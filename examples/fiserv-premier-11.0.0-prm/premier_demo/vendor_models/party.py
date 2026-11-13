@@ -12,23 +12,24 @@ from enum import StrEnum
 from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic.experimental.missing_sentinel import MISSING
 
 
 class PartyAcctRelInqBySecuredRequestPartyAcctRelSelPartyKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    party_id: Annotated[str | None, Field(alias='PartyId', max_length=36)] = None
+    party_id: Annotated[str | MISSING, Field(alias='PartyId', max_length=36)] = MISSING
 
 
 class PartyAcctRelInqBySecuredRequestRecCtrlIn(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cursor: Annotated[str | None, Field(alias='Cursor', max_length=250)] = None
-    max_rec_limit: Annotated[int | None, Field(alias='MaxRecLimit')] = None
+    cursor: Annotated[str | MISSING, Field(alias='Cursor', max_length=250)] = MISSING
+    max_rec_limit: Annotated[int | MISSING, Field(alias='MaxRecLimit')] = MISSING
 
 
 class AcctType(StrEnum):
@@ -52,14 +53,14 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctKeysAcctIdent(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    acct_ident_type: Annotated[AcctIdentType | None, Field(alias='AcctIdentType')] = (
-        None
-    )
+    acct_ident_type: Annotated[
+        AcctIdentType | MISSING, Field(alias='AcctIdentType')
+    ] = MISSING
     acct_ident_value: Annotated[
-        str | None, Field(alias='AcctIdentValue', max_length=36)
-    ] = None
+        str | MISSING, Field(alias='AcctIdentValue', max_length=36)
+    ] = MISSING
 
 
 class AcctDtlStatus(StrEnum):
@@ -167,23 +168,23 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctPer
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_amt_type: Annotated[AcctAmtType, Field(alias='AcctAmtType')]
     acct_period_type: Annotated[
-        AcctPeriodType | None, Field(alias='AcctPeriodType')
-    ] = None
-    amt: Annotated[float | None, Field(alias='Amt')] = None
-    count: Annotated[int | None, Field(alias='Count')] = None
-    last_occur_ind: Annotated[bool | None, Field(alias='LastOccurInd')] = None
+        AcctPeriodType | MISSING, Field(alias='AcctPeriodType')
+    ] = MISSING
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    count: Annotated[int | MISSING, Field(alias='Count')] = MISSING
+    last_occur_ind: Annotated[bool | MISSING, Field(alias='LastOccurInd')] = MISSING
     last_occurance_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='LastOccuranceDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
-    rate: Annotated[float | None, Field(alias='Rate')] = None
+    ] = MISSING
+    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
 
 
 class Language(StrEnum):
@@ -197,9 +198,9 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctPre
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    language: Annotated[Language | None, Field(alias='Language')] = None
+    language: Annotated[Language | MISSING, Field(alias='Language')] = MISSING
 
 
 class RecurType(StrEnum):
@@ -211,10 +212,10 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctStm
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    recur_interval: Annotated[int | None, Field(alias='RecurInterval')] = None
-    recur_type: Annotated[RecurType | None, Field(alias='RecurType')] = None
+    recur_interval: Annotated[int | MISSING, Field(alias='RecurInterval')] = MISSING
+    recur_type: Annotated[RecurType | MISSING, Field(alias='RecurType')] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAdvPostingRestrictions(
@@ -222,17 +223,17 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAdvPost
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    restriction_ovrd_ind: Annotated[bool | None, Field(alias='RestrictionOvrdInd')] = (
-        None
-    )
+    restriction_ovrd_ind: Annotated[
+        bool | MISSING, Field(alias='RestrictionOvrdInd')
+    ] = MISSING
     restriction_past_due_days: Annotated[
-        int | None, Field(alias='RestrictionPastDueDays')
-    ] = None
+        int | MISSING, Field(alias='RestrictionPastDueDays')
+    ] = MISSING
     restriction_reason_code: Annotated[
-        str | None, Field(alias='RestrictionReasonCode')
-    ] = None
+        str | MISSING, Field(alias='RestrictionReasonCode')
+    ] = MISSING
 
 
 class DataClassType(StrEnum):
@@ -244,13 +245,13 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoClientD
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    data_class_type: Annotated[DataClassType | None, Field(alias='DataClassType')] = (
-        None
-    )
-    desc: Annotated[str | None, Field(alias='Desc', max_length=200)] = None
-    value: Annotated[str | None, Field(alias='Value', max_length=256)] = None
+    data_class_type: Annotated[
+        DataClassType | MISSING, Field(alias='DataClassType')
+    ] = MISSING
+    desc: Annotated[str | MISSING, Field(alias='Desc', max_length=200)] = MISSING
+    value: Annotated[str | MISSING, Field(alias='Value', max_length=256)] = MISSING
 
 
 class CurCodeType(StrEnum):
@@ -262,9 +263,11 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoCurAmtC
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cur_code_type: Annotated[CurCodeType | None, Field(alias='CurCodeType')] = None
+    cur_code_type: Annotated[CurCodeType | MISSING, Field(alias='CurCodeType')] = (
+        MISSING
+    )
     cur_code_value: Annotated[str, Field(alias='CurCodeValue')]
 
 
@@ -280,16 +283,16 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDateDat
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    date_type: Annotated[DateType | None, Field(alias='DateType')] = None
+    date_type: Annotated[DateType | MISSING, Field(alias='DateType')] = MISSING
     date_value: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='DateValue',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmtCurAmtCurCode(
@@ -297,9 +300,11 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmtC
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cur_code_type: Annotated[CurCodeType | None, Field(alias='CurCodeType')] = None
+    cur_code_type: Annotated[CurCodeType | MISSING, Field(alias='CurCodeType')] = (
+        MISSING
+    )
     cur_code_value: Annotated[str, Field(alias='CurCodeValue')]
 
 
@@ -313,9 +318,11 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoInitial
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cur_code_type: Annotated[CurCodeType | None, Field(alias='CurCodeType')] = None
+    cur_code_type: Annotated[CurCodeType | MISSING, Field(alias='CurCodeType')] = (
+        MISSING
+    )
     cur_code_value: Annotated[str, Field(alias='CurCodeValue')]
 
 
@@ -324,9 +331,11 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmt
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cur_code_type: Annotated[CurCodeType | None, Field(alias='CurCodeType')] = None
+    cur_code_type: Annotated[CurCodeType | MISSING, Field(alias='CurCodeType')] = (
+        MISSING
+    )
     cur_code_value: Annotated[str, Field(alias='CurCodeValue')]
 
 
@@ -339,11 +348,11 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoPmtPost
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     restriction_reason_code: Annotated[
-        str | None, Field(alias='RestrictionReasonCode')
-    ] = None
+        str | MISSING, Field(alias='RestrictionReasonCode')
+    ] = MISSING
 
 
 class AddrFormatType(StrEnum):
@@ -380,17 +389,17 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoRelatio
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     relationship_mgr_ident: Annotated[
         str, Field(alias='RelationshipMgrIdent', max_length=36)
     ]
     relationship_mgr_ident_enum_desc: Annotated[
-        str | None, Field(alias='RelationshipMgrIdentEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='RelationshipMgrIdentEnumDesc', max_length=80)
+    ] = MISSING
     relationship_role: Annotated[
-        RelationshipRole | None, Field(alias='RelationshipRole')
-    ] = None
+        RelationshipRole | MISSING, Field(alias='RelationshipRole')
+    ] = MISSING
 
 
 class TermUnits(StrEnum):
@@ -403,9 +412,9 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoTerm(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    count: Annotated[int | None, Field(alias='Count')] = None
+    count: Annotated[int | MISSING, Field(alias='Count')] = MISSING
     term_units: Annotated[TermUnits, Field(alias='TermUnits')]
 
 
@@ -414,22 +423,22 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoTimeFra
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     end_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EndDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     start_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='StartDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelOrder(StrEnum):
@@ -458,14 +467,14 @@ class PartyAcctRelType(StrEnum):
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyAcctRelData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     party_acct_rel_desc: Annotated[
-        str | None, Field(alias='PartyAcctRelDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='PartyAcctRelDesc', max_length=80)
+    ] = MISSING
     party_acct_rel_order: Annotated[
-        PartyAcctRelOrder | None, Field(alias='PartyAcctRelOrder')
-    ] = None
+        PartyAcctRelOrder | MISSING, Field(alias='PartyAcctRelOrder')
+    ] = MISSING
     party_acct_rel_type: Annotated[PartyAcctRelType, Field(alias='PartyAcctRelType')]
 
 
@@ -506,12 +515,16 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoEm
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    email_addr: Annotated[str | None, Field(alias='EmailAddr', max_length=254)] = None
-    email_ident: Annotated[str | None, Field(alias='EmailIdent', max_length=36)] = None
-    email_type: Annotated[EmailType | None, Field(alias='EmailType')] = None
-    preferred_email: Annotated[bool | None, Field(alias='PreferredEmail')] = None
+    email_addr: Annotated[str | MISSING, Field(alias='EmailAddr', max_length=254)] = (
+        MISSING
+    )
+    email_ident: Annotated[str | MISSING, Field(alias='EmailIdent', max_length=36)] = (
+        MISSING
+    )
+    email_type: Annotated[EmailType | MISSING, Field(alias='EmailType')] = MISSING
+    preferred_email: Annotated[bool | MISSING, Field(alias='PreferredEmail')] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoIssuedIdent(
@@ -519,27 +532,27 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoIs
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    exp_dt: Annotated[date | None, Field(alias='ExpDt')] = None
+    exp_dt: Annotated[date | MISSING, Field(alias='ExpDt')] = MISSING
     issue_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='IssueDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     issued_ident_id: Annotated[
-        str | None, Field(alias='IssuedIdentId', max_length=36)
-    ] = None
+        str | MISSING, Field(alias='IssuedIdentId', max_length=36)
+    ] = MISSING
     issued_ident_type: Annotated[str, Field(alias='IssuedIdentType')]
     issued_ident_type_enum_desc: Annotated[
-        str | None, Field(alias='IssuedIdentTypeEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='IssuedIdentTypeEnumDesc', max_length=80)
+    ] = MISSING
     issued_ident_value: Annotated[
-        str | None, Field(alias='IssuedIdentValue', max_length=32)
-    ] = None
-    issuer: Annotated[str | None, Field(alias='Issuer', max_length=32)] = None
+        str | MISSING, Field(alias='IssuedIdentValue', max_length=32)
+    ] = MISSING
+    issuer: Annotated[str | MISSING, Field(alias='Issuer', max_length=32)] = MISSING
 
 
 class NameType(StrEnum):
@@ -551,10 +564,12 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoOr
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    name: Annotated[str | None, Field(alias='Name', max_length=80)] = None
-    name_ident: Annotated[str | None, Field(alias='NameIdent', max_length=36)] = None
+    name: Annotated[str | MISSING, Field(alias='Name', max_length=80)] = MISSING
+    name_ident: Annotated[str | MISSING, Field(alias='NameIdent', max_length=36)] = (
+        MISSING
+    )
     name_type: Annotated[NameType, Field(alias='NameType')]
 
 
@@ -576,13 +591,15 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoPh
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    phone: Annotated[str | None, Field(alias='Phone')] = None
-    phone_desc: Annotated[str | None, Field(alias='PhoneDesc', max_length=30)] = None
-    phone_ident: Annotated[int | None, Field(alias='PhoneIdent')] = None
+    phone: Annotated[str | MISSING, Field(alias='Phone')] = MISSING
+    phone_desc: Annotated[str | MISSING, Field(alias='PhoneDesc', max_length=30)] = (
+        MISSING
+    )
+    phone_ident: Annotated[int | MISSING, Field(alias='PhoneIdent')] = MISSING
     phone_type: Annotated[PhoneType, Field(alias='PhoneType')]
-    preferred_phone: Annotated[bool | None, Field(alias='PreferredPhone')] = None
+    preferred_phone: Annotated[bool | MISSING, Field(alias='PreferredPhone')] = MISSING
 
 
 class AddrType1(StrEnum):
@@ -618,11 +635,11 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoPo
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     country_code_source: Annotated[
-        CountryCodeSource | None, Field(alias='CountryCodeSource')
-    ] = None
+        CountryCodeSource | MISSING, Field(alias='CountryCodeSource')
+    ] = MISSING
     country_code_value: Annotated[str, Field(alias='CountryCodeValue')]
 
 
@@ -631,22 +648,22 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoPo
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     end_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EndDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     start_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='StartDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
 
 
 class WebAddrType(StrEnum):
@@ -658,11 +675,13 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoWe
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    web_addr_ident: Annotated[int | None, Field(alias='WebAddrIdent')] = None
-    web_addr_link: Annotated[str | None, Field(alias='WebAddrLink')] = None
-    web_addr_type: Annotated[WebAddrType | None, Field(alias='WebAddrType')] = None
+    web_addr_ident: Annotated[int | MISSING, Field(alias='WebAddrIdent')] = MISSING
+    web_addr_link: Annotated[str | MISSING, Field(alias='WebAddrLink')] = MISSING
+    web_addr_type: Annotated[WebAddrType | MISSING, Field(alias='WebAddrType')] = (
+        MISSING
+    )
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoEmail(
@@ -670,12 +689,16 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInf
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    email_addr: Annotated[str | None, Field(alias='EmailAddr', max_length=254)] = None
-    email_ident: Annotated[str | None, Field(alias='EmailIdent', max_length=36)] = None
-    email_type: Annotated[EmailType | None, Field(alias='EmailType')] = None
-    preferred_email: Annotated[bool | None, Field(alias='PreferredEmail')] = None
+    email_addr: Annotated[str | MISSING, Field(alias='EmailAddr', max_length=254)] = (
+        MISSING
+    )
+    email_ident: Annotated[str | MISSING, Field(alias='EmailIdent', max_length=36)] = (
+        MISSING
+    )
+    email_type: Annotated[EmailType | MISSING, Field(alias='EmailType')] = MISSING
+    preferred_email: Annotated[bool | MISSING, Field(alias='PreferredEmail')] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoIssuedIdent(
@@ -683,27 +706,27 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInf
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    exp_dt: Annotated[date | None, Field(alias='ExpDt')] = None
+    exp_dt: Annotated[date | MISSING, Field(alias='ExpDt')] = MISSING
     issue_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='IssueDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     issued_ident_id: Annotated[
-        str | None, Field(alias='IssuedIdentId', max_length=36)
-    ] = None
+        str | MISSING, Field(alias='IssuedIdentId', max_length=36)
+    ] = MISSING
     issued_ident_type: Annotated[str, Field(alias='IssuedIdentType')]
     issued_ident_type_enum_desc: Annotated[
-        str | None, Field(alias='IssuedIdentTypeEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='IssuedIdentTypeEnumDesc', max_length=80)
+    ] = MISSING
     issued_ident_value: Annotated[
-        str | None, Field(alias='IssuedIdentValue', max_length=32)
-    ] = None
-    issuer: Annotated[str | None, Field(alias='Issuer', max_length=32)] = None
+        str | MISSING, Field(alias='IssuedIdentValue', max_length=32)
+    ] = MISSING
+    issuer: Annotated[str | MISSING, Field(alias='Issuer', max_length=32)] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoPersonName(
@@ -711,13 +734,23 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInf
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    family_name: Annotated[str | None, Field(alias='FamilyName', max_length=40)] = None
-    full_name: Annotated[str | None, Field(alias='FullName', max_length=96)] = None
-    given_name: Annotated[str | None, Field(alias='GivenName', max_length=40)] = None
-    middle_name: Annotated[str | None, Field(alias='MiddleName', max_length=40)] = None
-    name_ident: Annotated[str | None, Field(alias='NameIdent', max_length=36)] = None
+    family_name: Annotated[str | MISSING, Field(alias='FamilyName', max_length=40)] = (
+        MISSING
+    )
+    full_name: Annotated[str | MISSING, Field(alias='FullName', max_length=96)] = (
+        MISSING
+    )
+    given_name: Annotated[str | MISSING, Field(alias='GivenName', max_length=40)] = (
+        MISSING
+    )
+    middle_name: Annotated[str | MISSING, Field(alias='MiddleName', max_length=40)] = (
+        MISSING
+    )
+    name_ident: Annotated[str | MISSING, Field(alias='NameIdent', max_length=36)] = (
+        MISSING
+    )
     name_type: Annotated[NameType, Field(alias='NameType')]
 
 
@@ -726,23 +759,25 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInf
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    phone: Annotated[str | None, Field(alias='Phone')] = None
-    phone_desc: Annotated[str | None, Field(alias='PhoneDesc', max_length=30)] = None
-    phone_ident: Annotated[int | None, Field(alias='PhoneIdent')] = None
+    phone: Annotated[str | MISSING, Field(alias='Phone')] = MISSING
+    phone_desc: Annotated[str | MISSING, Field(alias='PhoneDesc', max_length=30)] = (
+        MISSING
+    )
+    phone_ident: Annotated[int | MISSING, Field(alias='PhoneIdent')] = MISSING
     phone_type: Annotated[PhoneType, Field(alias='PhoneType')]
-    preferred_phone: Annotated[bool | None, Field(alias='PreferredPhone')] = None
+    preferred_phone: Annotated[bool | MISSING, Field(alias='PreferredPhone')] = MISSING
 
 
 class CountryCode(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     country_code_source: Annotated[
-        CountryCodeSource | None, Field(alias='CountryCodeSource')
-    ] = None
+        CountryCodeSource | MISSING, Field(alias='CountryCodeSource')
+    ] = MISSING
     country_code_value: Annotated[str, Field(alias='CountryCodeValue')]
 
 
@@ -751,22 +786,22 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInf
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     end_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EndDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     start_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='StartDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoWebAddr(
@@ -774,11 +809,13 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInf
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    web_addr_ident: Annotated[int | None, Field(alias='WebAddrIdent')] = None
-    web_addr_link: Annotated[str | None, Field(alias='WebAddrLink')] = None
-    web_addr_type: Annotated[WebAddrType | None, Field(alias='WebAddrType')] = None
+    web_addr_ident: Annotated[int | MISSING, Field(alias='WebAddrIdent')] = MISSING
+    web_addr_link: Annotated[str | MISSING, Field(alias='WebAddrLink')] = MISSING
+    web_addr_type: Annotated[WebAddrType | MISSING, Field(alias='WebAddrType')] = (
+        MISSING
+    )
 
 
 class AcctType1(StrEnum):
@@ -796,9 +833,9 @@ class AcctType1(StrEnum):
 class PartyAcctRelInqBySecuredResponsePartyAcctRelKeysAcctKeysSvcIdent(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    svc_nbr: Annotated[str | None, Field(alias='SvcNbr', max_length=36)] = None
+    svc_nbr: Annotated[str | MISSING, Field(alias='SvcNbr', max_length=36)] = MISSING
 
 
 class PartyAcctRelStatusCode(StrEnum):
@@ -808,15 +845,15 @@ class PartyAcctRelStatusCode(StrEnum):
 class PartyAcctRelInqBySecuredResponsePartyAcctRelStatus(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     eff_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EffDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     party_acct_rel_status_code: Annotated[
         PartyAcctRelStatusCode, Field(alias='PartyAcctRelStatusCode')
     ]
@@ -825,11 +862,13 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelStatus(BaseModel):
 class PartyAcctRelInqBySecuredResponseRecCtrlOut(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cursor: Annotated[str | None, Field(alias='Cursor', max_length=250)] = None
-    matched_rec_count: Annotated[int | None, Field(alias='MatchedRecCount')] = None
-    remain_rec_count: Annotated[int | None, Field(alias='RemainRecCount')] = None
+    cursor: Annotated[str | MISSING, Field(alias='Cursor', max_length=250)] = MISSING
+    matched_rec_count: Annotated[int | MISSING, Field(alias='MatchedRecCount')] = (
+        MISSING
+    )
+    remain_rec_count: Annotated[int | MISSING, Field(alias='RemainRecCount')] = MISSING
     sent_rec_count: Annotated[int, Field(alias='SentRecCount')]
 
 
@@ -842,51 +881,56 @@ class SeverityType(StrEnum):
 class AdditionalStatusType(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     server_status_code: Annotated[
-        str | None, Field(alias='ServerStatusCode', max_length=20)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusCode', max_length=20)
+    ] = MISSING
     server_status_desc: Annotated[
-        str | None, Field(alias='ServerStatusDesc', max_length=255)
-    ] = None
-    severity: Annotated[SeverityType | None, Field(alias='Severity')] = None
-    status_code: Annotated[str | None, Field(alias='StatusCode', max_length=20)] = None
-    status_desc: Annotated[str | None, Field(alias='StatusDesc', max_length=255)] = None
+        str | MISSING, Field(alias='ServerStatusDesc', max_length=255)
+    ] = MISSING
+    severity: Annotated[SeverityType | MISSING, Field(alias='Severity')] = MISSING
+    status_code: Annotated[str | MISSING, Field(alias='StatusCode', max_length=20)] = (
+        MISSING
+    )
+    status_desc: Annotated[str | MISSING, Field(alias='StatusDesc', max_length=255)] = (
+        MISSING
+    )
     svc_provider_name: Annotated[
-        str | None, Field(alias='SvcProviderName', max_length=1024)
-    ] = None
+        str | MISSING, Field(alias='SvcProviderName', max_length=1024)
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredRequestPartyAcctRelSel(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     exclude_closed_acct_ind: Annotated[
-        bool | None, Field(alias='ExcludeClosedAcctInd')
-    ] = None
+        bool | MISSING, Field(alias='ExcludeClosedAcctInd')
+    ] = MISSING
     party_keys: Annotated[
-        PartyAcctRelInqBySecuredRequestPartyAcctRelSelPartyKeys | None,
+        PartyAcctRelInqBySecuredRequestPartyAcctRelSelPartyKeys | MISSING,
         Field(alias='PartyKeys'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
     acct_ident: Annotated[
-        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctKeysAcctIdent | None,
+        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctKeysAcctIdent
+        | MISSING,
         Field(alias='AcctIdent'),
-    ] = None
-    acct_type: Annotated[AcctType | None, Field(alias='AcctType')] = None
+    ] = MISSING
+    acct_type: Annotated[AcctType | MISSING, Field(alias='AcctType')] = MISSING
     svc_ident: Annotated[
-        PartyAcctRelInqBySecuredResponsePartyAcctRelKeysAcctKeysSvcIdent | None,
+        PartyAcctRelInqBySecuredResponsePartyAcctRelKeysAcctKeysSvcIdent | MISSING,
         Field(alias='SvcIdent'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctStmtData(
@@ -894,15 +938,15 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctStm
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     stmt_time_frame: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctStmtDataStmtTimeFrame
         ]
-        | None,
+        | MISSING,
         Field(alias='StmtTimeFrame'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoCurAmt(
@@ -910,14 +954,14 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoCurAmt(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoCurAmtCurCode
-        | None,
+        | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmtCurAmt(
@@ -925,14 +969,14 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmtC
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmtCurAmtCurCode
-        | None,
+        | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmtPmtCompositeAmt(
@@ -940,11 +984,11 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmtP
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     composite_cur_amt_type: Annotated[
-        CompositeCurAmtType | None, Field(alias='CompositeCurAmtType')
-    ] = None
+        CompositeCurAmtType | MISSING, Field(alias='CompositeCurAmtType')
+    ] = MISSING
     cur_amt: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmtCurAmt,
         Field(alias='CurAmt'),
@@ -956,14 +1000,14 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoInitial
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoInitialAmountCurCode
-        | None,
+        | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmtCurAmt(
@@ -971,14 +1015,14 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmt
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmtCurAmtCurCode
-        | None,
+        | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmtPmtCompositeAmt(
@@ -986,11 +1030,11 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmt
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     composite_cur_amt_type: Annotated[
-        CompositeCurAmtType1 | None, Field(alias='CompositeCurAmtType')
-    ] = None
+        CompositeCurAmtType1 | MISSING, Field(alias='CompositeCurAmtType')
+    ] = MISSING
     cur_amt: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmtCurAmt,
         Field(alias='CurAmt'),
@@ -1002,44 +1046,46 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoPostAdd
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    addr1: Annotated[str | None, Field(alias='Addr1', max_length=64)] = None
-    addr2: Annotated[str | None, Field(alias='Addr2', max_length=64)] = None
+    addr1: Annotated[str | MISSING, Field(alias='Addr1', max_length=64)] = MISSING
+    addr2: Annotated[str | MISSING, Field(alias='Addr2', max_length=64)] = MISSING
     addr_format_type: Annotated[
-        AddrFormatType | None, Field(alias='AddrFormatType')
-    ] = None
+        AddrFormatType | MISSING, Field(alias='AddrFormatType')
+    ] = MISSING
     addr_type: Annotated[AddrType, Field(alias='AddrType')]
-    addr_use: Annotated[AddrUse | None, Field(alias='AddrUse')] = None
-    address_ident: Annotated[str | None, Field(alias='AddressIdent', max_length=36)] = (
-        None
-    )
-    census_block: Annotated[str | None, Field(alias='CensusBlock', max_length=20)] = (
-        None
-    )
-    census_tract: Annotated[str | None, Field(alias='CensusTract', max_length=20)] = (
-        None
-    )
-    city: Annotated[str | None, Field(alias='City', max_length=32)] = None
+    addr_use: Annotated[AddrUse | MISSING, Field(alias='AddrUse')] = MISSING
+    address_ident: Annotated[
+        str | MISSING, Field(alias='AddressIdent', max_length=36)
+    ] = MISSING
+    census_block: Annotated[
+        str | MISSING, Field(alias='CensusBlock', max_length=20)
+    ] = MISSING
+    census_tract: Annotated[
+        str | MISSING, Field(alias='CensusTract', max_length=20)
+    ] = MISSING
+    city: Annotated[str | MISSING, Field(alias='City', max_length=32)] = MISSING
     country_code: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoPostAddrCountryCode
-        | None,
+        | MISSING,
         Field(alias='CountryCode'),
-    ] = None
-    foreign_flag: Annotated[bool | None, Field(alias='ForeignFlag')] = None
-    handling_code: Annotated[str | None, Field(alias='HandlingCode')] = None
+    ] = MISSING
+    foreign_flag: Annotated[bool | MISSING, Field(alias='ForeignFlag')] = MISSING
+    handling_code: Annotated[str | MISSING, Field(alias='HandlingCode')] = MISSING
     handling_code_option: Annotated[
-        HandlingCodeOption | None, Field(alias='HandlingCodeOption')
-    ] = None
-    msa_code: Annotated[int | None, Field(alias='MSACode')] = None
-    postal_code: Annotated[str | None, Field(alias='PostalCode', max_length=11)] = None
-    retention: Annotated[bool | None, Field(alias='Retention')] = None
-    state_prov: Annotated[str | None, Field(alias='StateProv')] = None
+        HandlingCodeOption | MISSING, Field(alias='HandlingCodeOption')
+    ] = MISSING
+    msa_code: Annotated[int | MISSING, Field(alias='MSACode')] = MISSING
+    postal_code: Annotated[str | MISSING, Field(alias='PostalCode', max_length=11)] = (
+        MISSING
+    )
+    retention: Annotated[bool | MISSING, Field(alias='Retention')] = MISSING
+    state_prov: Annotated[str | MISSING, Field(alias='StateProv')] = MISSING
     time_frame: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoTimeFrame
-        | None,
+        | MISSING,
         Field(alias='TimeFrame'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoPostAddr(
@@ -1047,44 +1093,46 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoPo
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    addr1: Annotated[str | None, Field(alias='Addr1', max_length=64)] = None
-    addr2: Annotated[str | None, Field(alias='Addr2', max_length=64)] = None
+    addr1: Annotated[str | MISSING, Field(alias='Addr1', max_length=64)] = MISSING
+    addr2: Annotated[str | MISSING, Field(alias='Addr2', max_length=64)] = MISSING
     addr_format_type: Annotated[
-        AddrFormatType | None, Field(alias='AddrFormatType')
-    ] = None
+        AddrFormatType | MISSING, Field(alias='AddrFormatType')
+    ] = MISSING
     addr_type: Annotated[AddrType1, Field(alias='AddrType')]
-    addr_use: Annotated[AddrUse1 | None, Field(alias='AddrUse')] = None
-    address_ident: Annotated[str | None, Field(alias='AddressIdent', max_length=36)] = (
-        None
-    )
-    census_block: Annotated[str | None, Field(alias='CensusBlock', max_length=20)] = (
-        None
-    )
-    census_tract: Annotated[str | None, Field(alias='CensusTract', max_length=20)] = (
-        None
-    )
-    city: Annotated[str | None, Field(alias='City', max_length=32)] = None
+    addr_use: Annotated[AddrUse1 | MISSING, Field(alias='AddrUse')] = MISSING
+    address_ident: Annotated[
+        str | MISSING, Field(alias='AddressIdent', max_length=36)
+    ] = MISSING
+    census_block: Annotated[
+        str | MISSING, Field(alias='CensusBlock', max_length=20)
+    ] = MISSING
+    census_tract: Annotated[
+        str | MISSING, Field(alias='CensusTract', max_length=20)
+    ] = MISSING
+    city: Annotated[str | MISSING, Field(alias='City', max_length=32)] = MISSING
     country_code: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoPostAddrCountryCode
-        | None,
+        | MISSING,
         Field(alias='CountryCode'),
-    ] = None
-    foreign_flag: Annotated[bool | None, Field(alias='ForeignFlag')] = None
-    handling_code: Annotated[str | None, Field(alias='HandlingCode')] = None
+    ] = MISSING
+    foreign_flag: Annotated[bool | MISSING, Field(alias='ForeignFlag')] = MISSING
+    handling_code: Annotated[str | MISSING, Field(alias='HandlingCode')] = MISSING
     handling_code_option: Annotated[
-        HandlingCodeOption1 | None, Field(alias='HandlingCodeOption')
-    ] = None
-    msa_code: Annotated[int | None, Field(alias='MSACode')] = None
-    postal_code: Annotated[str | None, Field(alias='PostalCode', max_length=11)] = None
-    retention: Annotated[bool | None, Field(alias='Retention')] = None
-    state_prov: Annotated[str | None, Field(alias='StateProv')] = None
+        HandlingCodeOption1 | MISSING, Field(alias='HandlingCodeOption')
+    ] = MISSING
+    msa_code: Annotated[int | MISSING, Field(alias='MSACode')] = MISSING
+    postal_code: Annotated[str | MISSING, Field(alias='PostalCode', max_length=11)] = (
+        MISSING
+    )
+    retention: Annotated[bool | MISSING, Field(alias='Retention')] = MISSING
+    state_prov: Annotated[str | MISSING, Field(alias='StateProv')] = MISSING
     time_frame: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoPostAddrTimeFrame
-        | None,
+        | MISSING,
         Field(alias='TimeFrame'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoPostAddr(
@@ -1092,69 +1140,71 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInf
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    addr1: Annotated[str | None, Field(alias='Addr1', max_length=64)] = None
-    addr2: Annotated[str | None, Field(alias='Addr2', max_length=64)] = None
+    addr1: Annotated[str | MISSING, Field(alias='Addr1', max_length=64)] = MISSING
+    addr2: Annotated[str | MISSING, Field(alias='Addr2', max_length=64)] = MISSING
     addr_format_type: Annotated[
-        AddrFormatType | None, Field(alias='AddrFormatType')
-    ] = None
+        AddrFormatType | MISSING, Field(alias='AddrFormatType')
+    ] = MISSING
     addr_type: Annotated[AddrType1, Field(alias='AddrType')]
-    addr_use: Annotated[AddrUse1 | None, Field(alias='AddrUse')] = None
-    address_ident: Annotated[str | None, Field(alias='AddressIdent', max_length=36)] = (
-        None
-    )
-    census_block: Annotated[str | None, Field(alias='CensusBlock', max_length=20)] = (
-        None
-    )
-    census_tract: Annotated[str | None, Field(alias='CensusTract', max_length=20)] = (
-        None
-    )
-    city: Annotated[str | None, Field(alias='City', max_length=32)] = None
-    country_code: Annotated[CountryCode | None, Field(alias='CountryCode')] = None
-    foreign_flag: Annotated[bool | None, Field(alias='ForeignFlag')] = None
-    handling_code: Annotated[str | None, Field(alias='HandlingCode')] = None
+    addr_use: Annotated[AddrUse1 | MISSING, Field(alias='AddrUse')] = MISSING
+    address_ident: Annotated[
+        str | MISSING, Field(alias='AddressIdent', max_length=36)
+    ] = MISSING
+    census_block: Annotated[
+        str | MISSING, Field(alias='CensusBlock', max_length=20)
+    ] = MISSING
+    census_tract: Annotated[
+        str | MISSING, Field(alias='CensusTract', max_length=20)
+    ] = MISSING
+    city: Annotated[str | MISSING, Field(alias='City', max_length=32)] = MISSING
+    country_code: Annotated[CountryCode | MISSING, Field(alias='CountryCode')] = MISSING
+    foreign_flag: Annotated[bool | MISSING, Field(alias='ForeignFlag')] = MISSING
+    handling_code: Annotated[str | MISSING, Field(alias='HandlingCode')] = MISSING
     handling_code_option: Annotated[
-        HandlingCodeOption1 | None, Field(alias='HandlingCodeOption')
-    ] = None
-    msa_code: Annotated[int | None, Field(alias='MSACode')] = None
-    postal_code: Annotated[str | None, Field(alias='PostalCode', max_length=11)] = None
-    retention: Annotated[bool | None, Field(alias='Retention')] = None
-    state_prov: Annotated[str | None, Field(alias='StateProv')] = None
+        HandlingCodeOption1 | MISSING, Field(alias='HandlingCodeOption')
+    ] = MISSING
+    msa_code: Annotated[int | MISSING, Field(alias='MSACode')] = MISSING
+    postal_code: Annotated[str | MISSING, Field(alias='PostalCode', max_length=11)] = (
+        MISSING
+    )
+    retention: Annotated[bool | MISSING, Field(alias='Retention')] = MISSING
+    state_prov: Annotated[str | MISSING, Field(alias='StateProv')] = MISSING
     time_frame: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoPostAddrTimeFrame
-        | None,
+        | MISSING,
         Field(alias='TimeFrame'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelKeysAcctKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
-    acct_type: Annotated[AcctType1 | None, Field(alias='AcctType')] = None
+    acct_type: Annotated[AcctType1 | MISSING, Field(alias='AcctType')] = MISSING
     svc_ident: Annotated[
-        PartyAcctRelInqBySecuredResponsePartyAcctRelKeysAcctKeysSvcIdent | None,
+        PartyAcctRelInqBySecuredResponsePartyAcctRelKeysAcctKeysSvcIdent | MISSING,
         Field(alias='SvcIdent'),
-    ] = None
+    ] = MISSING
 
 
 class StatusType(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     additional_status: Annotated[
-        list[AdditionalStatusType] | None, Field(alias='AdditionalStatus')
-    ] = None
+        list[AdditionalStatusType] | MISSING, Field(alias='AdditionalStatus')
+    ] = MISSING
     server_status_code: Annotated[
-        str | None, Field(alias='ServerStatusCode', max_length=20)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusCode', max_length=20)
+    ] = MISSING
     server_status_desc: Annotated[
-        str | None, Field(alias='ServerStatusDesc', max_length=255)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusDesc', max_length=255)
+    ] = MISSING
     severity: Annotated[SeverityType, Field(alias='Severity')]
     status_code: Annotated[str, Field(alias='StatusCode', max_length=20)]
     status_desc: Annotated[str, Field(alias='StatusDesc', max_length=255)]
@@ -1164,14 +1214,14 @@ class StatusType(BaseModel):
 class PartyAcctRelInqBySecuredRequest(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     party_acct_rel_sel: Annotated[
         PartyAcctRelInqBySecuredRequestPartyAcctRelSel, Field(alias='PartyAcctRelSel')
     ]
     rec_ctrl_in: Annotated[
-        PartyAcctRelInqBySecuredRequestRecCtrlIn | None, Field(alias='RecCtrlIn')
-    ] = None
+        PartyAcctRelInqBySecuredRequestRecCtrlIn | MISSING, Field(alias='RecCtrlIn')
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctBal(
@@ -1179,7 +1229,7 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctBal
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     bal_type: Annotated[BalType, Field(alias='BalType')]
     cur_amt: Annotated[
@@ -1193,22 +1243,22 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmt(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     due_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='DueDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     pmt_composite_amt: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmtPmtCompositeAmt
         ]
-        | None,
+        | MISSING,
         Field(alias='PmtCompositeAmt'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmt(
@@ -1216,16 +1266,16 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmt
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     pmt_composite_amt: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmtPmtCompositeAmt
         ]
-        | None,
+        | MISSING,
         Field(alias='PmtCompositeAmt'),
-    ] = None
-    pmt_dt: Annotated[date | None, Field(alias='PmtDt')] = None
+    ] = MISSING
+    pmt_dt: Annotated[date | MISSING, Field(alias='PmtDt')] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoContact(
@@ -1233,28 +1283,28 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoCo
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     email: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoEmail
-        | None,
+        | MISSING,
         Field(alias='Email'),
-    ] = None
+    ] = MISSING
     phone_num: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoPhoneNum
-        | None,
+        | MISSING,
         Field(alias='PhoneNum'),
-    ] = None
+    ] = MISSING
     post_addr: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoPostAddr
-        | None,
+        | MISSING,
         Field(alias='PostAddr'),
-    ] = None
+    ] = MISSING
     web_addr: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoWebAddr
-        | None,
+        | MISSING,
         Field(alias='WebAddr'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoContact(
@@ -1262,199 +1312,207 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInf
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     email: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoEmail
-        | None,
+        | MISSING,
         Field(alias='Email'),
-    ] = None
+    ] = MISSING
     phone_num: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoPhoneNum
-        | None,
+        | MISSING,
         Field(alias='PhoneNum'),
-    ] = None
+    ] = MISSING
     post_addr: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoPostAddr
-        | None,
+        | MISSING,
         Field(alias='PostAddr'),
-    ] = None
+    ] = MISSING
     web_addr: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoWebAddr
-        | None,
+        | MISSING,
         Field(alias='WebAddr'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_keys: Annotated[
-        PartyAcctRelInqBySecuredResponsePartyAcctRelKeysAcctKeys | None,
+        PartyAcctRelInqBySecuredResponsePartyAcctRelKeysAcctKeys | MISSING,
         Field(alias='AcctKeys'),
-    ] = None
+    ] = MISSING
     party_keys: Annotated[
-        PartyAcctRelInqBySecuredRequestPartyAcctRelSelPartyKeys | None,
+        PartyAcctRelInqBySecuredRequestPartyAcctRelSelPartyKeys | MISSING,
         Field(alias='PartyKeys'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfo(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_bal: Annotated[
         list[PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctBal]
-        | None,
+        | MISSING,
         Field(alias='AcctBal'),
-    ] = None
-    acct_dtl_status: Annotated[AcctDtlStatus | None, Field(alias='AcctDtlStatus')] = (
-        None
+    ] = MISSING
+    acct_dtl_status: Annotated[
+        AcctDtlStatus | MISSING, Field(alias='AcctDtlStatus')
+    ] = MISSING
+    acct_dtl_status_dt: Annotated[date | MISSING, Field(alias='AcctDtlStatusDt')] = (
+        MISSING
     )
-    acct_dtl_status_dt: Annotated[date | None, Field(alias='AcctDtlStatusDt')] = None
     acct_dtl_status_enum_desc: Annotated[
-        str | None, Field(alias='AcctDtlStatusEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='AcctDtlStatusEnumDesc', max_length=80)
+    ] = MISSING
     acct_period_data: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctPeriodData
         ]
-        | None,
+        | MISSING,
         Field(alias='AcctPeriodData'),
-    ] = None
+    ] = MISSING
     acct_pref: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctPref
-        | None,
+        | MISSING,
         Field(alias='AcctPref'),
-    ] = None
+    ] = MISSING
     acct_stmt_data: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAcctStmtData
-        | None,
+        | MISSING,
         Field(alias='AcctStmtData'),
-    ] = None
-    acct_title: Annotated[str | None, Field(alias='AcctTitle', max_length=255)] = None
+    ] = MISSING
+    acct_title: Annotated[str | MISSING, Field(alias='AcctTitle', max_length=255)] = (
+        MISSING
+    )
     acct_title_option: Annotated[
-        AcctTitleOption | None, Field(alias='AcctTitleOption')
-    ] = None
-    acct_type_code: Annotated[str | None, Field(alias='AcctTypeCode')] = None
+        AcctTitleOption | MISSING, Field(alias='AcctTitleOption')
+    ] = MISSING
+    acct_type_code: Annotated[str | MISSING, Field(alias='AcctTypeCode')] = MISSING
     adv_posting_restrictions: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoAdvPostingRestrictions
-        | None,
+        | MISSING,
         Field(alias='AdvPostingRestrictions'),
-    ] = None
-    box_num: Annotated[str | None, Field(alias='BoxNum', max_length=15)] = None
-    card_type: Annotated[str | None, Field(alias='CardType')] = None
-    charge_off_code: Annotated[str | None, Field(alias='ChargeOffCode')] = None
-    charge_off_ind: Annotated[bool | None, Field(alias='ChargeOffInd')] = None
-    class_code: Annotated[str | None, Field(alias='ClassCode')] = None
+    ] = MISSING
+    box_num: Annotated[str | MISSING, Field(alias='BoxNum', max_length=15)] = MISSING
+    card_type: Annotated[str | MISSING, Field(alias='CardType')] = MISSING
+    charge_off_code: Annotated[str | MISSING, Field(alias='ChargeOffCode')] = MISSING
+    charge_off_ind: Annotated[bool | MISSING, Field(alias='ChargeOffInd')] = MISSING
+    class_code: Annotated[str | MISSING, Field(alias='ClassCode')] = MISSING
     client_defined_data: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoClientDefinedData
         ]
-        | None,
+        | MISSING,
         Field(alias='ClientDefinedData'),
-    ] = None
-    closed_dt: Annotated[date | None, Field(alias='ClosedDt')] = None
+    ] = MISSING
+    closed_dt: Annotated[date | MISSING, Field(alias='ClosedDt')] = MISSING
     date_data: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDateData
         ]
-        | None,
+        | MISSING,
         Field(alias='DateData'),
-    ] = None
-    desc: Annotated[str | None, Field(alias='Desc', max_length=200)] = None
+    ] = MISSING
+    desc: Annotated[str | MISSING, Field(alias='Desc', max_length=200)] = MISSING
     doc_distribution_option: Annotated[
-        str | None, Field(alias='DocDistributionOption')
-    ] = None
+        str | MISSING, Field(alias='DocDistributionOption')
+    ] = MISSING
     due_pmt: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoDuePmt
-        | None,
+        | MISSING,
         Field(alias='DuePmt'),
-    ] = None
+    ] = MISSING
     electronic_banking_opt: Annotated[
-        ElectronicBankingOpt | None, Field(alias='ElectronicBankingOpt')
-    ] = None
-    exp_dt: Annotated[date | None, Field(alias='ExpDt')] = None
+        ElectronicBankingOpt | MISSING, Field(alias='ElectronicBankingOpt')
+    ] = MISSING
+    exp_dt: Annotated[date | MISSING, Field(alias='ExpDt')] = MISSING
     federal_insurance_eligibility: Annotated[
-        FederalInsuranceEligibility | None, Field(alias='FederalInsuranceEligibility')
-    ] = None
+        FederalInsuranceEligibility | MISSING,
+        Field(alias='FederalInsuranceEligibility'),
+    ] = MISSING
     initial_amount: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoInitialAmount
-        | None,
+        | MISSING,
         Field(alias='InitialAmount'),
-    ] = None
+    ] = MISSING
     issue_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='IssueDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     last_pmt: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoLastPmt
-        | None,
+        | MISSING,
         Field(alias='LastPmt'),
-    ] = None
-    maturity_dt: Annotated[date | None, Field(alias='MaturityDt')] = None
-    nickname: Annotated[str | None, Field(alias='Nickname', max_length=80)] = None
-    nickname_option: Annotated[NicknameOption | None, Field(alias='NicknameOption')] = (
-        None
-    )
-    non_accrual_code: Annotated[str | None, Field(alias='NonAccrualCode')] = None
-    non_accrual_ind: Annotated[bool | None, Field(alias='NonAccrualInd')] = None
-    oed_code: Annotated[str | None, Field(alias='OEDCode')] = None
-    open_dt: Annotated[date | None, Field(alias='OpenDt')] = None
+    ] = MISSING
+    maturity_dt: Annotated[date | MISSING, Field(alias='MaturityDt')] = MISSING
+    nickname: Annotated[str | MISSING, Field(alias='Nickname', max_length=80)] = MISSING
+    nickname_option: Annotated[
+        NicknameOption | MISSING, Field(alias='NicknameOption')
+    ] = MISSING
+    non_accrual_code: Annotated[str | MISSING, Field(alias='NonAccrualCode')] = MISSING
+    non_accrual_ind: Annotated[bool | MISSING, Field(alias='NonAccrualInd')] = MISSING
+    oed_code: Annotated[str | MISSING, Field(alias='OEDCode')] = MISSING
+    open_dt: Annotated[date | MISSING, Field(alias='OpenDt')] = MISSING
     originating_branch: Annotated[
-        str | None, Field(alias='OriginatingBranch', max_length=32)
-    ] = None
+        str | MISSING, Field(alias='OriginatingBranch', max_length=32)
+    ] = MISSING
     originating_branch_enum_desc: Annotated[
-        str | None, Field(alias='OriginatingBranchEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='OriginatingBranchEnumDesc', max_length=80)
+    ] = MISSING
     pmt_posting_restrictions: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoPmtPostingRestrictions
-        | None,
+        | MISSING,
         Field(alias='PmtPostingRestrictions'),
-    ] = None
+    ] = MISSING
     post_addr: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoPostAddr
         ]
-        | None,
+        | MISSING,
         Field(alias='PostAddr'),
-    ] = None
+    ] = MISSING
     prod_int_rate_id: Annotated[
-        str | None, Field(alias='ProdIntRateId', max_length=36)
-    ] = None
-    product_ident: Annotated[str | None, Field(alias='ProductIdent', max_length=42)] = (
-        None
-    )
-    rate: Annotated[float | None, Field(alias='Rate')] = None
+        str | MISSING, Field(alias='ProdIntRateId', max_length=36)
+    ] = MISSING
+    product_ident: Annotated[
+        str | MISSING, Field(alias='ProductIdent', max_length=42)
+    ] = MISSING
+    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
     relationship_mgr: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoRelationshipMgr
         ]
-        | None,
+        | MISSING,
         Field(alias='RelationshipMgr'),
-    ] = None
-    report_group_code: Annotated[str | None, Field(alias='ReportGroupCode')] = None
-    restricted_desc: Annotated[
-        str | None, Field(alias='RestrictedDesc', max_length=80)
-    ] = None
-    restricted_ind: Annotated[bool | None, Field(alias='RestrictedInd')] = None
-    tax_incentive_type: Annotated[
-        TaxIncentiveType | None, Field(alias='TaxIncentiveType')
-    ] = None
-    term: Annotated[
-        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoTerm | None,
-        Field(alias='Term'),
-    ] = None
-    trn_restriction: Annotated[str | None, Field(alias='TrnRestriction')] = None
-    trn_restriction_ovrd: Annotated[str | None, Field(alias='TrnRestrictionOvrd')] = (
-        None
+    ] = MISSING
+    report_group_code: Annotated[str | MISSING, Field(alias='ReportGroupCode')] = (
+        MISSING
     )
+    restricted_desc: Annotated[
+        str | MISSING, Field(alias='RestrictedDesc', max_length=80)
+    ] = MISSING
+    restricted_ind: Annotated[bool | MISSING, Field(alias='RestrictedInd')] = MISSING
+    tax_incentive_type: Annotated[
+        TaxIncentiveType | MISSING, Field(alias='TaxIncentiveType')
+    ] = MISSING
+    term: Annotated[
+        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfoTerm
+        | MISSING,
+        Field(alias='Term'),
+    ] = MISSING
+    trn_restriction: Annotated[str | MISSING, Field(alias='TrnRestriction')] = MISSING
+    trn_restriction_ovrd: Annotated[
+        str | MISSING, Field(alias='TrnRestrictionOvrd')
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfo(
@@ -1462,39 +1520,43 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfo(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     contact: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoContact
         ]
-        | None,
+        | MISSING,
         Field(alias='Contact'),
-    ] = None
+    ] = MISSING
     issued_ident: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoIssuedIdent
         ]
-        | None,
+        | MISSING,
         Field(alias='IssuedIdent'),
-    ] = None
+    ] = MISSING
     org_name: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfoOrgName
-        | None,
+        | MISSING,
         Field(alias='OrgName'),
-    ] = None
+    ] = MISSING
     originating_branch: Annotated[
-        str | None, Field(alias='OriginatingBranch', max_length=32)
-    ] = None
-    party_type: Annotated[PartyType | None, Field(alias='PartyType')] = None
+        str | MISSING, Field(alias='OriginatingBranch', max_length=32)
+    ] = MISSING
+    party_type: Annotated[PartyType | MISSING, Field(alias='PartyType')] = MISSING
     party_type_enum_desc: Annotated[
-        str | None, Field(alias='PartyTypeEnumDesc', max_length=80)
-    ] = None
-    tax_ident: Annotated[str | None, Field(alias='TaxIdent', max_length=12)] = None
-    tax_ident_type: Annotated[TaxIdentType | None, Field(alias='TaxIdentType')] = None
+        str | MISSING, Field(alias='PartyTypeEnumDesc', max_length=80)
+    ] = MISSING
+    tax_ident: Annotated[str | MISSING, Field(alias='TaxIdent', max_length=12)] = (
+        MISSING
+    )
+    tax_ident_type: Annotated[TaxIdentType | MISSING, Field(alias='TaxIdentType')] = (
+        MISSING
+    )
     telebanc_pswd: Annotated[
-        str | None, Field(alias='TelebancPswd', max_length=255)
-    ] = None
+        str | MISSING, Field(alias='TelebancPswd', max_length=255)
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfo(
@@ -1502,107 +1564,115 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInf
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    birth_dt: Annotated[date | None, Field(alias='BirthDt')] = None
+    birth_dt: Annotated[date | MISSING, Field(alias='BirthDt')] = MISSING
     contact: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoContact
         ]
-        | None,
+        | MISSING,
         Field(alias='Contact'),
-    ] = None
+    ] = MISSING
     issued_ident: Annotated[
         list[
             PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoIssuedIdent
         ]
-        | None,
+        | MISSING,
         Field(alias='IssuedIdent'),
-    ] = None
+    ] = MISSING
     originating_branch: Annotated[
-        str | None, Field(alias='OriginatingBranch', max_length=32)
-    ] = None
-    party_type: Annotated[PartyType | None, Field(alias='PartyType')] = None
+        str | MISSING, Field(alias='OriginatingBranch', max_length=32)
+    ] = MISSING
+    party_type: Annotated[PartyType | MISSING, Field(alias='PartyType')] = MISSING
     party_type_enum_desc: Annotated[
-        str | None, Field(alias='PartyTypeEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='PartyTypeEnumDesc', max_length=80)
+    ] = MISSING
     person_name: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfoPersonName
-        | None,
+        | MISSING,
         Field(alias='PersonName'),
-    ] = None
-    tax_ident: Annotated[str | None, Field(alias='TaxIdent', max_length=12)] = None
-    tax_ident_type: Annotated[TaxIdentType | None, Field(alias='TaxIdentType')] = None
+    ] = MISSING
+    tax_ident: Annotated[str | MISSING, Field(alias='TaxIdent', max_length=12)] = (
+        MISSING
+    )
+    tax_ident_type: Annotated[TaxIdentType | MISSING, Field(alias='TaxIdentType')] = (
+        MISSING
+    )
     telebanc_pswd: Annotated[
-        str | None, Field(alias='TelebancPswd', max_length=255)
-    ] = None
+        str | MISSING, Field(alias='TelebancPswd', max_length=255)
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRef(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_keys: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctKeys,
         Field(alias='AcctKeys'),
     ]
     acct_summ_info: Annotated[
-        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfo | None,
+        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRefAcctSummInfo | MISSING,
         Field(alias='AcctSummInfo'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRef(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     org_party_list_info: Annotated[
-        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfo | None,
+        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefOrgPartyListInfo
+        | MISSING,
         Field(alias='OrgPartyListInfo'),
-    ] = None
+    ] = MISSING
     party_keys: Annotated[
         PartyAcctRelInqBySecuredRequestPartyAcctRelSelPartyKeys,
         Field(alias='PartyKeys'),
     ]
     person_party_list_info: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRefPersonPartyListInfo
-        | None,
+        | MISSING,
         Field(alias='PersonPartyListInfo'),
-    ] = None
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelInfo(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_ref: Annotated[
-        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRef | None,
+        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoAcctRef | MISSING,
         Field(alias='AcctRef'),
-    ] = None
-    nickname: Annotated[str | None, Field(alias='Nickname', max_length=80)] = None
-    owner_ind: Annotated[bool | None, Field(alias='OwnerInd')] = None
-    owner_percent: Annotated[float | None, Field(alias='OwnerPercent')] = None
+    ] = MISSING
+    nickname: Annotated[str | MISSING, Field(alias='Nickname', max_length=80)] = MISSING
+    owner_ind: Annotated[bool | MISSING, Field(alias='OwnerInd')] = MISSING
+    owner_percent: Annotated[float | MISSING, Field(alias='OwnerPercent')] = MISSING
     party_acct_rel_data: Annotated[
-        list[PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyAcctRelData] | None,
+        list[PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyAcctRelData]
+        | MISSING,
         Field(alias='PartyAcctRelData'),
-    ] = None
+    ] = MISSING
     party_ref: Annotated[
-        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRef | None,
+        PartyAcctRelInqBySecuredResponsePartyAcctRelInfoPartyRef | MISSING,
         Field(alias='PartyRef'),
-    ] = None
-    primary_owner_ind: Annotated[bool | None, Field(alias='PrimaryOwnerInd')] = None
+    ] = MISSING
+    primary_owner_ind: Annotated[bool | MISSING, Field(alias='PrimaryOwnerInd')] = (
+        MISSING
+    )
     tax_reporting_owner_ind: Annotated[
-        bool | None, Field(alias='TaxReportingOwnerInd')
-    ] = None
+        bool | MISSING, Field(alias='TaxReportingOwnerInd')
+    ] = MISSING
 
 
 class PartyAcctRelInqBySecuredResponsePartyAcctRelRec(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     party_acct_rel_info: Annotated[
         PartyAcctRelInqBySecuredResponsePartyAcctRelInfo,
@@ -1621,13 +1691,13 @@ class PartyAcctRelInqBySecuredResponsePartyAcctRelRec(BaseModel):
 class PartyAcctRelInqBySecuredResponse(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     party_acct_rel_rec: Annotated[
         list[PartyAcctRelInqBySecuredResponsePartyAcctRelRec],
         Field(alias='PartyAcctRelRec'),
     ]
     rec_ctrl_out: Annotated[
-        PartyAcctRelInqBySecuredResponseRecCtrlOut | None, Field(alias='RecCtrlOut')
-    ] = None
-    status: Annotated[StatusType | None, Field(alias='Status')] = None
+        PartyAcctRelInqBySecuredResponseRecCtrlOut | MISSING, Field(alias='RecCtrlOut')
+    ] = MISSING
+    status: Annotated[StatusType | MISSING, Field(alias='Status')] = MISSING

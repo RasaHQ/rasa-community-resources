@@ -38,11 +38,19 @@ class Helpers(unittest.TestCase):
         with self.assertRaises(ValidationError):
             reply("xfer", {"XferStatusRec": {"XferStatus": {"XferStatusCode": 7}}})
 
+    def test_missing_and_null_are_different(self):
+        # RecCtrlIn is optional and not nullable: left out it is absent, as null it is refused.
+        body = {"AcctTrnSel": {"AcctKeys": {"AcctId": "5550010001", "AcctType": "DDA"}, "TrnPostType": "ExcludeMemoPost"}}
+        self.assertEqual(request_body("trn", body), body)
+        with self.assertRaises(ValidationError):
+            request_body("trn", {**body, "RecCtrlIn": None})
+
     def test_a_history_row_without_an_optional_field_is_read_safely(self):
         recorded = next(body for key, side, status, body in EXCHANGES if key == "trn" and side == "response")
         changed = copy.deepcopy(recorded)
         changed["AcctTrnRec"][0]["AcctTrnInfo"].pop("PostedDt")
-        self.assertIsNone(reply("trn", changed).acct_trn_rec[0].acct_trn_info.posted_dt)
+        from premier_demo.vendor_api import present
+        self.assertIsNone(present(reply("trn", changed).acct_trn_rec[0].acct_trn_info.posted_dt))
 
 
 @unittest.skipUnless(importlib.util.find_spec("datamodel_code_generator"),

@@ -46,6 +46,11 @@ ARGUMENTS = (
     "--use-annotated",
     "--field-constraints",
     "--use-operation-id-as-name",
+    # Missing is not null: an optional field that is not nullable may be left out
+    # (its default is Pydantic's MISSING sentinel), but an explicit null is refused,
+    # as the schema says; only a field the schema marks nullable accepts null.
+    "--strict-nullable",
+    "--use-missing-sentinel",
     # Python names in snake_case, with the vendor's names kept as aliases (the wire form);
     # this also avoids clashes such as a field and a class both called BalType.
     "--snake-case-field",
@@ -71,6 +76,10 @@ def _interface(node):
                 kept[key] = {name: _interface(item) for name, item in value.items()}
             elif key not in DROP and not str(key).startswith("x-"):
                 kept[key] = _interface(value)
+        # OpenAPI 3.0: `nullable: true` beside an `enum` that does not list null still
+        # rejects null (the example's runtime OAS30 validators agree), so it is not nullable.
+        if kept.get("nullable") is True and isinstance(kept.get("enum"), list) and None not in kept["enum"]:
+            del kept["nullable"]
         return kept
     if isinstance(node, list):
         return [_interface(value) for value in node]

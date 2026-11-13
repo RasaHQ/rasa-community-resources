@@ -11,6 +11,7 @@ from enum import StrEnum
 from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic.experimental.missing_sentinel import MISSING
 
 
 class TrnPostType(StrEnum):
@@ -26,18 +27,18 @@ class AcctType(StrEnum):
 class AcctTrnInqOperBySecuredRequestAcctTrnSelAcctKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
-    acct_type: Annotated[AcctType | None, Field(alias='AcctType')] = None
+    acct_type: Annotated[AcctType | MISSING, Field(alias='AcctType')] = MISSING
 
 
 class AcctTrnInqOperBySecuredRequestRecCtrlIn(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cursor: Annotated[str | None, Field(alias='Cursor', max_length=250)] = None
+    cursor: Annotated[str | MISSING, Field(alias='Cursor', max_length=250)] = MISSING
 
 
 class DrCrType(StrEnum):
@@ -92,9 +93,11 @@ class CurCodeType(StrEnum):
 class AcctTrnInqOperBySecuredResponseAcctTrnInfoCheckFloatAmtCurCode(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cur_code_type: Annotated[CurCodeType | None, Field(alias='CurCodeType')] = None
+    cur_code_type: Annotated[CurCodeType | MISSING, Field(alias='CurCodeType')] = (
+        MISSING
+    )
     cur_code_value: Annotated[str, Field(alias='CurCodeValue')]
 
 
@@ -105,19 +108,21 @@ class FloatType(StrEnum):
 class AcctTrnInqOperBySecuredResponseAcctTrnInfoTrnAmtCurCode(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cur_code_type: Annotated[CurCodeType | None, Field(alias='CurCodeType')] = None
+    cur_code_type: Annotated[CurCodeType | MISSING, Field(alias='CurCodeType')] = (
+        MISSING
+    )
     cur_code_value: Annotated[str, Field(alias='CurCodeValue')]
 
 
 class AcctTrnInqOperBySecuredResponseAcctTrnKeysAcctKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
-    acct_type: Annotated[AcctType | None, Field(alias='AcctType')] = None
+    acct_type: Annotated[AcctType | MISSING, Field(alias='AcctType')] = MISSING
 
 
 class AcctTrnStatusCode(StrEnum):
@@ -127,24 +132,24 @@ class AcctTrnStatusCode(StrEnum):
 class AcctTrnInqOperBySecuredResponseAcctTrnStatus(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_trn_status_code: Annotated[AcctTrnStatusCode, Field(alias='AcctTrnStatusCode')]
     eff_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EffDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
 
 
 class AcctTrnInqOperBySecuredResponseRecCtrlOut(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cursor: Annotated[str | None, Field(alias='Cursor', max_length=250)] = None
+    cursor: Annotated[str | MISSING, Field(alias='Cursor', max_length=250)] = MISSING
     sent_rec_count: Annotated[int, Field(alias='SentRecCount')]
 
 
@@ -157,96 +162,103 @@ class SeverityType(StrEnum):
 class AcctTrnInqOperBySecuredRequestAcctTrnSel(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_keys: Annotated[
-        AcctTrnInqOperBySecuredRequestAcctTrnSelAcctKeys | None, Field(alias='AcctKeys')
-    ] = None
-    trn_post_type: Annotated[TrnPostType | None, Field(alias='TrnPostType')] = None
+        AcctTrnInqOperBySecuredRequestAcctTrnSelAcctKeys | MISSING,
+        Field(alias='AcctKeys'),
+    ] = MISSING
+    trn_post_type: Annotated[TrnPostType | MISSING, Field(alias='TrnPostType')] = (
+        MISSING
+    )
 
 
 class AcctTrnInqOperBySecuredResponseAcctTrnInfoCheckFloatAmt(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
-        AcctTrnInqOperBySecuredResponseAcctTrnInfoCheckFloatAmtCurCode | None,
+        AcctTrnInqOperBySecuredResponseAcctTrnInfoCheckFloatAmtCurCode | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class AcctTrnInqOperBySecuredResponseAcctTrnInfoFloatDetails(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     check_float_amt: Annotated[
-        AcctTrnInqOperBySecuredResponseAcctTrnInfoCheckFloatAmt | None,
+        AcctTrnInqOperBySecuredResponseAcctTrnInfoCheckFloatAmt | MISSING,
         Field(alias='CheckFloatAmt'),
-    ] = None
-    float_days: Annotated[int | None, Field(alias='FloatDays')] = None
+    ] = MISSING
+    float_days: Annotated[int | MISSING, Field(alias='FloatDays')] = MISSING
 
 
 class AcctTrnInqOperBySecuredResponseAcctTrnInfoTrnAmt(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
-        AcctTrnInqOperBySecuredResponseAcctTrnInfoTrnAmtCurCode | None,
+        AcctTrnInqOperBySecuredResponseAcctTrnInfoTrnAmtCurCode | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class AcctTrnInqOperBySecuredResponseAcctTrnKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_keys: Annotated[
         AcctTrnInqOperBySecuredResponseAcctTrnKeysAcctKeys, Field(alias='AcctKeys')
     ]
     acct_trn_ident: Annotated[
-        str | None, Field(alias='AcctTrnIdent', max_length=36)
-    ] = None
+        str | MISSING, Field(alias='AcctTrnIdent', max_length=36)
+    ] = MISSING
 
 
 class AdditionalStatusType(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     server_status_code: Annotated[
-        str | None, Field(alias='ServerStatusCode', max_length=20)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusCode', max_length=20)
+    ] = MISSING
     server_status_desc: Annotated[
-        str | None, Field(alias='ServerStatusDesc', max_length=255)
-    ] = None
-    severity: Annotated[SeverityType | None, Field(alias='Severity')] = None
-    status_code: Annotated[str | None, Field(alias='StatusCode', max_length=20)] = None
-    status_desc: Annotated[str | None, Field(alias='StatusDesc', max_length=255)] = None
+        str | MISSING, Field(alias='ServerStatusDesc', max_length=255)
+    ] = MISSING
+    severity: Annotated[SeverityType | MISSING, Field(alias='Severity')] = MISSING
+    status_code: Annotated[str | MISSING, Field(alias='StatusCode', max_length=20)] = (
+        MISSING
+    )
+    status_desc: Annotated[str | MISSING, Field(alias='StatusDesc', max_length=255)] = (
+        MISSING
+    )
     svc_provider_name: Annotated[
-        str | None, Field(alias='SvcProviderName', max_length=1024)
-    ] = None
+        str | MISSING, Field(alias='SvcProviderName', max_length=1024)
+    ] = MISSING
 
 
 class StatusType(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     additional_status: Annotated[
-        list[AdditionalStatusType] | None, Field(alias='AdditionalStatus')
-    ] = None
+        list[AdditionalStatusType] | MISSING, Field(alias='AdditionalStatus')
+    ] = MISSING
     server_status_code: Annotated[
-        str | None, Field(alias='ServerStatusCode', max_length=20)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusCode', max_length=20)
+    ] = MISSING
     server_status_desc: Annotated[
-        str | None, Field(alias='ServerStatusDesc', max_length=255)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusDesc', max_length=255)
+    ] = MISSING
     severity: Annotated[SeverityType, Field(alias='Severity')]
     status_code: Annotated[str, Field(alias='StatusCode', max_length=20)]
     status_desc: Annotated[str, Field(alias='StatusDesc', max_length=255)]
@@ -256,77 +268,82 @@ class StatusType(BaseModel):
 class AcctTrnInqOperBySecuredRequest(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_trn_sel: Annotated[
         AcctTrnInqOperBySecuredRequestAcctTrnSel, Field(alias='AcctTrnSel')
     ]
     rec_ctrl_in: Annotated[
-        AcctTrnInqOperBySecuredRequestRecCtrlIn | None, Field(alias='RecCtrlIn')
-    ] = None
+        AcctTrnInqOperBySecuredRequestRecCtrlIn | MISSING, Field(alias='RecCtrlIn')
+    ] = MISSING
 
 
 class AcctTrnInqOperBySecuredResponseAcctTrnInfoFloatData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     float_details: Annotated[
-        list[AcctTrnInqOperBySecuredResponseAcctTrnInfoFloatDetails] | None,
+        list[AcctTrnInqOperBySecuredResponseAcctTrnInfoFloatDetails] | MISSING,
         Field(alias='FloatDetails'),
-    ] = None
-    float_type: Annotated[FloatType | None, Field(alias='FloatType')] = None
+    ] = MISSING
+    float_type: Annotated[FloatType | MISSING, Field(alias='FloatType')] = MISSING
 
 
 class AcctTrnInqOperBySecuredResponseAcctTrnInfo(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    chk_num: Annotated[str | None, Field(alias='ChkNum', max_length=22)] = None
-    desc: Annotated[list[Any] | None, Field(alias='Desc', max_length=200)] = None
-    dr_cr_type: Annotated[DrCrType | None, Field(alias='DrCrType')] = None
+    chk_num: Annotated[str | MISSING, Field(alias='ChkNum', max_length=22)] = MISSING
+    desc: Annotated[list[Any] | MISSING, Field(alias='Desc', max_length=200)] = MISSING
+    dr_cr_type: Annotated[DrCrType | MISSING, Field(alias='DrCrType')] = MISSING
     eff_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EffDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
-    external_trn_code: Annotated[str | None, Field(alias='ExternalTrnCode')] = None
+    ] = MISSING
+    external_trn_code: Annotated[str | MISSING, Field(alias='ExternalTrnCode')] = (
+        MISSING
+    )
     float_data: Annotated[
-        list[AcctTrnInqOperBySecuredResponseAcctTrnInfoFloatData] | None,
+        list[AcctTrnInqOperBySecuredResponseAcctTrnInfoFloatData] | MISSING,
         Field(alias='FloatData'),
-    ] = None
-    image_ind: Annotated[bool | None, Field(alias='ImageInd')] = None
-    memo_post_ind: Annotated[bool | None, Field(alias='MemoPostInd')] = None
+    ] = MISSING
+    image_ind: Annotated[bool | MISSING, Field(alias='ImageInd')] = MISSING
+    memo_post_ind: Annotated[bool | MISSING, Field(alias='MemoPostInd')] = MISSING
     posted_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='PostedDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     trn_amt: Annotated[
-        AcctTrnInqOperBySecuredResponseAcctTrnInfoTrnAmt | None, Field(alias='TrnAmt')
-    ] = None
-    trn_code: Annotated[str | None, Field(alias='TrnCode')] = None
+        AcctTrnInqOperBySecuredResponseAcctTrnInfoTrnAmt | MISSING,
+        Field(alias='TrnAmt'),
+    ] = MISSING
+    trn_code: Annotated[str | MISSING, Field(alias='TrnCode')] = MISSING
     trn_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='TrnDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
-    trn_image_id: Annotated[str | None, Field(alias='TrnImageId', max_length=36)] = None
-    trn_rev_type: Annotated[TrnRevType | None, Field(alias='TrnRevType')] = None
-    trn_type: Annotated[TrnType | None, Field(alias='TrnType')] = None
+    ] = MISSING
+    trn_image_id: Annotated[str | MISSING, Field(alias='TrnImageId', max_length=36)] = (
+        MISSING
+    )
+    trn_rev_type: Annotated[TrnRevType | MISSING, Field(alias='TrnRevType')] = MISSING
+    trn_type: Annotated[TrnType | MISSING, Field(alias='TrnType')] = MISSING
 
 
 class AcctTrnInqOperBySecuredResponseAcctTrnRec(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_trn_info: Annotated[
         AcctTrnInqOperBySecuredResponseAcctTrnInfo, Field(alias='AcctTrnInfo')
@@ -342,12 +359,12 @@ class AcctTrnInqOperBySecuredResponseAcctTrnRec(BaseModel):
 class AcctTrnInqOperBySecuredResponse(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_trn_rec: Annotated[
         list[AcctTrnInqOperBySecuredResponseAcctTrnRec], Field(alias='AcctTrnRec')
     ]
     rec_ctrl_out: Annotated[
-        AcctTrnInqOperBySecuredResponseRecCtrlOut | None, Field(alias='RecCtrlOut')
-    ] = None
-    status: Annotated[StatusType | None, Field(alias='Status')] = None
+        AcctTrnInqOperBySecuredResponseRecCtrlOut | MISSING, Field(alias='RecCtrlOut')
+    ] = MISSING
+    status: Annotated[StatusType | MISSING, Field(alias='Status')] = MISSING

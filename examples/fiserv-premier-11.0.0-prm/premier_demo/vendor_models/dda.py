@@ -12,6 +12,7 @@ from enum import StrEnum
 from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic.experimental.missing_sentinel import MISSING
 
 
 class SeverityType(StrEnum):
@@ -27,19 +28,19 @@ class AcctType(StrEnum):
 class GetAccountsSecuredRequestAcctSelAcctKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
-    acct_type: Annotated[AcctType | None, Field(alias='AcctType')] = None
+    acct_type: Annotated[AcctType | MISSING, Field(alias='AcctType')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecAcctKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
-    acct_type: Annotated[AcctType | None, Field(alias='AcctType')] = None
+    acct_type: Annotated[AcctType | MISSING, Field(alias='AcctType')] = MISSING
 
 
 class AcctStatusCode(StrEnum):
@@ -49,16 +50,16 @@ class AcctStatusCode(StrEnum):
 class GetAccountsSecuredResponseAcctRecAcctStatus(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_status_code: Annotated[AcctStatusCode, Field(alias='AcctStatusCode')]
     eff_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EffDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
 
 
 class AccountingMethod(StrEnum):
@@ -197,14 +198,14 @@ class AcctIdentType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctIdent(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    acct_ident_type: Annotated[AcctIdentType | None, Field(alias='AcctIdentType')] = (
-        None
-    )
+    acct_ident_type: Annotated[
+        AcctIdentType | MISSING, Field(alias='AcctIdentType')
+    ] = MISSING
     acct_ident_value: Annotated[
-        str | None, Field(alias='AcctIdentValue', max_length=36)
-    ] = None
+        str | MISSING, Field(alias='AcctIdentValue', max_length=36)
+    ] = MISSING
 
 
 class AcctMemoType(StrEnum):
@@ -215,19 +216,21 @@ class AcctMemoType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctMemoData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    acct_memo_code: Annotated[str | None, Field(alias='AcctMemoCode')] = None
+    acct_memo_code: Annotated[str | MISSING, Field(alias='AcctMemoCode')] = MISSING
     acct_memo_code_enum_desc: Annotated[
-        str | None, Field(alias='AcctMemoCodeEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='AcctMemoCodeEnumDesc', max_length=80)
+    ] = MISSING
     acct_memo_ident: Annotated[
-        str | None, Field(alias='AcctMemoIdent', max_length=36)
-    ] = None
+        str | MISSING, Field(alias='AcctMemoIdent', max_length=36)
+    ] = MISSING
     acct_memo_text: Annotated[
-        str | None, Field(alias='AcctMemoText', max_length=255)
-    ] = None
-    acct_memo_type: Annotated[AcctMemoType | None, Field(alias='AcctMemoType')] = None
+        str | MISSING, Field(alias='AcctMemoText', max_length=255)
+    ] = MISSING
+    acct_memo_type: Annotated[AcctMemoType | MISSING, Field(alias='AcctMemoType')] = (
+        MISSING
+    )
 
 
 class AcctAmtType(StrEnum):
@@ -289,23 +292,23 @@ class AcctPeriodType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctPeriodData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_amt_type: Annotated[AcctAmtType, Field(alias='AcctAmtType')]
     acct_period_type: Annotated[
-        AcctPeriodType | None, Field(alias='AcctPeriodType')
-    ] = None
-    amt: Annotated[float | None, Field(alias='Amt')] = None
-    count: Annotated[int | None, Field(alias='Count')] = None
-    last_occur_ind: Annotated[bool | None, Field(alias='LastOccurInd')] = None
+        AcctPeriodType | MISSING, Field(alias='AcctPeriodType')
+    ] = MISSING
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
+    count: Annotated[int | MISSING, Field(alias='Count')] = MISSING
+    last_occur_ind: Annotated[bool | MISSING, Field(alias='LastOccurInd')] = MISSING
     last_occurance_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='LastOccuranceDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
-    rate: Annotated[float | None, Field(alias='Rate')] = None
+    ] = MISSING
+    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
 
 
 class Language(StrEnum):
@@ -317,9 +320,9 @@ class Language(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctPref(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    language: Annotated[Language | None, Field(alias='Language')] = None
+    language: Annotated[Language | MISSING, Field(alias='Language')] = MISSING
 
 
 class CombinedStmtCode(StrEnum):
@@ -351,17 +354,19 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctStmtDataStmtTimeFrame(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    alternate_stmt_ind: Annotated[bool | None, Field(alias='AlternateStmtInd')] = None
+    alternate_stmt_ind: Annotated[bool | MISSING, Field(alias='AlternateStmtInd')] = (
+        MISSING
+    )
     alternate_stmt_option: Annotated[
-        AlternateStmtOption | None, Field(alias='AlternateStmtOption')
-    ] = None
-    recur_interval: Annotated[int | None, Field(alias='RecurInterval')] = None
-    recur_type: Annotated[RecurType | None, Field(alias='RecurType')] = None
+        AlternateStmtOption | MISSING, Field(alias='AlternateStmtOption')
+    ] = MISSING
+    recur_interval: Annotated[int | MISSING, Field(alias='RecurInterval')] = MISSING
+    recur_type: Annotated[RecurType | MISSING, Field(alias='RecurType')] = MISSING
     recur_type_enum_desc: Annotated[
-        str | None, Field(alias='RecurTypeEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='RecurTypeEnumDesc', max_length=80)
+    ] = MISSING
 
 
 class DataType(StrEnum):
@@ -378,15 +383,15 @@ class DataType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoClientDefinedData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     data_ident: Annotated[str, Field(alias='DataIdent', max_length=36)]
-    data_length: Annotated[int | None, Field(alias='DataLength')] = None
-    data_type: Annotated[DataType | None, Field(alias='DataType')] = None
-    desc: Annotated[str | None, Field(alias='Desc', max_length=200)] = None
-    exp_dt: Annotated[date_aliased | None, Field(alias='ExpDt')] = None
-    required_flag: Annotated[bool | None, Field(alias='RequiredFlag')] = None
-    value: Annotated[str | None, Field(alias='Value', max_length=256)] = None
+    data_length: Annotated[int | MISSING, Field(alias='DataLength')] = MISSING
+    data_type: Annotated[DataType | MISSING, Field(alias='DataType')] = MISSING
+    desc: Annotated[str | MISSING, Field(alias='Desc', max_length=200)] = MISSING
+    exp_dt: Annotated[date_aliased | MISSING, Field(alias='ExpDt')] = MISSING
+    required_flag: Annotated[bool | MISSING, Field(alias='RequiredFlag')] = MISSING
+    value: Annotated[str | MISSING, Field(alias='Value', max_length=256)] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoCommercialAnalysisDataAnalysisChargeAcctAcctKeys(
@@ -394,22 +399,24 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoCommercialAnalysisDataAnal
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
-    acct_type: Annotated[AcctType | None, Field(alias='AcctType')] = None
+    acct_type: Annotated[AcctType | MISSING, Field(alias='AcctType')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoCountryCode(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    country_code_source: Annotated[str | None, Field(alias='CountryCodeSource')] = None
+    country_code_source: Annotated[str | MISSING, Field(alias='CountryCodeSource')] = (
+        MISSING
+    )
     country_code_value: Annotated[str, Field(alias='CountryCodeValue')]
     country_code_value_enum_desc: Annotated[
-        str | None, Field(alias='CountryCodeValueEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='CountryCodeValueEnumDesc', max_length=80)
+    ] = MISSING
 
 
 class RiskCategory(StrEnum):
@@ -420,9 +427,9 @@ class RiskCategory(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoCreditRisk(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    internal_score: Annotated[str | None, Field(alias='InternalScore')] = None
+    internal_score: Annotated[str | MISSING, Field(alias='InternalScore')] = MISSING
     risk_category: Annotated[RiskCategory, Field(alias='RiskCategory')]
 
 
@@ -441,16 +448,16 @@ class DateType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoDateData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    date_type: Annotated[DateType | None, Field(alias='DateType')] = None
+    date_type: Annotated[DateType | MISSING, Field(alias='DateType')] = MISSING
     date_value: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='DateValue',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
 
 
 class FeeOption(StrEnum):
@@ -479,18 +486,18 @@ class FeeType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoFeeWaiver(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    waiver_code: Annotated[str | None, Field(alias='WaiverCode')] = None
+    waiver_code: Annotated[str | MISSING, Field(alias='WaiverCode')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoFinancialLiteracy(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    is_funding: Annotated[bool | None, Field(alias='IsFunding')] = None
-    is_round_up: Annotated[bool | None, Field(alias='IsRoundUp')] = None
+    is_funding: Annotated[bool | MISSING, Field(alias='IsFunding')] = MISSING
+    is_round_up: Annotated[bool | MISSING, Field(alias='IsRoundUp')] = MISSING
 
 
 class FloatType(StrEnum):
@@ -508,9 +515,11 @@ class CurCodeType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoInitialAmountCurCode(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cur_code_type: Annotated[CurCodeType | None, Field(alias='CurCodeType')] = None
+    cur_code_type: Annotated[CurCodeType | MISSING, Field(alias='CurCodeType')] = (
+        MISSING
+    )
     cur_code_value: Annotated[str, Field(alias='CurCodeValue')]
 
 
@@ -529,10 +538,10 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispDataIntDistAcctRefA
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
-    acct_type: Annotated[AcctType3 | None, Field(alias='AcctType')] = None
+    acct_type: Annotated[AcctType3 | MISSING, Field(alias='AcctType')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispDataIntPmtFrequency(
@@ -540,25 +549,25 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispDataIntPmtFrequency
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    recur_interval: Annotated[int | None, Field(alias='RecurInterval')] = None
-    recur_type: Annotated[RecurType | None, Field(alias='RecurType')] = None
+    recur_interval: Annotated[int | MISSING, Field(alias='RecurInterval')] = MISSING
+    recur_type: Annotated[RecurType | MISSING, Field(alias='RecurType')] = MISSING
     recur_type_enum_desc: Annotated[
-        str | None, Field(alias='RecurTypeEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='RecurTypeEnumDesc', max_length=80)
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntPmtFrequency(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    recur_interval: Annotated[int | None, Field(alias='RecurInterval')] = None
-    recur_type: Annotated[RecurType | None, Field(alias='RecurType')] = None
+    recur_interval: Annotated[int | MISSING, Field(alias='RecurInterval')] = MISSING
+    recur_type: Annotated[RecurType | MISSING, Field(alias='RecurType')] = MISSING
     recur_type_enum_desc: Annotated[
-        str | None, Field(alias='RecurTypeEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='RecurTypeEnumDesc', max_length=80)
+    ] = MISSING
 
 
 class AccrualMethod(StrEnum):
@@ -602,12 +611,12 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataBalCutOffData(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    bal_cut_off_amt: Annotated[float | None, Field(alias='BalCutOffAmt')] = None
-    bal_cut_off_type: Annotated[BalCutOffType | None, Field(alias='BalCutOffType')] = (
-        None
-    )
+    bal_cut_off_amt: Annotated[float | MISSING, Field(alias='BalCutOffAmt')] = MISSING
+    bal_cut_off_type: Annotated[
+        BalCutOffType | MISSING, Field(alias='BalCutOffType')
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataHighCurAmtCurCode(
@@ -615,9 +624,11 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataHighCurAmtCurCo
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cur_code_type: Annotated[CurCodeType | None, Field(alias='CurCodeType')] = None
+    cur_code_type: Annotated[CurCodeType | MISSING, Field(alias='CurCodeType')] = (
+        MISSING
+    )
     cur_code_value: Annotated[str, Field(alias='CurCodeValue')]
 
 
@@ -634,10 +645,10 @@ class Tier(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoNSFEntry(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    count: Annotated[int | None, Field(alias='Count')] = None
-    nsf_dt: Annotated[date_aliased | None, Field(alias='NSFDt')] = None
+    count: Annotated[int | MISSING, Field(alias='Count')] = MISSING
+    nsf_dt: Annotated[date_aliased | MISSING, Field(alias='NSFDt')] = MISSING
     nsf_ident: Annotated[str, Field(alias='NSFIdent', max_length=36)]
 
 
@@ -653,10 +664,10 @@ class NoticeType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoNoticeData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    notice_option: Annotated[str | None, Field(alias='NoticeOption')] = None
-    notice_type: Annotated[NoticeType | None, Field(alias='NoticeType')] = None
+    notice_option: Annotated[str | MISSING, Field(alias='NoticeOption')] = MISSING
+    notice_type: Annotated[NoticeType | MISSING, Field(alias='NoticeType')] = MISSING
 
 
 class OverdraftEnrollOpt(StrEnum):
@@ -707,9 +718,11 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataAtmPosOverdra
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cur_code_type: Annotated[CurCodeType | None, Field(alias='CurCodeType')] = None
+    cur_code_type: Annotated[CurCodeType | MISSING, Field(alias='CurCodeType')] = (
+        MISSING
+    )
     cur_code_value: Annotated[str, Field(alias='CurCodeValue')]
 
 
@@ -718,9 +731,9 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataOverdraftLimi
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
 
 
 class VarianceFactorType(StrEnum):
@@ -731,27 +744,27 @@ class VarianceFactorType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoPendingRate(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     eff_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EffDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     int_pmt_frequency: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoIntPmtFrequency | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoIntPmtFrequency | MISSING,
         Field(alias='IntPmtFrequency'),
-    ] = None
+    ] = MISSING
     prod_int_rate_id: Annotated[
-        str | None, Field(alias='ProdIntRateId', max_length=36)
-    ] = None
-    rate_factor: Annotated[float | None, Field(alias='RateFactor')] = None
-    rate_variance: Annotated[float | None, Field(alias='RateVariance')] = None
+        str | MISSING, Field(alias='ProdIntRateId', max_length=36)
+    ] = MISSING
+    rate_factor: Annotated[float | MISSING, Field(alias='RateFactor')] = MISSING
+    rate_variance: Annotated[float | MISSING, Field(alias='RateVariance')] = MISSING
     variance_factor_type: Annotated[
-        VarianceFactorType | None, Field(alias='VarianceFactorType')
-    ] = None
+        VarianceFactorType | MISSING, Field(alias='VarianceFactorType')
+    ] = MISSING
 
 
 class AddrFormatType(StrEnum):
@@ -784,35 +797,39 @@ class HandlingCodeOption1(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoRateChangeData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     pending_rate: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoPendingRate] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoPendingRate] | MISSING,
         Field(alias='PendingRate'),
-    ] = None
+    ] = MISSING
     rate_adjuster_eff_dt: Annotated[
-        date_aliased | None, Field(alias='RateAdjusterEffDt')
-    ] = None
+        date_aliased | MISSING, Field(alias='RateAdjusterEffDt')
+    ] = MISSING
     rate_adjuster_exp_dt: Annotated[
-        date_aliased | None, Field(alias='RateAdjusterExpDt')
-    ] = None
+        date_aliased | MISSING, Field(alias='RateAdjusterExpDt')
+    ] = MISSING
     rate_adjuster_three_eff_dt: Annotated[
-        date_aliased | None, Field(alias='RateAdjusterThreeEffDt')
-    ] = None
+        date_aliased | MISSING, Field(alias='RateAdjusterThreeEffDt')
+    ] = MISSING
     rate_adjuster_two_eff_dt: Annotated[
-        date_aliased | None, Field(alias='RateAdjusterTwoEffDt')
-    ] = None
-    rate_factor: Annotated[float | None, Field(alias='RateFactor')] = None
-    rate_factor_three: Annotated[float | None, Field(alias='RateFactorThree')] = None
-    rate_factor_two: Annotated[float | None, Field(alias='RateFactorTwo')] = None
-    rate_variance: Annotated[float | None, Field(alias='RateVariance')] = None
-    rate_variance_three: Annotated[float | None, Field(alias='RateVarianceThree')] = (
-        None
+        date_aliased | MISSING, Field(alias='RateAdjusterTwoEffDt')
+    ] = MISSING
+    rate_factor: Annotated[float | MISSING, Field(alias='RateFactor')] = MISSING
+    rate_factor_three: Annotated[float | MISSING, Field(alias='RateFactorThree')] = (
+        MISSING
     )
-    rate_variance_two: Annotated[float | None, Field(alias='RateVarianceTwo')] = None
+    rate_factor_two: Annotated[float | MISSING, Field(alias='RateFactorTwo')] = MISSING
+    rate_variance: Annotated[float | MISSING, Field(alias='RateVariance')] = MISSING
+    rate_variance_three: Annotated[
+        float | MISSING, Field(alias='RateVarianceThree')
+    ] = MISSING
+    rate_variance_two: Annotated[float | MISSING, Field(alias='RateVarianceTwo')] = (
+        MISSING
+    )
     variance_factor_type: Annotated[
-        VarianceFactorType | None, Field(alias='VarianceFactorType')
-    ] = None
+        VarianceFactorType | MISSING, Field(alias='VarianceFactorType')
+    ] = MISSING
 
 
 class RegCcStatus(StrEnum):
@@ -831,9 +848,9 @@ class RegCcNsfType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoRegCCDataRegCCNSF(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    count: Annotated[int | None, Field(alias='Count')] = None
+    count: Annotated[int | MISSING, Field(alias='Count')] = MISSING
     nsf_ident: Annotated[str, Field(alias='NSFIdent', max_length=36)]
     reg_cc_nsf_type: Annotated[RegCcNsfType, Field(alias='RegCC_NSFType')]
 
@@ -847,17 +864,17 @@ class RelationshipRole(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoRelationshipMgr(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     relationship_mgr_ident: Annotated[
         str, Field(alias='RelationshipMgrIdent', max_length=36)
     ]
     relationship_mgr_ident_enum_desc: Annotated[
-        str | None, Field(alias='RelationshipMgrIdentEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='RelationshipMgrIdentEnumDesc', max_length=80)
+    ] = MISSING
     relationship_role: Annotated[
-        RelationshipRole | None, Field(alias='RelationshipRole')
-    ] = None
+        RelationshipRole | MISSING, Field(alias='RelationshipRole')
+    ] = MISSING
 
 
 class CreditBackGroupIdent(StrEnum):
@@ -886,15 +903,15 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataCreditBackAcct(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     credit_back_acct_id: Annotated[
-        str | None, Field(alias='CreditBackAcctId', max_length=36)
-    ] = None
+        str | MISSING, Field(alias='CreditBackAcctId', max_length=36)
+    ] = MISSING
     credit_back_ident: Annotated[str, Field(alias='CreditBackIdent', max_length=36)]
     credit_back_type: Annotated[
-        CreditBackType | None, Field(alias='CreditBackType')
-    ] = None
+        CreditBackType | MISSING, Field(alias='CreditBackType')
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgAcctRefAcctKeys(
@@ -902,10 +919,10 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgAcctRefAcc
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
-    acct_type: Annotated[AcctType3 | None, Field(alias='AcctType')] = None
+    acct_type: Annotated[AcctType3 | MISSING, Field(alias='AcctType')] = MISSING
 
 
 class SvcChgFlatFeeIdent(StrEnum):
@@ -922,14 +939,14 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgFlatFeeAmt
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataAtmPosOverdraftAuthLimitAmtCurCode
-        | None,
+        | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class SvcChgMethodType(StrEnum):
@@ -940,12 +957,14 @@ class SvcChgMethodType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgMethod(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    svc_chg_method_opt: Annotated[int | None, Field(alias='SvcChgMethodOpt')] = None
+    svc_chg_method_opt: Annotated[int | MISSING, Field(alias='SvcChgMethodOpt')] = (
+        MISSING
+    )
     svc_chg_method_type: Annotated[
-        SvcChgMethodType | None, Field(alias='SvcChgMethodType')
-    ] = None
+        SvcChgMethodType | MISSING, Field(alias='SvcChgMethodType')
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgTimeFrame(
@@ -953,31 +972,31 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgTimeFrame(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    recur_interval: Annotated[int | None, Field(alias='RecurInterval')] = None
-    recur_type: Annotated[RecurType | None, Field(alias='RecurType')] = None
+    recur_interval: Annotated[int | MISSING, Field(alias='RecurInterval')] = MISSING
+    recur_type: Annotated[RecurType | MISSING, Field(alias='RecurType')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoTimeFrame(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     end_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EndDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     start_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='StartDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
 
 
 class RecurType4(StrEnum):
@@ -992,11 +1011,11 @@ class RecurType4(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoTimeFrame1RecurRule(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    occurrences: Annotated[int | None, Field(alias='Occurrences')] = None
-    recur_interval: Annotated[int | None, Field(alias='RecurInterval')] = None
-    recur_type: Annotated[RecurType4 | None, Field(alias='RecurType')] = None
+    occurrences: Annotated[int | MISSING, Field(alias='Occurrences')] = MISSING
+    recur_interval: Annotated[int | MISSING, Field(alias='RecurInterval')] = MISSING
+    recur_type: Annotated[RecurType4 | MISSING, Field(alias='RecurType')] = MISSING
 
 
 class TranCounterType(StrEnum):
@@ -1007,9 +1026,9 @@ class TranCounterType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoTranCounter(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    count: Annotated[int | None, Field(alias='Count')] = None
+    count: Annotated[int | MISSING, Field(alias='Count')] = MISSING
     tran_counter_type: Annotated[TranCounterType, Field(alias='TranCounterType')]
 
 
@@ -1021,49 +1040,53 @@ class WithholdingType(StrEnum):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoWithholdingData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    withholding_percent: Annotated[float | None, Field(alias='WithholdingPercent')] = (
-        None
-    )
+    withholding_percent: Annotated[
+        float | MISSING, Field(alias='WithholdingPercent')
+    ] = MISSING
     withholding_type: Annotated[
-        WithholdingType | None, Field(alias='WithholdingType')
-    ] = None
+        WithholdingType | MISSING, Field(alias='WithholdingType')
+    ] = MISSING
 
 
 class AdditionalStatusType(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     server_status_code: Annotated[
-        str | None, Field(alias='ServerStatusCode', max_length=20)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusCode', max_length=20)
+    ] = MISSING
     server_status_desc: Annotated[
-        str | None, Field(alias='ServerStatusDesc', max_length=255)
-    ] = None
-    severity: Annotated[SeverityType | None, Field(alias='Severity')] = None
-    status_code: Annotated[str | None, Field(alias='StatusCode', max_length=20)] = None
-    status_desc: Annotated[str | None, Field(alias='StatusDesc', max_length=255)] = None
+        str | MISSING, Field(alias='ServerStatusDesc', max_length=255)
+    ] = MISSING
+    severity: Annotated[SeverityType | MISSING, Field(alias='Severity')] = MISSING
+    status_code: Annotated[str | MISSING, Field(alias='StatusCode', max_length=20)] = (
+        MISSING
+    )
+    status_desc: Annotated[str | MISSING, Field(alias='StatusDesc', max_length=255)] = (
+        MISSING
+    )
     svc_provider_name: Annotated[
-        str | None, Field(alias='SvcProviderName', max_length=1024)
-    ] = None
+        str | MISSING, Field(alias='SvcProviderName', max_length=1024)
+    ] = MISSING
 
 
 class StatusType(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     additional_status: Annotated[
-        list[AdditionalStatusType] | None, Field(alias='AdditionalStatus')
-    ] = None
+        list[AdditionalStatusType] | MISSING, Field(alias='AdditionalStatus')
+    ] = MISSING
     server_status_code: Annotated[
-        str | None, Field(alias='ServerStatusCode', max_length=20)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusCode', max_length=20)
+    ] = MISSING
     server_status_desc: Annotated[
-        str | None, Field(alias='ServerStatusDesc', max_length=255)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusDesc', max_length=255)
+    ] = MISSING
     severity: Annotated[SeverityType, Field(alias='Severity')]
     status_code: Annotated[str, Field(alias='StatusCode', max_length=20)]
     status_desc: Annotated[str, Field(alias='StatusDesc', max_length=255)]
@@ -1073,7 +1096,7 @@ class StatusType(BaseModel):
 class GetAccountsSecuredRequestAcctSel(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_keys: Annotated[
         GetAccountsSecuredRequestAcctSelAcctKeys, Field(alias='AcctKeys')
@@ -1083,54 +1106,54 @@ class GetAccountsSecuredRequestAcctSel(BaseModel):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctStmtData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     combined_stmt_code: Annotated[
-        CombinedStmtCode | None, Field(alias='CombinedStmtCode')
-    ] = None
+        CombinedStmtCode | MISSING, Field(alias='CombinedStmtCode')
+    ] = MISSING
     combined_stmt_ident: Annotated[
-        str | None, Field(alias='CombinedStmtIdent', max_length=36)
-    ] = None
-    last_stmt_dt: Annotated[date_aliased | None, Field(alias='LastStmtDt')] = None
+        str | MISSING, Field(alias='CombinedStmtIdent', max_length=36)
+    ] = MISSING
+    last_stmt_dt: Annotated[date_aliased | MISSING, Field(alias='LastStmtDt')] = MISSING
     special_stmt_code: Annotated[
-        SpecialStmtCode | None, Field(alias='SpecialStmtCode')
-    ] = None
-    stmt_format: Annotated[str | None, Field(alias='StmtFormat')] = None
-    stmt_group: Annotated[str | None, Field(alias='StmtGroup')] = None
+        SpecialStmtCode | MISSING, Field(alias='SpecialStmtCode')
+    ] = MISSING
+    stmt_format: Annotated[str | MISSING, Field(alias='StmtFormat')] = MISSING
+    stmt_group: Annotated[str | MISSING, Field(alias='StmtGroup')] = MISSING
     stmt_time_frame: Annotated[
         list[GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctStmtDataStmtTimeFrame]
-        | None,
+        | MISSING,
         Field(alias='StmtTimeFrame'),
-    ] = None
+    ] = MISSING
     stmt_truncation_option: Annotated[
-        str | None, Field(alias='StmtTruncationOption')
-    ] = None
+        str | MISSING, Field(alias='StmtTruncationOption')
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoCashFloatAmt(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataAtmPosOverdraftAuthLimitAmtCurCode
-        | None,
+        | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoCheckFloatAmt(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataAtmPosOverdraftAuthLimitAmtCurCode
-        | None,
+        | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoCommercialAnalysisDataAnalysisChargeAcct(
@@ -1138,7 +1161,7 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoCommercialAnalysisDataAnal
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_keys: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoCommercialAnalysisDataAnalysisChargeAcctAcctKeys,
@@ -1149,55 +1172,55 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoCommercialAnalysisDataAnal
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoCurAmt(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataHighCurAmtCurCode
-        | None,
+        | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoCurAmt1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataHighCurAmtCurCode
-        | None,
+        | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoFloatDetails(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     cash_float_amt: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoCashFloatAmt | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoCashFloatAmt | MISSING,
         Field(alias='CashFloatAmt'),
-    ] = None
+    ] = MISSING
     check_float_amt: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoCheckFloatAmt | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoCheckFloatAmt | MISSING,
         Field(alias='CheckFloatAmt'),
-    ] = None
-    float_days: Annotated[FloatDays | None, Field(alias='FloatDays')] = None
+    ] = MISSING
+    float_days: Annotated[FloatDays | MISSING, Field(alias='FloatDays')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoInitialAmount(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoInitialAmountCurCode | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoInitialAmountCurCode | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispDataIntDistAcctRef(
@@ -1205,7 +1228,7 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispDataIntDistAcctRef(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_keys: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispDataIntDistAcctRefAcctKeys,
@@ -1216,14 +1239,14 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispDataIntDistAcctRef(
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataHighCurAmt(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataHighCurAmtCurCode
-        | None,
+        | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataRateMatrixTier(
@@ -1231,14 +1254,14 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataRateMatrixTier(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     high_cur_amt: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataHighCurAmt | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataHighCurAmt | MISSING,
         Field(alias='HighCurAmt'),
-    ] = None
-    rate: Annotated[float | None, Field(alias='Rate')] = None
-    tier: Annotated[Tier | None, Field(alias='Tier')] = None
+    ] = MISSING
+    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
+    tier: Annotated[Tier | MISSING, Field(alias='Tier')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataAtmPosOverdraftAuthLimitAmt(
@@ -1246,79 +1269,90 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataAtmPosOverdra
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataAtmPosOverdraftAuthLimitAmtCurCode
-        | None,
+        | MISSING,
         Field(alias='CurCode'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoPostAddr(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    addr1: Annotated[str | None, Field(alias='Addr1', max_length=64)] = None
-    addr2: Annotated[str | None, Field(alias='Addr2', max_length=64)] = None
+    addr1: Annotated[str | MISSING, Field(alias='Addr1', max_length=64)] = MISSING
+    addr2: Annotated[str | MISSING, Field(alias='Addr2', max_length=64)] = MISSING
     addr_format_type: Annotated[
-        AddrFormatType | None, Field(alias='AddrFormatType')
-    ] = None
+        AddrFormatType | MISSING, Field(alias='AddrFormatType')
+    ] = MISSING
     addr_type: Annotated[AddrType, Field(alias='AddrType')]
-    addr_use: Annotated[AddrUse | None, Field(alias='AddrUse')] = None
-    address_ident: Annotated[str | None, Field(alias='AddressIdent', max_length=36)] = (
-        None
-    )
-    census_block: Annotated[str | None, Field(alias='CensusBlock', max_length=20)] = (
-        None
-    )
-    census_tract: Annotated[str | None, Field(alias='CensusTract', max_length=20)] = (
-        None
-    )
-    city: Annotated[str | None, Field(alias='City', max_length=32)] = None
+    addr_use: Annotated[AddrUse | MISSING, Field(alias='AddrUse')] = MISSING
+    address_ident: Annotated[
+        str | MISSING, Field(alias='AddressIdent', max_length=36)
+    ] = MISSING
+    census_block: Annotated[
+        str | MISSING, Field(alias='CensusBlock', max_length=20)
+    ] = MISSING
+    census_tract: Annotated[
+        str | MISSING, Field(alias='CensusTract', max_length=20)
+    ] = MISSING
+    city: Annotated[str | MISSING, Field(alias='City', max_length=32)] = MISSING
     country_code: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoCountryCode | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoCountryCode | MISSING,
         Field(alias='CountryCode'),
-    ] = None
-    foreign_flag: Annotated[bool | None, Field(alias='ForeignFlag')] = None
-    full_name1: Annotated[str | None, Field(alias='FullName1', max_length=96)] = None
-    full_name2: Annotated[str | None, Field(alias='FullName2', max_length=96)] = None
-    full_name3: Annotated[str | None, Field(alias='FullName3', max_length=96)] = None
-    handling_code: Annotated[str | None, Field(alias='HandlingCode')] = None
-    handling_code_option: Annotated[
-        HandlingCodeOption1 | None, Field(alias='HandlingCodeOption')
-    ] = None
-    msa_code: Annotated[int | None, Field(alias='MSACode')] = None
-    name_ident: Annotated[list[Any] | None, Field(alias='NameIdent', max_length=36)] = (
-        None
+    ] = MISSING
+    foreign_flag: Annotated[bool | MISSING, Field(alias='ForeignFlag')] = MISSING
+    full_name1: Annotated[str | MISSING, Field(alias='FullName1', max_length=96)] = (
+        MISSING
     )
-    postal_code: Annotated[str | None, Field(alias='PostalCode', max_length=11)] = None
-    state_prov: Annotated[str | None, Field(alias='StateProv')] = None
+    full_name2: Annotated[str | MISSING, Field(alias='FullName2', max_length=96)] = (
+        MISSING
+    )
+    full_name3: Annotated[str | MISSING, Field(alias='FullName3', max_length=96)] = (
+        MISSING
+    )
+    handling_code: Annotated[str | MISSING, Field(alias='HandlingCode')] = MISSING
+    handling_code_option: Annotated[
+        HandlingCodeOption1 | MISSING, Field(alias='HandlingCodeOption')
+    ] = MISSING
+    msa_code: Annotated[int | MISSING, Field(alias='MSACode')] = MISSING
+    name_ident: Annotated[
+        list[Any] | MISSING, Field(alias='NameIdent', max_length=36)
+    ] = MISSING
+    postal_code: Annotated[str | MISSING, Field(alias='PostalCode', max_length=11)] = (
+        MISSING
+    )
+    state_prov: Annotated[str | MISSING, Field(alias='StateProv')] = MISSING
     time_frame: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoTimeFrame | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoTimeFrame | MISSING,
         Field(alias='TimeFrame'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoRegCCData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    reg_cc_exception: Annotated[str | None, Field(alias='RegCCException')] = None
+    reg_cc_exception: Annotated[str | MISSING, Field(alias='RegCCException')] = MISSING
     reg_cc_exception_exp_dt: Annotated[
-        date_aliased | None, Field(alias='RegCCExceptionExpDt')
-    ] = None
-    reg_cc_status: Annotated[RegCcStatus | None, Field(alias='RegCCStatus')] = None
-    reg_cc_status_dt: Annotated[date_aliased | None, Field(alias='RegCCStatusDt')] = (
-        None
+        date_aliased | MISSING, Field(alias='RegCCExceptionExpDt')
+    ] = MISSING
+    reg_cc_status: Annotated[RegCcStatus | MISSING, Field(alias='RegCCStatus')] = (
+        MISSING
     )
+    reg_cc_status_dt: Annotated[
+        date_aliased | MISSING, Field(alias='RegCCStatusDt')
+    ] = MISSING
     reg_cc_nsf: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoRegCCDataRegCCNSF] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoRegCCDataRegCCNSF]
+        | MISSING,
         Field(alias='RegCC_NSF'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgAcctRef(
@@ -1326,7 +1360,7 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgAcctRef(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_keys: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgAcctRefAcctKeys,
@@ -1339,44 +1373,44 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgFlatFee(
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     svc_chg_flat_fee_amt: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgFlatFeeAmt
-        | None,
+        | MISSING,
         Field(alias='SvcChgFlatFeeAmt'),
-    ] = None
+    ] = MISSING
     svc_chg_flat_fee_ident: Annotated[
-        SvcChgFlatFeeIdent | None, Field(alias='SvcChgFlatFeeIdent')
-    ] = None
+        SvcChgFlatFeeIdent | MISSING, Field(alias='SvcChgFlatFeeIdent')
+    ] = MISSING
     svc_chg_flat_fee_type: Annotated[
-        SvcChgFlatFeeType | None, Field(alias='SvcChgFlatFeeType')
-    ] = None
+        SvcChgFlatFeeType | MISSING, Field(alias='SvcChgFlatFeeType')
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoTimeFrame1(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     recur_rule: Annotated[
         list[GetAccountsSecuredResponseAcctRecDepositAcctInfoTimeFrame1RecurRule]
-        | None,
+        | MISSING,
         Field(alias='RecurRule'),
-    ] = None
+    ] = MISSING
     start_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='StartDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredRequest(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_sel: Annotated[GetAccountsSecuredRequestAcctSel, Field(alias='AcctSel')]
 
@@ -1384,7 +1418,7 @@ class GetAccountsSecuredRequest(BaseModel):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctBal(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     bal_type: Annotated[BalType, Field(alias='BalType')]
     cur_amt: Annotated[
@@ -1395,100 +1429,107 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctBal(BaseModel):
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoCommercialAnalysisData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     analysis_charge_acct: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoCommercialAnalysisDataAnalysisChargeAcct
-        | None,
+        | MISSING,
         Field(alias='AnalysisChargeAcct'),
-    ] = None
-    analysis_code: Annotated[str | None, Field(alias='AnalysisCode')] = None
-    analysis_group: Annotated[int | None, Field(alias='AnalysisGroup')] = None
+    ] = MISSING
+    analysis_code: Annotated[str | MISSING, Field(alias='AnalysisCode')] = MISSING
+    analysis_group: Annotated[int | MISSING, Field(alias='AnalysisGroup')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoFee(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     cur_amt: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoCurAmt1 | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoCurAmt1 | MISSING,
         Field(alias='CurAmt'),
-    ] = None
-    desc: Annotated[str | None, Field(alias='Desc', max_length=200)] = None
-    fee_ident: Annotated[str | None, Field(alias='FeeIdent', max_length=36)] = None
-    fee_option: Annotated[FeeOption | None, Field(alias='FeeOption')] = None
-    fee_plan: Annotated[str | None, Field(alias='FeePlan', max_length=80)] = None
+    ] = MISSING
+    desc: Annotated[str | MISSING, Field(alias='Desc', max_length=200)] = MISSING
+    fee_ident: Annotated[str | MISSING, Field(alias='FeeIdent', max_length=36)] = (
+        MISSING
+    )
+    fee_option: Annotated[FeeOption | MISSING, Field(alias='FeeOption')] = MISSING
+    fee_plan: Annotated[str | MISSING, Field(alias='FeePlan', max_length=80)] = MISSING
     fee_type: Annotated[FeeType, Field(alias='FeeType')]
     fee_waiver: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoFeeWaiver | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoFeeWaiver | MISSING,
         Field(alias='FeeWaiver'),
-    ] = None
+    ] = MISSING
     time_frame: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoTimeFrame1 | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoTimeFrame1 | MISSING,
         Field(alias='TimeFrame'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoFloatData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     float_details: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoFloatDetails] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoFloatDetails] | MISSING,
         Field(alias='FloatDetails'),
-    ] = None
-    float_type: Annotated[FloatType | None, Field(alias='FloatType')] = None
+    ] = MISSING
+    float_type: Annotated[FloatType | MISSING, Field(alias='FloatType')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    int_disposition: Annotated[IntDisposition | None, Field(alias='IntDisposition')] = (
-        None
-    )
+    int_disposition: Annotated[
+        IntDisposition | MISSING, Field(alias='IntDisposition')
+    ] = MISSING
     int_dist_acct_ref: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispDataIntDistAcctRef
-        | None,
+        | MISSING,
         Field(alias='IntDistAcctRef'),
-    ] = None
+    ] = MISSING
     int_pmt_frequency: Annotated[
         list[GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispDataIntPmtFrequency]
-        | None,
+        | MISSING,
         Field(alias='IntPmtFrequency'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    accrual_method: Annotated[AccrualMethod | None, Field(alias='AccrualMethod')] = None
+    accrual_method: Annotated[AccrualMethod | MISSING, Field(alias='AccrualMethod')] = (
+        MISSING
+    )
     accrual_on_balance: Annotated[
-        AccrualOnBalance | None, Field(alias='AccrualOnBalance')
-    ] = None
+        AccrualOnBalance | MISSING, Field(alias='AccrualOnBalance')
+    ] = MISSING
     bal_cut_off_data: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataBalCutOffData | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataBalCutOffData
+        | MISSING,
         Field(alias='BalCutOffData'),
-    ] = None
+    ] = MISSING
     eff_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EffDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     rate_matrix_tier: Annotated[
         list[GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateDataRateMatrixTier]
-        | None,
+        | MISSING,
         Field(alias='RateMatrixTier'),
-    ] = None
-    tier_amt_type: Annotated[TierAmtType | None, Field(alias='TierAmtType')] = None
-    tier_type: Annotated[TierType | None, Field(alias='TierType')] = None
+    ] = MISSING
+    tier_amt_type: Annotated[TierAmtType | MISSING, Field(alias='TierAmtType')] = (
+        MISSING
+    )
+    tier_type: Annotated[TierType | MISSING, Field(alias='TierType')] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataAtmPosOverdraft(
@@ -1496,342 +1537,370 @@ class GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataAtmPosOverdra
 ):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     auth_limit_amt: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataAtmPosOverdraftAuthLimitAmt
-        | None,
+        | MISSING,
         Field(alias='AuthLimitAmt'),
-    ] = None
+    ] = MISSING
     auth_limit_option: Annotated[
-        AuthLimitOption | None, Field(alias='AuthLimitOption')
-    ] = None
+        AuthLimitOption | MISSING, Field(alias='AuthLimitOption')
+    ] = MISSING
     auth_limit_option_enum_desc: Annotated[
-        str | None, Field(alias='AuthLimitOptionEnumDesc', max_length=80)
-    ] = None
-    notice_option: Annotated[NoticeOption | None, Field(alias='NoticeOption')] = None
-    opt_in_out_dt: Annotated[date_aliased | None, Field(alias='OptInOutDt')] = None
+        str | MISSING, Field(alias='AuthLimitOptionEnumDesc', max_length=80)
+    ] = MISSING
+    notice_option: Annotated[NoticeOption | MISSING, Field(alias='NoticeOption')] = (
+        MISSING
+    )
+    opt_in_out_dt: Annotated[date_aliased | MISSING, Field(alias='OptInOutDt')] = (
+        MISSING
+    )
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     credit_back_acct: Annotated[
         list[GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataCreditBackAcct]
-        | None,
+        | MISSING,
         Field(alias='CreditBackAcct'),
-    ] = None
+    ] = MISSING
     credit_back_group_ident: Annotated[
-        CreditBackGroupIdent | None, Field(alias='CreditBackGroupIdent')
-    ] = None
-    credit_back_method: Annotated[str | None, Field(alias='CreditBackMethod')] = None
-    last_svc_chg_dt: Annotated[date_aliased | None, Field(alias='LastSvcChgDt')] = None
+        CreditBackGroupIdent | MISSING, Field(alias='CreditBackGroupIdent')
+    ] = MISSING
+    credit_back_method: Annotated[str | MISSING, Field(alias='CreditBackMethod')] = (
+        MISSING
+    )
+    last_svc_chg_dt: Annotated[date_aliased | MISSING, Field(alias='LastSvcChgDt')] = (
+        MISSING
+    )
     svc_chg_acct_ref: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgAcctRef | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgAcctRef
+        | MISSING,
         Field(alias='SvcChgAcctRef'),
-    ] = None
+    ] = MISSING
     svc_chg_flat_fee: Annotated[
         list[GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgFlatFee]
-        | None,
+        | MISSING,
         Field(alias='SvcChgFlatFee'),
-    ] = None
+    ] = MISSING
     svc_chg_method: Annotated[
         list[GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgMethod]
-        | None,
+        | MISSING,
         Field(alias='SvcChgMethod'),
-    ] = None
+    ] = MISSING
     svc_chg_time_frame: Annotated[
         list[GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgDataSvcChgTimeFrame]
-        | None,
+        | MISSING,
         Field(alias='SvcChgTimeFrame'),
-    ] = None
-    svc_chg_waive_code: Annotated[int | None, Field(alias='SvcChgWaiveCode')] = None
-    svc_chg_waive_tax_ind: Annotated[bool | None, Field(alias='SvcChgWaiveTaxInd')] = (
-        None
+    ] = MISSING
+    svc_chg_waive_code: Annotated[int | MISSING, Field(alias='SvcChgWaiveCode')] = (
+        MISSING
     )
+    svc_chg_waive_tax_ind: Annotated[
+        bool | MISSING, Field(alias='SvcChgWaiveTaxInd')
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     atm_pos_overdraft: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataAtmPosOverdraft
-        | None,
+        | MISSING,
         Field(alias='AtmPosOverdraft'),
-    ] = None
-    contact_type: Annotated[str | None, Field(alias='ContactType')] = None
+    ] = MISSING
+    contact_type: Annotated[str | MISSING, Field(alias='ContactType')] = MISSING
     overdraft_auto_trn_ind: Annotated[
-        bool | None, Field(alias='OverdraftAutoTrnInd')
-    ] = None
+        bool | MISSING, Field(alias='OverdraftAutoTrnInd')
+    ] = MISSING
     overdraft_enroll_opt: Annotated[
-        OverdraftEnrollOpt | None, Field(alias='OverdraftEnrollOpt')
-    ] = None
+        OverdraftEnrollOpt | MISSING, Field(alias='OverdraftEnrollOpt')
+    ] = MISSING
     overdraft_enroll_opt_dt: Annotated[
-        date_aliased | None, Field(alias='OverdraftEnrollOptDt')
-    ] = None
+        date_aliased | MISSING, Field(alias='OverdraftEnrollOptDt')
+    ] = MISSING
     overdraft_limit_amt: Annotated[
         GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftDataOverdraftLimitAmt
-        | None,
+        | MISSING,
         Field(alias='OverdraftLimitAmt'),
-    ] = None
+    ] = MISSING
     overdraft_limit_priority: Annotated[
-        OverdraftLimitPriority | None, Field(alias='OverdraftLimitPriority')
-    ] = None
+        OverdraftLimitPriority | MISSING, Field(alias='OverdraftLimitPriority')
+    ] = MISSING
     overdraft_notification_opt: Annotated[
-        OverdraftNotificationOpt | None, Field(alias='OverdraftNotificationOpt')
-    ] = None
-    overdraft_rating_code: Annotated[str | None, Field(alias='OverdraftRatingCode')] = (
-        None
-    )
+        OverdraftNotificationOpt | MISSING, Field(alias='OverdraftNotificationOpt')
+    ] = MISSING
+    overdraft_rating_code: Annotated[
+        str | MISSING, Field(alias='OverdraftRatingCode')
+    ] = MISSING
     overdraft_review_dt: Annotated[
-        date_aliased | None, Field(alias='OverdraftReviewDt')
-    ] = None
-    overdraft_type_code: Annotated[str | None, Field(alias='OverdraftTypeCode')] = None
+        date_aliased | MISSING, Field(alias='OverdraftReviewDt')
+    ] = MISSING
+    overdraft_type_code: Annotated[str | MISSING, Field(alias='OverdraftTypeCode')] = (
+        MISSING
+    )
 
 
 class GetAccountsSecuredResponseAcctRecDepositAcctInfo(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     accounting_method: Annotated[
-        AccountingMethod | None, Field(alias='AccountingMethod')
-    ] = None
+        AccountingMethod | MISSING, Field(alias='AccountingMethod')
+    ] = MISSING
     accounting_value: Annotated[
-        str | None, Field(alias='AccountingValue', max_length=15)
-    ] = None
+        str | MISSING, Field(alias='AccountingValue', max_length=15)
+    ] = MISSING
     acct_bal: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctBal] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctBal] | MISSING,
         Field(alias='AcctBal'),
-    ] = None
-    acct_dtl_status: Annotated[AcctDtlStatus | None, Field(alias='AcctDtlStatus')] = (
-        None
-    )
+    ] = MISSING
+    acct_dtl_status: Annotated[
+        AcctDtlStatus | MISSING, Field(alias='AcctDtlStatus')
+    ] = MISSING
     acct_dtl_status_dt: Annotated[
-        date_aliased | None, Field(alias='AcctDtlStatusDt')
-    ] = None
+        date_aliased | MISSING, Field(alias='AcctDtlStatusDt')
+    ] = MISSING
     acct_dtl_status_enum_desc: Annotated[
-        str | None, Field(alias='AcctDtlStatusEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='AcctDtlStatusEnumDesc', max_length=80)
+    ] = MISSING
     acct_ident: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctIdent] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctIdent] | MISSING,
         Field(alias='AcctIdent'),
-    ] = None
+    ] = MISSING
     acct_memo_data: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctMemoData] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctMemoData] | MISSING,
         Field(alias='AcctMemoData'),
-    ] = None
+    ] = MISSING
     acct_open_method: Annotated[
-        AcctOpenMethod | None, Field(alias='AcctOpenMethod')
-    ] = None
+        AcctOpenMethod | MISSING, Field(alias='AcctOpenMethod')
+    ] = MISSING
     acct_period_data: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctPeriodData] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctPeriodData] | MISSING,
         Field(alias='AcctPeriodData'),
-    ] = None
+    ] = MISSING
     acct_pref: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctPref | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctPref | MISSING,
         Field(alias='AcctPref'),
-    ] = None
+    ] = MISSING
     acct_stmt_data: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctStmtData | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoAcctStmtData | MISSING,
         Field(alias='AcctStmtData'),
-    ] = None
-    acct_title: Annotated[str | None, Field(alias='AcctTitle', max_length=255)] = None
+    ] = MISSING
+    acct_title: Annotated[str | MISSING, Field(alias='AcctTitle', max_length=255)] = (
+        MISSING
+    )
     acct_title_option: Annotated[
-        AcctTitleOption | None, Field(alias='AcctTitleOption')
-    ] = None
-    acct_type_code: Annotated[str | None, Field(alias='AcctTypeCode')] = None
-    auto_nsf_decision: Annotated[str | None, Field(alias='AutoNSFDecision')] = None
-    class_code: Annotated[str | None, Field(alias='ClassCode')] = None
+        AcctTitleOption | MISSING, Field(alias='AcctTitleOption')
+    ] = MISSING
+    acct_type_code: Annotated[str | MISSING, Field(alias='AcctTypeCode')] = MISSING
+    auto_nsf_decision: Annotated[str | MISSING, Field(alias='AutoNSFDecision')] = (
+        MISSING
+    )
+    class_code: Annotated[str | MISSING, Field(alias='ClassCode')] = MISSING
     client_defined_data: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoClientDefinedData] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoClientDefinedData]
+        | MISSING,
         Field(alias='ClientDefinedData'),
-    ] = None
-    closed_dt: Annotated[date_aliased | None, Field(alias='ClosedDt')] = None
+    ] = MISSING
+    closed_dt: Annotated[date_aliased | MISSING, Field(alias='ClosedDt')] = MISSING
     collateral_pledge_code: Annotated[
-        str | None, Field(alias='CollateralPledgeCode')
-    ] = None
+        str | MISSING, Field(alias='CollateralPledgeCode')
+    ] = MISSING
     commercial_analysis_data: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoCommercialAnalysisData | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoCommercialAnalysisData
+        | MISSING,
         Field(alias='CommercialAnalysisData'),
-    ] = None
-    cost_center: Annotated[str | None, Field(alias='CostCenter')] = None
+    ] = MISSING
+    cost_center: Annotated[str | MISSING, Field(alias='CostCenter')] = MISSING
     credit_risk: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoCreditRisk] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoCreditRisk] | MISSING,
         Field(alias='CreditRisk'),
-    ] = None
+    ] = MISSING
     date_data: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoDateData] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoDateData] | MISSING,
         Field(alias='DateData'),
-    ] = None
-    desc: Annotated[str | None, Field(alias='Desc', max_length=200)] = None
+    ] = MISSING
+    desc: Annotated[str | MISSING, Field(alias='Desc', max_length=200)] = MISSING
     doc_distribution_option: Annotated[
-        str | None, Field(alias='DocDistributionOption')
-    ] = None
+        str | MISSING, Field(alias='DocDistributionOption')
+    ] = MISSING
     doc_distribution_option_enum_desc: Annotated[
-        str | None, Field(alias='DocDistributionOptionEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='DocDistributionOptionEnumDesc', max_length=80)
+    ] = MISSING
     eim_nsf_instruction: Annotated[
-        EimNsfInstruction | None, Field(alias='EIM_NSFInstruction')
-    ] = None
+        EimNsfInstruction | MISSING, Field(alias='EIM_NSFInstruction')
+    ] = MISSING
     electronic_banking_opt: Annotated[
-        ElectronicBankingOpt | None, Field(alias='ElectronicBankingOpt')
-    ] = None
-    escheat_dt: Annotated[date_aliased | None, Field(alias='EscheatDt')] = None
+        ElectronicBankingOpt | MISSING, Field(alias='ElectronicBankingOpt')
+    ] = MISSING
+    escheat_dt: Annotated[date_aliased | MISSING, Field(alias='EscheatDt')] = MISSING
     federal_insurance_eligibility: Annotated[
-        FederalInsuranceEligibility | None, Field(alias='FederalInsuranceEligibility')
-    ] = None
+        FederalInsuranceEligibility | MISSING,
+        Field(alias='FederalInsuranceEligibility'),
+    ] = MISSING
     fee: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoFee] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoFee] | MISSING,
         Field(alias='Fee'),
-    ] = None
+    ] = MISSING
     financial_literacy: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoFinancialLiteracy | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoFinancialLiteracy | MISSING,
         Field(alias='FinancialLiteracy'),
-    ] = None
+    ] = MISSING
     float_data: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoFloatData] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoFloatData] | MISSING,
         Field(alias='FloatData'),
-    ] = None
-    handling_code: Annotated[str | None, Field(alias='HandlingCode')] = None
+    ] = MISSING
+    handling_code: Annotated[str | MISSING, Field(alias='HandlingCode')] = MISSING
     handling_code_option: Annotated[
-        HandlingCodeOption | None, Field(alias='HandlingCodeOption')
-    ] = None
-    hold_ind: Annotated[bool | None, Field(alias='HoldInd')] = None
+        HandlingCodeOption | MISSING, Field(alias='HandlingCodeOption')
+    ] = MISSING
+    hold_ind: Annotated[bool | MISSING, Field(alias='HoldInd')] = MISSING
     initial_amount: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoInitialAmount | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoInitialAmount | MISSING,
         Field(alias='InitialAmount'),
-    ] = None
+    ] = MISSING
     int_disp_data: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispData | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoIntDispData | MISSING,
         Field(alias='IntDispData'),
-    ] = None
+    ] = MISSING
     int_rate_data: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateData | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoIntRateData | MISSING,
         Field(alias='IntRateData'),
-    ] = None
-    int_reporting_ind: Annotated[bool | None, Field(alias='IntReportingInd')] = None
+    ] = MISSING
+    int_reporting_ind: Annotated[bool | MISSING, Field(alias='IntReportingInd')] = (
+        MISSING
+    )
     last_contact_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='LastContactDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     memo_post_process_opt_ovrd: Annotated[
-        MemoPostProcessOptOvrd | None, Field(alias='MemoPostProcessOptOvrd')
-    ] = None
-    naics: Annotated[str | None, Field(alias='NAICS', max_length=6)] = None
+        MemoPostProcessOptOvrd | MISSING, Field(alias='MemoPostProcessOptOvrd')
+    ] = MISSING
+    naics: Annotated[str | MISSING, Field(alias='NAICS', max_length=6)] = MISSING
     nsf_entry: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoNSFEntry] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoNSFEntry] | MISSING,
         Field(alias='NSFEntry'),
-    ] = None
-    nickname: Annotated[str | None, Field(alias='Nickname', max_length=80)] = None
-    nickname_option: Annotated[NicknameOption | None, Field(alias='NicknameOption')] = (
-        None
-    )
+    ] = MISSING
+    nickname: Annotated[str | MISSING, Field(alias='Nickname', max_length=80)] = MISSING
+    nickname_option: Annotated[
+        NicknameOption | MISSING, Field(alias='NicknameOption')
+    ] = MISSING
     notice_data: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoNoticeData] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoNoticeData] | MISSING,
         Field(alias='NoticeData'),
-    ] = None
-    oed_code: Annotated[str | None, Field(alias='OEDCode')] = None
+    ] = MISSING
+    oed_code: Annotated[str | MISSING, Field(alias='OEDCode')] = MISSING
     oed_code_enum_desc: Annotated[
-        str | None, Field(alias='OEDCodeEnumDesc', max_length=80)
-    ] = None
-    open_dt: Annotated[date_aliased | None, Field(alias='OpenDt')] = None
+        str | MISSING, Field(alias='OEDCodeEnumDesc', max_length=80)
+    ] = MISSING
+    open_dt: Annotated[date_aliased | MISSING, Field(alias='OpenDt')] = MISSING
     originating_branch: Annotated[
-        str | None, Field(alias='OriginatingBranch', max_length=32)
-    ] = None
+        str | MISSING, Field(alias='OriginatingBranch', max_length=32)
+    ] = MISSING
     originating_branch_enum_desc: Annotated[
-        str | None, Field(alias='OriginatingBranchEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='OriginatingBranchEnumDesc', max_length=80)
+    ] = MISSING
     overdraft_data: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftData | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoOverdraftData | MISSING,
         Field(alias='OverdraftData'),
-    ] = None
+    ] = MISSING
     post_addr: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoPostAddr] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoPostAddr] | MISSING,
         Field(alias='PostAddr'),
-    ] = None
+    ] = MISSING
     prod_int_rate_id: Annotated[
-        str | None, Field(alias='ProdIntRateId', max_length=36)
-    ] = None
+        str | MISSING, Field(alias='ProdIntRateId', max_length=36)
+    ] = MISSING
     prod_int_rate_id_enum_desc: Annotated[
-        str | None, Field(alias='ProdIntRateIdEnumDesc', max_length=80)
-    ] = None
-    product_ident: Annotated[str | None, Field(alias='ProductIdent', max_length=42)] = (
-        None
-    )
-    rate: Annotated[float | None, Field(alias='Rate')] = None
+        str | MISSING, Field(alias='ProdIntRateIdEnumDesc', max_length=80)
+    ] = MISSING
+    product_ident: Annotated[
+        str | MISSING, Field(alias='ProductIdent', max_length=42)
+    ] = MISSING
+    rate: Annotated[float | MISSING, Field(alias='Rate')] = MISSING
     rate_change_data: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoRateChangeData] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoRateChangeData] | MISSING,
         Field(alias='RateChangeData'),
-    ] = None
+    ] = MISSING
     reg_cc_data: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoRegCCData | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoRegCCData | MISSING,
         Field(alias='RegCCData'),
-    ] = None
+    ] = MISSING
     relationship_mgr: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoRelationshipMgr] | None,
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoRelationshipMgr] | MISSING,
         Field(alias='RelationshipMgr'),
-    ] = None
-    report_group_code: Annotated[str | None, Field(alias='ReportGroupCode')] = None
-    responsible_branch: Annotated[
-        str | None, Field(alias='ResponsibleBranch', max_length=32)
-    ] = None
-    responsible_branch_enum_desc: Annotated[
-        str | None, Field(alias='ResponsibleBranchEnumDesc', max_length=80)
-    ] = None
-    restricted_desc: Annotated[
-        str | None, Field(alias='RestrictedDesc', max_length=80)
-    ] = None
-    restricted_ind: Annotated[bool | None, Field(alias='RestrictedInd')] = None
-    retention_option: Annotated[
-        RetentionOption | None, Field(alias='RetentionOption')
-    ] = None
-    risk_ranking: Annotated[str | None, Field(alias='RiskRanking')] = None
-    stop_ind: Annotated[bool | None, Field(alias='StopInd')] = None
-    svc_chg_data: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgData | None,
-        Field(alias='SvcChgData'),
-    ] = None
-    tax_exempt: Annotated[str | None, Field(alias='TaxExempt')] = None
-    tax_ident: Annotated[str | None, Field(alias='TaxIdent', max_length=12)] = None
-    tax_ident_type: Annotated[TaxIdentType | None, Field(alias='TaxIdentType')] = None
-    tax_incentive_type: Annotated[
-        TaxIncentiveType | None, Field(alias='TaxIncentiveType')
-    ] = None
-    tax_incentive_type_enum_desc: Annotated[
-        str | None, Field(alias='TaxIncentiveTypeEnumDesc', max_length=80)
-    ] = None
-    tran_counter: Annotated[
-        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoTranCounter] | None,
-        Field(alias='TranCounter'),
-    ] = None
-    trn_restriction: Annotated[str | None, Field(alias='TrnRestriction')] = None
-    trn_restriction_ovrd: Annotated[str | None, Field(alias='TrnRestrictionOvrd')] = (
-        None
+    ] = MISSING
+    report_group_code: Annotated[str | MISSING, Field(alias='ReportGroupCode')] = (
+        MISSING
     )
+    responsible_branch: Annotated[
+        str | MISSING, Field(alias='ResponsibleBranch', max_length=32)
+    ] = MISSING
+    responsible_branch_enum_desc: Annotated[
+        str | MISSING, Field(alias='ResponsibleBranchEnumDesc', max_length=80)
+    ] = MISSING
+    restricted_desc: Annotated[
+        str | MISSING, Field(alias='RestrictedDesc', max_length=80)
+    ] = MISSING
+    restricted_ind: Annotated[bool | MISSING, Field(alias='RestrictedInd')] = MISSING
+    retention_option: Annotated[
+        RetentionOption | MISSING, Field(alias='RetentionOption')
+    ] = MISSING
+    risk_ranking: Annotated[str | MISSING, Field(alias='RiskRanking')] = MISSING
+    stop_ind: Annotated[bool | MISSING, Field(alias='StopInd')] = MISSING
+    svc_chg_data: Annotated[
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoSvcChgData | MISSING,
+        Field(alias='SvcChgData'),
+    ] = MISSING
+    tax_exempt: Annotated[str | MISSING, Field(alias='TaxExempt')] = MISSING
+    tax_ident: Annotated[str | MISSING, Field(alias='TaxIdent', max_length=12)] = (
+        MISSING
+    )
+    tax_ident_type: Annotated[TaxIdentType | MISSING, Field(alias='TaxIdentType')] = (
+        MISSING
+    )
+    tax_incentive_type: Annotated[
+        TaxIncentiveType | MISSING, Field(alias='TaxIncentiveType')
+    ] = MISSING
+    tax_incentive_type_enum_desc: Annotated[
+        str | MISSING, Field(alias='TaxIncentiveTypeEnumDesc', max_length=80)
+    ] = MISSING
+    tran_counter: Annotated[
+        list[GetAccountsSecuredResponseAcctRecDepositAcctInfoTranCounter] | MISSING,
+        Field(alias='TranCounter'),
+    ] = MISSING
+    trn_restriction: Annotated[str | MISSING, Field(alias='TrnRestriction')] = MISSING
+    trn_restriction_ovrd: Annotated[
+        str | MISSING, Field(alias='TrnRestrictionOvrd')
+    ] = MISSING
     withholding_data: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfoWithholdingData | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfoWithholdingData | MISSING,
         Field(alias='WithholdingData'),
-    ] = None
+    ] = MISSING
     withholding_option: Annotated[
-        WithholdingOption | None, Field(alias='WithholdingOption')
-    ] = None
+        WithholdingOption | MISSING, Field(alias='WithholdingOption')
+    ] = MISSING
     withholding_option_enum_desc: Annotated[
-        str | None, Field(alias='WithholdingOptionEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='WithholdingOptionEnumDesc', max_length=80)
+    ] = MISSING
 
 
 class GetAccountsSecuredResponseAcctRec(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_keys: Annotated[
         GetAccountsSecuredResponseAcctRecAcctKeys, Field(alias='AcctKeys')
@@ -1840,15 +1909,15 @@ class GetAccountsSecuredResponseAcctRec(BaseModel):
         GetAccountsSecuredResponseAcctRecAcctStatus, Field(alias='AcctStatus')
     ]
     deposit_acct_info: Annotated[
-        GetAccountsSecuredResponseAcctRecDepositAcctInfo | None,
+        GetAccountsSecuredResponseAcctRecDepositAcctInfo | MISSING,
         Field(alias='DepositAcctInfo'),
-    ] = None
+    ] = MISSING
 
 
 class GetAccountsSecuredResponse(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_rec: Annotated[GetAccountsSecuredResponseAcctRec, Field(alias='AcctRec')]
-    status: Annotated[StatusType | None, Field(alias='Status')] = None
+    status: Annotated[StatusType | MISSING, Field(alias='Status')] = MISSING

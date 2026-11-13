@@ -15,7 +15,7 @@ from uuid import uuid4
 import httpx
 
 from .contract import ContractError, PremierContract
-from .vendor_api import reply, request_body
+from .vendor_api import present, reply, request_body
 
 
 class Unavailable(Exception):
@@ -32,7 +32,9 @@ class UnknownOutcome(Exception):
 
 def _money(amount) -> Decimal:
     """A CurAmt model: the amount in USD, to the cent."""
-    if amount is None or amount.cur_code is None or amount.cur_code.cur_code_value != "USD":
+    amount = present(amount)
+    code = present(amount.cur_code) if amount is not None else None
+    if code is None or present(code.cur_code_value) != "USD" or present(amount.amt) is None:
         raise Unavailable("currency")
     return Decimal(str(amount.amt)).quantize(Decimal("0.01"))
 
@@ -100,15 +102,20 @@ class PremierClient:
                 "PartyAcctRelSel": {"PartyKeys": {"PartyId": party_id}}, "RecCtrlIn": {"MaxRecLimit": 20}})))
         except NoRecords:
             return []
-        return [(row.party_acct_rel_keys.acct_keys.acct_id, row.party_acct_rel_keys.acct_keys.acct_type)
-                for row in data.party_acct_rel_rec]
+        rows = []
+        for row in present(data.party_acct_rel_rec) or []:
+            keys = present(present(row.party_acct_rel_keys).acct_keys) if present(row.party_acct_rel_keys) else None
+            if keys is not None:
+                rows.append((present(keys.acct_id), present(keys.acct_type)))
+        return rows
 
     def available_balance(self, account_id: str) -> Decimal:
         data = reply("dda", self._post("dda", request_body("dda", {
             "AcctSel": {"AcctKeys": {"AcctId": account_id, "AcctType": "DDA"}}})))
-        deposit = data.acct_rec.deposit_acct_info
-        for entry in (deposit.acct_bal or []) if deposit else []:
-            if entry.bal_type == "Avail":  # no ledger, current or memo fallback
+        record = present(data.acct_rec)
+        deposit = present(record.deposit_acct_info) if record else None
+        for entry in (present(deposit.acct_bal) or []) if deposit else []:
+            if present(entry.bal_type) == "Avail":  # no ledger, current or memo fallback
                 return _money(entry.cur_amt)
         raise Unavailable("no_available_balance")
 
@@ -119,26 +126,29 @@ class PremierClient:
             body["RecCtrlIn"] = {"Cursor": cursor}
         data = reply("trn", self._post("trn", request_body("trn", body)))
         rows = []
-        for record in data.acct_trn_rec:
-            info = record.acct_trn_info
-            if info is None or info.posted_dt is None or info.trn_amt is None or info.dr_cr_type is None:
+        for record in present(data.acct_trn_rec) or []:
+            info = present(record.acct_trn_info)
+            if (info is None or present(info.posted_dt) is None or present(info.trn_amt) is None
+                    or present(info.dr_cr_type) is None):
                 continue  # an absent field is unavailable, never guessed
             rows.append({"date": str(info.posted_dt)[:10], "direction": str(info.dr_cr_type).lower(),
                          "amount": format(_money(info.trn_amt), "f"), "currency": "USD"})
-        return rows, data.rec_ctrl_out.cursor
+        control = present(data.rec_ctrl_out)
+        return rows, present(control.cursor) if control else None
 
     def _loan(self, account_id: str):
         data = reply("loan", self._post("loan", request_body("loan", {
             "AcctSel": {"AcctKeys": {"AcctId": account_id, "AcctType": "LOAN"}}})))
-        return data.acct_rec.loan_acct_info
+        record = present(data.acct_rec)
+        return present(record.loan_acct_info) if record else None
 
     def loan_payment(self, account_id: str):
         """NextPmt Total and PmtDt only; never sum parts or use due/past-due."""
         info = self._loan(account_id)
-        next_payment = info.next_pmt if info else None
-        total = [part for part in (next_payment.pmt_composite_amt or []) if part.composite_cur_amt_type == "Total"
-                 ] if next_payment else []
-        if len(total) != 1 or next_payment.pmt_dt is None:
+        next_payment = present(info.next_pmt) if info else None
+        total = [part for part in (present(next_payment.pmt_composite_amt) or [])
+                 if present(part.composite_cur_amt_type) == "Total"] if next_payment else []
+        if len(total) != 1 or present(next_payment.pmt_dt) is None:
             raise Unavailable("no_next_payment")
         return {"due_date": str(next_payment.pmt_dt), "amount": format(_money(total[0].cur_amt), "f"),
                 "currency": "USD"}
@@ -146,8 +156,8 @@ class PremierClient:
     def current_payoff(self, account_id: str):
         """Current PayOffAmt only; a dated quote is a different operation."""
         info = self._loan(account_id)
-        for entry in (info.acct_bal or []) if info else []:
-            if entry.bal_type == "PayOffAmt":
+        for entry in (present(info.acct_bal) or []) if info else []:
+            if present(entry.bal_type) == "PayOffAmt":
                 return {"amount": format(_money(entry.cur_amt), "f"), "currency": "USD"}
         raise Unavailable("no_payoff")
 
@@ -170,7 +180,8 @@ class PremierClient:
             # request or header) or the vendor answered 4xx: a clean refusal.
             return "refused"
         try:
-            status = reply("xfer", data).xfer_status_rec.xfer_status.xfer_status_code
+            record = present(reply("xfer", data).xfer_status_rec)
+            status = present(present(record.xfer_status).xfer_status_code)
         except (ValueError, AttributeError):
             raise UnknownOutcome("malformed_reply") from None  # sent; the effect is not known
         if status != "Valid":

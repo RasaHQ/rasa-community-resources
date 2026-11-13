@@ -11,6 +11,7 @@ from enum import StrEnum
 from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field
+from pydantic.experimental.missing_sentinel import MISSING
 
 
 class SeverityType(StrEnum):
@@ -22,10 +23,10 @@ class SeverityType(StrEnum):
 class SubjectElementType(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    path: Annotated[str | None, Field(alias='Path')] = None
-    value: Annotated[str | None, Field(alias='Value', max_length=256)] = None
+    path: Annotated[str | MISSING, Field(alias='Path')] = MISSING
+    value: Annotated[str | MISSING, Field(alias='Value', max_length=256)] = MISSING
 
 
 class TransferType(StrEnum):
@@ -44,9 +45,11 @@ class CurCodeType(StrEnum):
 class XferAddOperRequestXferInfoCurAmtCurCode(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    cur_code_type: Annotated[CurCodeType | None, Field(alias='CurCodeType')] = None
+    cur_code_type: Annotated[CurCodeType | MISSING, Field(alias='CurCodeType')] = (
+        MISSING
+    )
     cur_code_value: Annotated[str, Field(alias='CurCodeValue')]
 
 
@@ -62,13 +65,13 @@ class AcctType(StrEnum):
 class XferAddOperRequestXferInfoFromAcctRefAcctKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
-    acct_type: Annotated[AcctType | None, Field(alias='AcctType')] = None
+    acct_type: Annotated[AcctType | MISSING, Field(alias='AcctType')] = MISSING
     branch_ident: Annotated[
-        list[Any] | None, Field(alias='BranchIdent', max_length=22)
-    ] = None
+        list[Any] | MISSING, Field(alias='BranchIdent', max_length=22)
+    ] = MISSING
 
 
 class RefType(StrEnum):
@@ -79,9 +82,11 @@ class RefType(StrEnum):
 class XferAddOperRequestXferInfoRefData(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    ref_ident: Annotated[str | None, Field(alias='RefIdent', max_length=36)] = None
+    ref_ident: Annotated[str | MISSING, Field(alias='RefIdent', max_length=36)] = (
+        MISSING
+    )
     ref_type: Annotated[RefType, Field(alias='RefType')]
 
 
@@ -92,14 +97,14 @@ class RelationshipRole(StrEnum):
 class XferAddOperRequestXferInfoRelationshipMgr(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     relationship_mgr_ident: Annotated[
         str, Field(alias='RelationshipMgrIdent', max_length=36)
     ]
     relationship_role: Annotated[
-        RelationshipRole | None, Field(alias='RelationshipRole')
-    ] = None
+        RelationshipRole | MISSING, Field(alias='RelationshipRole')
+    ] = MISSING
 
 
 class AcctType1(StrEnum):
@@ -115,13 +120,13 @@ class AcctType1(StrEnum):
 class XferAddOperRequestXferInfoToAcctRefAcctKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
-    acct_type: Annotated[AcctType1 | None, Field(alias='AcctType')] = None
+    acct_type: Annotated[AcctType1 | MISSING, Field(alias='AcctType')] = MISSING
     branch_ident: Annotated[
-        list[Any] | None, Field(alias='BranchIdent', max_length=22)
-    ] = None
+        list[Any] | MISSING, Field(alias='BranchIdent', max_length=22)
+    ] = MISSING
 
 
 class AcctType2(StrEnum):
@@ -135,10 +140,10 @@ class AcctType2(StrEnum):
 class XferAddOperResponseXferStatusRecXferKeysAcctKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_id: Annotated[str, Field(alias='AcctId', max_length=36)]
-    acct_type: Annotated[AcctType2 | None, Field(alias='AcctType')] = None
+    acct_type: Annotated[AcctType2 | MISSING, Field(alias='AcctType')] = MISSING
 
 
 class XferStatusCode(StrEnum):
@@ -148,108 +153,116 @@ class XferStatusCode(StrEnum):
 class XferAddOperResponseXferStatusRecXferStatus(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     eff_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EffDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     xfer_status_code: Annotated[XferStatusCode, Field(alias='XferStatusCode')]
 
 
 class AdditionalStatusType(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    ovrd_exception_ind: Annotated[bool | None, Field(alias='OvrdExceptionInd')] = None
+    ovrd_exception_ind: Annotated[bool | MISSING, Field(alias='OvrdExceptionInd')] = (
+        MISSING
+    )
     server_status_code: Annotated[
-        str | None, Field(alias='ServerStatusCode', max_length=20)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusCode', max_length=20)
+    ] = MISSING
     server_status_desc: Annotated[
-        str | None, Field(alias='ServerStatusDesc', max_length=255)
-    ] = None
-    severity: Annotated[SeverityType | None, Field(alias='Severity')] = None
-    status_code: Annotated[str | None, Field(alias='StatusCode', max_length=20)] = None
-    status_desc: Annotated[str | None, Field(alias='StatusDesc', max_length=255)] = None
+        str | MISSING, Field(alias='ServerStatusDesc', max_length=255)
+    ] = MISSING
+    severity: Annotated[SeverityType | MISSING, Field(alias='Severity')] = MISSING
+    status_code: Annotated[str | MISSING, Field(alias='StatusCode', max_length=20)] = (
+        MISSING
+    )
+    status_desc: Annotated[str | MISSING, Field(alias='StatusDesc', max_length=255)] = (
+        MISSING
+    )
     subject_element: Annotated[
-        list[SubjectElementType] | None, Field(alias='SubjectElement')
-    ] = None
+        list[SubjectElementType] | MISSING, Field(alias='SubjectElement')
+    ] = MISSING
     svc_provider_name: Annotated[
-        str | None, Field(alias='SvcProviderName', max_length=1024)
-    ] = None
+        str | MISSING, Field(alias='SvcProviderName', max_length=1024)
+    ] = MISSING
 
 
 class StatusTypeException(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     additional_status: Annotated[
-        AdditionalStatusType | None, Field(alias='AdditionalStatus')
-    ] = None
-    ovrd_exception_ind: Annotated[bool | None, Field(alias='OvrdExceptionInd')] = None
+        AdditionalStatusType | MISSING, Field(alias='AdditionalStatus')
+    ] = MISSING
+    ovrd_exception_ind: Annotated[bool | MISSING, Field(alias='OvrdExceptionInd')] = (
+        MISSING
+    )
     server_status_code: Annotated[
-        str | None, Field(alias='ServerStatusCode', max_length=20)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusCode', max_length=20)
+    ] = MISSING
     server_status_desc: Annotated[
-        str | None, Field(alias='ServerStatusDesc', max_length=255)
-    ] = None
+        str | MISSING, Field(alias='ServerStatusDesc', max_length=255)
+    ] = MISSING
     severity: Annotated[SeverityType, Field(alias='Severity')]
     status_code: Annotated[str, Field(alias='StatusCode', max_length=20)]
     status_desc: Annotated[str, Field(alias='StatusDesc', max_length=255)]
     subject_element: Annotated[
-        list[SubjectElementType] | None, Field(alias='SubjectElement')
-    ] = None
+        list[SubjectElementType] | MISSING, Field(alias='SubjectElement')
+    ] = MISSING
     svc_provider_name: Annotated[str, Field(alias='SvcProviderName', max_length=1024)]
 
 
 class XferAddOperRequestXferInfoCurAmt(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    amt: Annotated[float | None, Field(alias='Amt')] = None
+    amt: Annotated[float | MISSING, Field(alias='Amt')] = MISSING
     cur_code: Annotated[
-        XferAddOperRequestXferInfoCurAmtCurCode | None, Field(alias='CurCode')
-    ] = None
+        XferAddOperRequestXferInfoCurAmtCurCode | MISSING, Field(alias='CurCode')
+    ] = MISSING
 
 
 class XferAddOperRequestXferInfoFromAcctRef(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_holder_name: Annotated[
-        str | None, Field(alias='AcctHolderName', max_length=130)
-    ] = None
+        str | MISSING, Field(alias='AcctHolderName', max_length=130)
+    ] = MISSING
     acct_keys: Annotated[
         XferAddOperRequestXferInfoFromAcctRefAcctKeys, Field(alias='AcctKeys')
     ]
-    trn_code: Annotated[str | None, Field(alias='TrnCode')] = None
+    trn_code: Annotated[str | MISSING, Field(alias='TrnCode')] = MISSING
 
 
 class XferAddOperRequestXferInfoToAcctRef(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_holder_name: Annotated[
-        str | None, Field(alias='AcctHolderName', max_length=130)
-    ] = None
+        str | MISSING, Field(alias='AcctHolderName', max_length=130)
+    ] = MISSING
     acct_keys: Annotated[
         XferAddOperRequestXferInfoToAcctRefAcctKeys, Field(alias='AcctKeys')
     ]
-    trn_code: Annotated[str | None, Field(alias='TrnCode')] = None
+    trn_code: Annotated[str | MISSING, Field(alias='TrnCode')] = MISSING
 
 
 class XferAddOperResponseXferStatusRecXferKeys(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     acct_keys: Annotated[
         XferAddOperResponseXferStatusRecXferKeysAcctKeys, Field(alias='AcctKeys')
@@ -259,57 +272,61 @@ class XferAddOperResponseXferStatusRecXferKeys(BaseModel):
 class XferAddOperRequestXferInfo(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     create_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='CreateDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
+    ] = MISSING
     cur_amt: Annotated[
-        XferAddOperRequestXferInfoCurAmt | None, Field(alias='CurAmt')
-    ] = None
+        XferAddOperRequestXferInfoCurAmt | MISSING, Field(alias='CurAmt')
+    ] = MISSING
     eff_dt: Annotated[
-        str | None,
+        str | MISSING,
         Field(
             alias='EffDt',
             pattern='[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]{3})?((-|\\+)[0-9]{2}:[0-9]{2})?)?)?',
         ),
-    ] = None
-    expedite_ind: Annotated[bool | None, Field(alias='ExpediteInd')] = None
+    ] = MISSING
+    expedite_ind: Annotated[bool | MISSING, Field(alias='ExpediteInd')] = MISSING
     from_acct_ref: Annotated[
-        XferAddOperRequestXferInfoFromAcctRef | None, Field(alias='FromAcctRef')
-    ] = None
-    is_validate_only: Annotated[bool | None, Field(alias='IsValidateOnly')] = None
-    orig_person: Annotated[str | None, Field(alias='OrigPerson', max_length=40)] = None
+        XferAddOperRequestXferInfoFromAcctRef | MISSING, Field(alias='FromAcctRef')
+    ] = MISSING
+    is_validate_only: Annotated[bool | MISSING, Field(alias='IsValidateOnly')] = MISSING
+    orig_person: Annotated[str | MISSING, Field(alias='OrigPerson', max_length=40)] = (
+        MISSING
+    )
     orig_person_enum_desc: Annotated[
-        str | None, Field(alias='OrigPersonEnumDesc', max_length=80)
-    ] = None
+        str | MISSING, Field(alias='OrigPersonEnumDesc', max_length=80)
+    ] = MISSING
     ref_data: Annotated[
-        list[XferAddOperRequestXferInfoRefData] | None, Field(alias='RefData')
-    ] = None
+        list[XferAddOperRequestXferInfoRefData] | MISSING, Field(alias='RefData')
+    ] = MISSING
     relationship_mgr: Annotated[
-        list[XferAddOperRequestXferInfoRelationshipMgr] | None,
+        list[XferAddOperRequestXferInfoRelationshipMgr] | MISSING,
         Field(alias='RelationshipMgr'),
-    ] = None
+    ] = MISSING
     to_acct_ref: Annotated[
-        XferAddOperRequestXferInfoToAcctRef | None, Field(alias='ToAcctRef')
-    ] = None
-    transfer_type: Annotated[TransferType | None, Field(alias='TransferType')] = None
+        XferAddOperRequestXferInfoToAcctRef | MISSING, Field(alias='ToAcctRef')
+    ] = MISSING
+    transfer_type: Annotated[TransferType | MISSING, Field(alias='TransferType')] = (
+        MISSING
+    )
     xfer_from_desc: Annotated[
-        list[Any] | None, Field(alias='XferFromDesc', max_length=80)
-    ] = None
+        list[Any] | MISSING, Field(alias='XferFromDesc', max_length=80)
+    ] = MISSING
     xfer_to_desc: Annotated[
-        list[Any] | None, Field(alias='XferToDesc', max_length=80)
-    ] = None
+        list[Any] | MISSING, Field(alias='XferToDesc', max_length=80)
+    ] = MISSING
 
 
 class XferAddOperResponseXferStatusRec(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
     xfer_keys: Annotated[
         XferAddOperResponseXferStatusRecXferKeys, Field(alias='XferKeys')
@@ -322,18 +339,20 @@ class XferAddOperResponseXferStatusRec(BaseModel):
 class XferAddOperRequest(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    ovrd_auto_ack_ind: Annotated[bool | None, Field(alias='OvrdAutoAckInd')] = None
+    ovrd_auto_ack_ind: Annotated[bool | MISSING, Field(alias='OvrdAutoAckInd')] = (
+        MISSING
+    )
     xfer_info: Annotated[XferAddOperRequestXferInfo, Field(alias='XferInfo')]
 
 
 class XferAddOperResponse(BaseModel):
     model_config = ConfigDict(
         extra='ignore',
-        populate_by_name=True,
+        validate_by_name=True,
     )
-    status: Annotated[StatusTypeException | None, Field(alias='Status')] = None
+    status: Annotated[StatusTypeException | MISSING, Field(alias='Status')] = MISSING
     xfer_status_rec: Annotated[
         XferAddOperResponseXferStatusRec, Field(alias='XferStatusRec')
     ]

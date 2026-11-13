@@ -10,6 +10,7 @@ every request and reply is still validated against the pinned definitions.
 from __future__ import annotations
 
 from pydantic import BaseModel
+from pydantic.experimental.missing_sentinel import MISSING
 
 from .vendor_models import dda, loan, party, trn, xfer
 
@@ -33,6 +34,11 @@ REPLY: dict[str, type[BaseModel]] = {
 def request_body(key: str, value: dict) -> dict:
     """A request body built through its model: a missing required field or a wrong type fails here."""
     return REQUEST[key].model_validate(value).model_dump(mode="json", by_alias=True, exclude_unset=True)
+
+
+def present(value):
+    """An optional field's value, or None when the reply left it out (MISSING)."""
+    return None if value is MISSING else value
 
 
 def reply(key: str, data) -> BaseModel:
