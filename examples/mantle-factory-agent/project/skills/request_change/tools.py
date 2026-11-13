@@ -122,7 +122,12 @@ def card_svg(request, verdict, failing_test, fingerprint, mode, builder_calls, s
     cells = ''.join(f'<rect x="{24 + i * 30}" y="132" width="24" height="12" rx="3" fill="{colour if i < passed else "#d9dee7"}"/>' for i in range(10))
     model = f' · {builder_model}' if builder_model else ''
     builder = f'LIVE{model} · {builder_calls} tool calls · {seconds} s' if mode == 'LIVE' else 'SCRIPTED · supplied attempt · 0 model calls'
-    detail = f'Failed: {failing_test}' if verdict == 'REJECT' else f'Attempt {fingerprint[:12]}…' if fingerprint else (reason or 'No verdict was obtained.')
+    if verdict == 'REJECT':
+        detail = f'Failed: {failing_test or "unknown"}'
+    elif verdict == 'NOT_READY':
+        detail = reason or 'No verdict was obtained.'  # why no verdict, before anything else
+    else:
+        detail = f'Attempt {fingerprint[:12]}…' if fingerprint else 'Attempt fingerprint unavailable.'
     def wrap(value, width):
         out, line = [], ''
         for part in re.findall(r'[^_ ]*[_ ]|[^_ ]+$', value):
@@ -132,6 +137,8 @@ def card_svg(request, verdict, failing_test, fingerprint, mode, builder_calls, s
             line += part
         return (out + [line])[:3]
     rows = [('Request', wrap(request, 34)), ('Builder', wrap(builder, 34)), ('Result', wrap(detail, 34))]
+    if verdict != 'ACCEPT' and fingerprint:
+        rows.append(('Attempt', [f'{fingerprint[:12]}…']))
     text, y = '', 176
     for label, lines in rows:
         text += f'<text x="24" y="{y}" font-size="12" fill="#5b6472">{escape(label)}</text>'

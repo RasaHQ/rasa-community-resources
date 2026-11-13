@@ -85,6 +85,19 @@ class VerdictCardTests(unittest.TestCase):
         self.assertIn('LIVE, model-from-record · 11 tool calls · 67.0 s', context.sent[0])
         self.assertNotIn('gpt-6-astra', Path(tools.__file__).read_text())
 
+    def test_the_picture_card_shows_why_there_is_no_verdict_even_with_a_fingerprint(self):
+        import re
+        from urllib.parse import unquote
+        svg = tools.card_svg('good', 'NOT_READY', '', 'a' * 40, 'SCRIPTED', 0, 0.1,
+                             reason='A factory check is still running.')
+        texts = [unquote(t) for t in re.findall(r'>([^<]+)</text>', svg)]
+        joined = ' '.join(texts)
+        self.assertIn('A factory check is still running.', joined)
+        self.assertIn('aaaaaaaaaaaa…', joined)  # the attempt stays, on its own row
+        self.assertLess(joined.index('A factory check'), joined.index('aaaaaaaaaaaa'))
+        accept = ' '.join(re.findall(r'>([^<]+)</text>', tools.card_svg('good', 'ACCEPT', '', 'b' * 40, 'SCRIPTED', 0, 1.0)))
+        self.assertIn('Attempt bbbbbbbbbbbb…', accept)
+
     def _turn(self, cancelled):
         return SimpleNamespace(is_cancelled=cancelled, sender_id='s',
                                tracker_handle=SimpleNamespace(apply_events=mock.Mock()),
