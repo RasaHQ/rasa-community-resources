@@ -26,16 +26,22 @@ def norm(text):
 
 # An account name with a suffix, such as checking-B or "checking B": the caller is
 # asking about an account other than their own bare-named one. The model must never
-# quietly answer it from the caller's own account of the same kind.
-_SUFFIXED = re.compile(r'\b(checking|savings|share|loan|car)-([a-z0-9]{1,12})\b')
-_SPACED = re.compile(r'\b(checking|savings|share|loan|car)\s+([A-Z0-9])\b', re.IGNORECASE)
+# quietly answer it from the caller's own account of the same kind. Only explicit
+# forms count, so ordinary speech is never refused: a hyphen with a short suffix
+# (checking-B, loan-2; not checking-account or car-free), or a space and one capital
+# letter other than A and I (checking B; not "the car I bought" or "savings 5 dollars").
+_KINDS = r'(?i:checking|savings|share|loan|car)'
+_SUFFIXED = re.compile(r'\b' + _KINDS + r'-([A-Za-z0-9]{1,3})\b')
+_SPACED = re.compile(r'\b' + _KINDS + r'\s+([B-HJ-Z])\b')
 
 
 def foreign_aliases(text, permitted):
     """Suffixed account names in the caller's raw words that are not theirs."""
-    named = {f'{kind}-{suffix}' for kind, suffix in _SUFFIXED.findall(text.casefold())}
-    named |= {f'{kind.casefold()}-{suffix.casefold()}' for kind, suffix in _SPACED.findall(text)
-              if suffix.isupper() or suffix.isdigit()}
+    named = set()
+    for pattern in (_SUFFIXED, _SPACED):
+        for match in pattern.finditer(text):
+            kind = match.group(0)[:match.start(1) - match.start(0)].rstrip(' -\t').casefold()
+            named.add(f'{kind}-{match.group(1).casefold()}')
     return tuple(sorted(named - {alias.casefold() for alias in permitted}))
 
 

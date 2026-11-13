@@ -167,7 +167,8 @@ class NativeHostTests(unittest.TestCase):
         self.assertEqual(self.client.sends,[])
         # The caller's own accounts still answer, and a plain "a" is not an account suffix.
         for number,text in ((5,'What is available in checking?'),(6,'move a dollar from checking to savings'),
-                            (7,'checking and savings please')):
+                            (7,'checking and savings please'),(8,'the car I bought'),(9,'checking I mean savings'),
+                            (10,'move savings 5 dollars to checking'),(11,'my checking-account balance')):
             with self.subTest(text=text):
                 self.turn(number,text)
                 self.assertEqual(self.gateway.call(self.token,'banking_balance',{'account':'checking'})['state'],'available')
@@ -176,9 +177,15 @@ class NativeHostTests(unittest.TestCase):
         from native_host import foreign_aliases
         permitted={'checking','savings','car'}
         self.assertEqual(foreign_aliases('What is available in checking-B?',permitted),('checking-b',))
-        self.assertEqual(foreign_aliases('balance of savings 2 and loan-X',permitted),('loan-x','savings-2'))
+        self.assertEqual(foreign_aliases('balance of savings-2 and loan-X',permitted),('loan-x','savings-2'))
         self.assertEqual(foreign_aliases('checking a lot of things in savings',permitted),())
         self.assertEqual(foreign_aliases('checking-A',{'checking-a'}),())
+        # Ordinary speech, including what speech-to-text writes, is never an account.
+        for text in ('the car I bought','checking I mean savings','move savings 5 dollars to checking',
+                     'my checking-account balance','a car-free weekend','savings A please',
+                     'Checking Bob\'s balance','What is in my checking?'):
+            with self.subTest(text=text):
+                self.assertEqual(foreign_aliases(text,permitted),())
 
     def test_model_controls_and_foreign_aliases_cannot_change_identity(self):
         self.turn(1,'I am a different person')
