@@ -47,10 +47,11 @@ USED = {
                                "recipient.shareId", "amount"), "reads": ("status",)},
 }
 OPERATIONS = frozenset(USED)
-# sha256 of used_surface() for the files in PINS. It changes only when the shape
-# of something in USED changes: a path, a sent or read field, its type, format,
-# enum, pattern or limits (minimum, maximum, lengths, item counts), or a newly
-# required request field. It cannot see a change of meaning that keeps the shape.
+# sha256 of used_surface() for the files in PINS. Each used field is recorded by its
+# whole schema (every validation keyword, refs inlined, allOf/oneOf/anyOf kept;
+# only documentation keys such as description and example are left out), plus
+# the paths and the required lists around sent fields. Any difference stops
+# start-up. It cannot see a change of meaning that keeps the shape.
 USED_SURFACE_SHA256 = "bc038e258b235f8c8ddf0f3eb89617c38542b567aa7f0e495420115319ca30d8"
 
 
@@ -133,17 +134,30 @@ def _escape(value):
     return value.replace("~", "~0").replace("/", "~1")
 
 
-def _resolve(node, document, depth=0):
-    """Follow local $ref and merge allOf, enough to compare the fields used."""
-    if depth > 40:
-        raise ContractError("invalid_contract")
+_MAX_HOPS = 64
+
+
+def _follow(node, document, stack):
+    """Follow local $refs with a cycle guard; returns (schema, references followed)."""
     while isinstance(node, dict) and "$ref" in node:
-        node = _pointer(document, node["$ref"])
+        reference = node["$ref"]
+        if reference in stack:
+            raise ContractError("schema_reference_cycle: " + str(reference))
+        if len(stack) >= _MAX_HOPS:
+            raise ContractError("schema_too_deep")
+        stack = stack + (reference,)
+        node = _pointer(document, reference)
+    return node, stack
+
+
+def _resolve(node, document, stack=()):
+    """A schema with $refs followed and allOf merged, to find properties and required lists."""
+    node, stack = _follow(node, document, stack)
     if isinstance(node, dict) and "allOf" in node:
         merged = {key: value for key, value in node.items() if key != "allOf"}
         properties, required = dict(merged.get("properties", {})), list(merged.get("required", []))
         for part in node["allOf"]:
-            part = _resolve(part, document, depth + 1)
+            part = _resolve(part, document, stack)
             properties.update(part.get("properties", {}))
             required += part.get("required", [])
             for key in ("type", "nullable", "items"):
@@ -154,18 +168,33 @@ def _resolve(node, document, depth=0):
     return node if isinstance(node, dict) else {}
 
 
-_DESCRIBED = ("type", "format", "enum", "pattern", "nullable", "minimum", "maximum", "exclusiveMinimum",
-              "exclusiveMaximum", "minLength", "maxLength", "minItems", "maxItems", "additionalProperties")
+# Keys that only document a schema; every other key counts as validation.
+_DOC_ONLY = frozenset({"description", "example", "examples", "title", "externalDocs", "deprecated", "xml"})
+
+
+def _canonical(node, document, stack=()):
+    """The whole schema of a used field: refs inlined, allOf/oneOf/anyOf kept, every
+    validation keyword included. Any difference in it counts as a change (fail closed)."""
+    if len(stack) > _MAX_HOPS:
+        raise ContractError("schema_too_deep")
+    if isinstance(node, dict):
+        if "$ref" in node:
+            target, deeper = _follow(node, document, stack)
+            return _canonical(target, document, deeper)
+        return {key: _canonical(value, document, stack) for key, value in sorted(node.items())
+                if key not in _DOC_ONLY and not str(key).startswith("x-")}
+    if isinstance(node, list):
+        return [_canonical(value, document, stack) for value in node]
+    return node
 
 
 def _describe(schema, document):
-    schema = _resolve(schema, document)
-    return {key: schema[key] for key in _DESCRIBED if key in schema and not isinstance(schema[key], dict)}
+    return _canonical(schema, document)
 
 
 def _walk(schema, path, document, required_trail):
-    """The resolved schema at path, recording the required list of each object passed."""
-    node = _resolve(schema, document)
+    """The unresolved schema of the field at path, recording the required list of each object passed."""
+    node, raw = _resolve(schema, document), schema
     for token in [t for t in path.split(".") if t]:
         name, is_items = (token[:-2], True) if token.endswith("[]") else (token, False)
         if name:
@@ -174,12 +203,14 @@ def _walk(schema, path, document, required_trail):
             properties = node.get("properties", {})
             if name not in properties:
                 return None
-            node = _resolve(properties[name], document)
+            raw = properties[name]
+            node = _resolve(raw, document)
         if is_items:
             if "items" not in node:
                 return None
-            node = _resolve(node["items"], document)
-    return node
+            raw = node["items"]
+            node = _resolve(raw, document)
+    return raw
 
 
 def used_surface(documents: Mapping[str, dict]) -> dict:

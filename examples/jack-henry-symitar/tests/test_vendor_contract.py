@@ -143,6 +143,77 @@ class ContractTests(unittest.TestCase):
             self.assertIn(expected, caught.exception.changes)
             self.assertNotIn("contract_drift", str(caught.exception))
 
+    def _edited(self, family, edit):
+        import yaml
+        document = yaml.safe_load(self.raw[family])
+        edit(document)
+        raw = dict(self.raw)
+        raw[family] = yaml.safe_dump(document).encode()
+        return raw
+
+    @staticmethod
+    def _amount_holder(document):
+        """The schema object that holds postTransfer's request property 'amount'."""
+        body = next(op for methods in document["paths"].values() for op in methods.values()
+                    if isinstance(op, dict) and op.get("operationId") == "postTransfer")
+        node = body["requestBody"]["content"]["application/json"]["schema"]
+        while "$ref" in node:
+            target = document
+            for part in node["$ref"][2:].split("/"):
+                target = target[part]
+            node = target
+        return node["properties"]
+
+    def test_any_validation_keyword_on_a_used_field_counts_including_inside_allof(self):
+        from contract_inputs import VendorChanged
+
+        def max_length(document):
+            holder = self._amount_holder(document)
+            holder["amount"] = {"allOf": [holder["amount"]], "maxLength": 1}
+
+        def all_of_enum(document):
+            holder = self._amount_holder(document)
+            holder["amount"] = {"allOf": [holder["amount"], {"enum": ["1.00"]}]}
+
+        def unknown_keyword(document):
+            holder = self._amount_holder(document)
+            holder["amount"] = {"allOf": [holder["amount"]], "multipleOf": 0.5}
+
+        for edit in (max_length, all_of_enum, unknown_keyword):
+            with self.subTest(edit=edit.__name__), self.assertRaises(VendorChanged) as caught:
+                SymitarContract(self._edited("transfers", edit))
+            self.assertIn("postTransfer request field amount changed", caught.exception.changes)
+
+    def test_a_documentation_only_change_on_a_used_field_still_loads(self):
+        def describe(document):
+            holder = self._amount_holder(document)
+            target = holder["amount"]
+            while "$ref" in target:
+                node = document
+                for part in target["$ref"][2:].split("/"):
+                    node = node[part]
+                target = node
+            target["description"] = "Reworded by the vendor."
+            target["example"] = "9.99"
+        contract = SymitarContract(self._edited("transfers", describe))
+        self.assertEqual(contract.newer_files, ("transfers",))
+
+    def test_reference_cycles_are_refused_with_a_clear_reason_not_a_hang(self):
+        def self_cycle(document):
+            document.setdefault("components", {}).setdefault("schemas", {})["Loop"] = {
+                "$ref": "#/components/schemas/Loop"}
+            self._amount_holder(document)["amount"] = {"$ref": "#/components/schemas/Loop"}
+
+        def mutual_cycle(document):
+            schemas = document.setdefault("components", {}).setdefault("schemas", {})
+            schemas["LoopA"] = {"$ref": "#/components/schemas/LoopB"}
+            schemas["LoopB"] = {"$ref": "#/components/schemas/LoopA"}
+            self._amount_holder(document)["amount"] = {"$ref": "#/components/schemas/LoopA"}
+
+        for edit in (self_cycle, mutual_cycle):
+            with self.subTest(edit=edit.__name__), self.assertRaisesRegex(ContractError, "schema_reference_cycle"):
+                SymitarContract(self._edited("transfers", edit))
+
     def test_the_recorded_surface_is_exactly_the_pinned_files(self):
         import yaml
         from contract_inputs import USED_SURFACE_SHA256, surface_digest, used_surface
