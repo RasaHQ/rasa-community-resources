@@ -7,6 +7,9 @@ dependencies = [
   "rasa-pro==3.21.0.dev5",
   "mcp>=1.28.1,<2",
   "xmlschema>=3.4,<5",
+  # The runtime half of xsdata (no generator): parses and writes the generated
+  # vendor_models dataclasses. The generator itself is in the models group below.
+  "xsdata==26.10",
   "httpx>=0.27",
   "uvicorn>=0.30",
   "python-dotenv>=1.0",
@@ -19,3 +22,8 @@ required-secrets = ["OPENAI_API_KEY", "DEEPGRAM_API_KEY"]
 [tool.uv]
 prerelease = "allow"
 package = false
+
+[dependency-groups]
+# Development only: regenerates silverlake_demo/vendor_models/ from the pinned
+# Jack Henry archive (make models). Never installed for running the example.
+models = ["xsdata[cli]==26.10", "ruff==0.17.3"]
