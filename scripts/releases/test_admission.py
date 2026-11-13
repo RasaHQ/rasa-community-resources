@@ -3,7 +3,8 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from admission import decide, held
+from admission import decide
+from index import held
 from maintenance import run
 
 
@@ -35,6 +36,22 @@ class AdmissionTests(unittest.TestCase):
         self.assertEqual(decide('3.21.0.dev5', data)['status'], 'candidate')
         with self.assertRaisesRegex(ValueError, 'needs both'):
             held('3.22.0.dev4', {'held': '>=3.22.0.dev0'})
+
+    def test_the_newest_unheld_release_is_still_proposed_during_a_hold(self):
+        hold = {'held': '>=3.22.0.dev0', 'reason': 'held for testing'}
+        data = releases('3.21.0.dev5', '3.21.1', '3.22.0.dev4')
+        result = decide('3.21.0.dev5', data, hold=hold)
+        self.assertEqual(result, {'status': 'candidate', 'version': '3.21.1'})
+        self.assertEqual(decide('3.21.1', data, hold=hold)['status'], 'held')
+
+    def test_discovery_selects_the_same_unheld_release(self):
+        from index import discover
+        hold = {'held': '>=3.22.0.dev0', 'reason': 'held for testing'}
+        data = releases('3.21.0.dev5', '3.21.1', '3.22.0.dev4')
+        seen = []
+        report = discover(data, inspect=lambda v: seen.append(v) or {'version': v, 'mantlePresent': True}, hold=hold)
+        self.assertEqual(report['selected']['version'], '3.21.1')
+        self.assertNotIn('3.22.0.dev4', seen)
 
     def test_the_repository_hold_covers_every_3_22_prerelease(self):
         import json

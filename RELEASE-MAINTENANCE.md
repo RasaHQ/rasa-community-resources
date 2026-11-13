@@ -26,8 +26,9 @@ contains the candidate patch, compatibility receipts and redacted project logs.
 by a failed validation dispatch. No issues or messages are sent automatically.
 
 A release can be held. `RASA_RELEASE_HOLD.json` names a version range and the
-reason; a matching release is reported as held and is never migrated, trained
-or proposed, so it cannot be merged automatically. Rasa Pro 3.22 is held today:
+reason; a matching release is never selected, migrated, trained or proposed,
+so it cannot be merged automatically. The newest release outside the hold is
+still adopted as usual, so a patch for the current line keeps flowing. Rasa Pro 3.22 is held today:
 it validates the catalog but silently ignores agent.yml keys the projects rely
 on and breaks two custom speech engines at runtime. Delete the file in the
 change that resolves the reason it gives.

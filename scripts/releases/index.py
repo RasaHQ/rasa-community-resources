@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+from pathlib import Path
 import urllib.request
 import zipfile
 from datetime import datetime, timezone
@@ -56,9 +57,31 @@ def inspect_release(version, data=None, fetch=None):
             'mantlePresent': any(name.startswith(REQUIRED_MODULE) for name in names)}
 
 
-def discover(data=None, inspect=inspect_release):
+HOLD = Path(__file__).resolve().parents[2] / 'RASA_RELEASE_HOLD.json'
+
+
+def load_hold(path=HOLD):
+    return json.loads(path.read_text()) if path.exists() else None
+
+
+def held(version, hold):
+    """The hold that keeps this version from being adopted, or None."""
+    if not hold:
+        return None
+    if not hold.get('reason') or not hold.get('held'):
+        raise ValueError('A release hold needs both held and reason')
+    return hold if SpecifierSet(hold['held'], prereleases=True).contains(version) else None
+
+
+def unheld(versions, hold):
+    return [v for v in versions if not held(v, hold)]
+
+
+def discover(data=None, inspect=inspect_release, hold=None):
     data = data or get_json(f'https://pypi.org/pypi/{PACKAGE}/json')
-    versions = candidates(data)
+    hold = load_hold() if hold is None else hold
+    # A held release is never selected; the newest unheld release is.
+    versions = unheld(candidates(data), hold)
     if not versions:
         raise ValueError('No usable Rasa release found')
     latest = versions[-1]
@@ -67,7 +90,7 @@ def discover(data=None, inspect=inspect_release):
     latest_stable = inspect(stable[-1]) if stable and stable[-1] != latest else selected
     return {'schema': 1, 'checkedAt': datetime.now(timezone.utc).isoformat(),
             'index': 'https://pypi.org/pypi/rasa-pro/json',
-            'policy': 'highest non-yanked PEP 440 wheel version for Python 3.12, including prereleases; require rasa.mantle; never silently fall back',
+            'policy': 'highest non-yanked PEP 440 wheel version for Python 3.12, including prereleases, outside RASA_RELEASE_HOLD.json; require rasa.mantle; never silently fall back',
             'selected': selected, 'latestStable': latest_stable}
 
 

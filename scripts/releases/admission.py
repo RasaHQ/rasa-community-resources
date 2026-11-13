@@ -3,35 +3,25 @@ import json
 import os
 from pathlib import Path
 import subprocess
-from packaging.specifiers import SpecifierSet
 from packaging.version import Version
-from index import candidates, get_json
+from index import candidates, get_json, held, load_hold, unheld
 
 INDEX = 'https://pypi.org/pypi/rasa-pro/json'
-HOLD = Path('RASA_RELEASE_HOLD.json')
-
-
-def held(version, hold):
-    """The hold that keeps this version from being proposed, or None."""
-    if not hold:
-        return None
-    if not hold.get('reason') or not hold.get('held'):
-        raise ValueError('A release hold needs both held and reason')
-    return hold if SpecifierSet(hold['held'], prereleases=True).contains(version) else None
-
-
 def decide(current, data, open_prs=(), owner=None, hold=None):
-    versions = candidates(data)
-    if not versions:
+    everything = candidates(data)
+    if not everything:
         raise ValueError('No usable Rasa release found')
-    latest = str(Version(versions[-1]))
-    if Version(latest) < Version(current):
+    newest = str(Version(everything[-1]))
+    if Version(newest) < Version(current):
         raise ValueError('Index would downgrade the catalog; investigation required')
-    if Version(latest) == Version(current):
+    # The newest release outside the hold is the candidate; a held one is never proposed.
+    versions = unheld(everything, hold)
+    latest = str(Version(versions[-1])) if versions else current
+    if Version(latest) <= Version(current):
+        reason = held(newest, hold)
+        if reason:
+            return {'status': 'held', 'version': newest, 'held': reason['held'], 'reason': reason['reason']}
         return {'status': 'unchanged', 'version': latest}
-    reason = held(latest, hold)
-    if reason:
-        return {'status': 'held', 'version': latest, 'held': reason['held'], 'reason': reason['reason']}
     branch = 'automation/rasa-' + latest
     for pr in open_prs:
         if (pr['headRefName'] == branch and pr['baseRefName'] == 'main'
@@ -43,7 +33,7 @@ def decide(current, data, open_prs=(), owner=None, hold=None):
 def check():
     data = get_json(INDEX)
     current = Path('RASA_PRO_VERSION').read_text().strip()
-    hold = json.loads(HOLD.read_text()) if HOLD.exists() else None
+    hold = load_hold()
     # An adopted or held version needs no GitHub request either.
     result = decide(current, data, hold=hold)
     if result['status'] != 'candidate':
