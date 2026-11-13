@@ -18,6 +18,8 @@ import sys
 import tempfile
 import time
 
+BUILDER_MODEL = 'gpt-6-astra'  # the one LIVE builder model; the gate record carries it as builder_model
+
 
 def _pack(chapter='ch06'):
     here = Path(__file__).resolve()
@@ -123,9 +125,10 @@ def _live(result, *, worker_python, evidence_root, env_file, max_funded_runs):
         temporary.write_text(json.dumps(used) + '\n')
         temporary.replace(ledger)
         result['reason'] = 'Expected cost 15–150 cents, not a monetary cap. Actual cost is unmeasured.'
+        result['builder_model'] = BUILDER_MODEL
         code, _, _ = _run([
             'build.py', 'tasks/b-limit-currencies.json', 'attempts/live', '--live',
-            '--model', 'gpt-6-astra', '--expected-cost-cents-min', '15',
+            '--model', BUILDER_MODEL, '--expected-cost-cents-min', '15',
             '--expected-cost-cents-max', '150',
         ], work, min(300, max(1, deadline - time.monotonic())), python=python, key=key.strip())
         native = work / 'runs/live/run/native.json'

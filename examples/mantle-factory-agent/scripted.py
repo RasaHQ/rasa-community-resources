@@ -2,6 +2,8 @@
 import json
 import os
 
+CARD_KIND = 'image'
+
 
 def gate_record(value):
     if isinstance(value, str):
@@ -61,6 +63,10 @@ class ScriptedClient:
             m.get('tool_call_id') in gate_ids) for m in messages[latest + 1:])
         if received_gate and result is None:
             return LLMResponse(id='scripted', created=0, choices=['NOT_READY: the tool returned no valid gate record; no automatic retry.'])
+        card_shown = any(call.get('function', {}).get('name') in ('show_verdict_card', 'show_verdict_image') for m in messages[latest + 1:] for call in (m.get('tool_calls') or []))
+        if result and not card_shown and ('show_verdict_card' in offered or 'show_verdict_image' in offered):
+            # The card tool takes no values: it reads run_factory's own recorded result.
+            return LLMResponse(id='scripted', created=0, choices=[], tool_calls=[LLMToolCall(id=f'card-{self.count}', tool_name=('show_verdict_image' if CARD_KIND == 'image' else 'show_verdict_card'), tool_args={})])
         if result:
             return LLMResponse(id='scripted', created=0, choices=[verdict_text(result)])
         if not text or text.startswith('/session_start'):
