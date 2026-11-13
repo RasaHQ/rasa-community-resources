@@ -327,6 +327,46 @@ class ContractTests(unittest.TestCase):
             self.contract.response("postTransfer", 200, "application/json", {"status": "invented"})
 
 
+class ReplyDigestStructure(unittest.TestCase):
+    """Names and literal values count in the reply digest; only annotations do not."""
+
+    def test_names_and_literals_count_annotations_do_not(self):
+        import copy
+        from contract_inputs import reply_schema
+        base = {"200": {"description": "OK", "headers": {"summary": {"schema": {"type": "string"}}},
+                        "links": {"example": {"operationId": "x", "description": "A link."}},
+                        "content": {"application/json": {"schema": {
+                            "type": "object", "description": "A reply.",
+                            "discriminator": {"propertyName": "kind", "mapping": {"description": "#/components/schemas/E"}},
+                            "properties": {"kind": {"type": "string", "enum": [{"description": "a"}], "default": {"summary": "s"},
+                                                    "description": "The kind."}}}}}}}
+
+        def changed(edit):
+            document = copy.deepcopy(base)
+            edit(document)
+            return document
+
+        def schema(document):
+            return document["200"]["content"]["application/json"]["schema"]
+
+        variants = {
+            "enum literal": lambda d: schema(d)["properties"]["kind"]["enum"][0].update(description="b"),
+            "default literal": lambda d: schema(d)["properties"]["kind"]["default"].update(summary="t"),
+            "header named summary": lambda d: d["200"]["headers"]["summary"]["schema"].update(type="integer"),
+            "link named example": lambda d: d["200"]["links"]["example"].update(operationId="y"),
+            "mapping key description": lambda d: schema(d)["discriminator"]["mapping"].update(description="#/components/schemas/F"),
+        }
+        reworded = changed(lambda d: (schema(d).update(description="Reworded."), d["200"].update(description="Fine"),
+                                      d["200"]["links"]["example"].update(description="Other."),
+                                      schema(d)["properties"]["kind"].update(description="Other.")))
+
+        digest = lambda responses: reply_schema({"responses": responses}, {})
+        for name, edit in variants.items():
+            with self.subTest(change=name):
+                self.assertNotEqual(digest(changed(edit)), digest(base))
+        self.assertEqual(digest(reworded), digest(base))
+
+
 class Transport:
     def __init__(self, response=None, error=None):
         self.requests = []

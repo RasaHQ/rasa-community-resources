@@ -52,7 +52,10 @@ REPLY_SHA256 = {
     "searchLoans": "7607e6ee776e7333aa4db3e888f5481de5ccd545427965aa18fe8b5e1c8c8233",
 }
 _DOC_ONLY = frozenset({"description", "example", "examples", "summary"})
-_NAME_MAPS = frozenset({"properties", "patternProperties"})  # maps of field names to schemas
+# Maps whose keys are names (fields, headers, discriminator values, links), never annotations.
+_NAME_MAPS = frozenset({"properties", "patternProperties", "headers", "mapping", "links"})
+# Keywords whose value is a literal JSON value: kept exactly, never filtered or followed.
+_LITERALS = frozenset({"enum", "default", "const"})
 
 
 class ContractError(Exception):
@@ -159,9 +162,11 @@ def _inline(node, document, stack=(), depth=0):
             return {"$inlined": target, **rest} if rest else target
         inlined = {}
         for key, value in sorted(node.items()):
-            if key in _NAME_MAPS and isinstance(value, dict):
-                # Keys here are field names, not annotations: keep every one, even a
-                # field called "description" or "example".
+            if key in _LITERALS:
+                inlined[key] = value
+            elif key in _NAME_MAPS and isinstance(value, dict):
+                # Keys here are names, not annotations: keep every one, even a
+                # field or header called "description" or "example".
                 inlined[key] = {name: _inline(schema, document, stack, depth + 1)
                                 for name, schema in sorted(value.items())}
             elif key not in _DOC_ONLY:
