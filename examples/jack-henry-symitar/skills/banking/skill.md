@@ -38,6 +38,6 @@ exact review has been delivered, add no second question or rewritten review.
 When the actual caller says yes or confirm transfer, use
 @tool.banking_transfer_status. The private channel observer handles the raw turn;
 the status tool itself cannot confirm or submit. On no, a changed request or a
-question, the review is cancelled. Ask at most one follow-up question.
+question, the review is canceled. Ask at most one follow-up question.
 
-The host delivers the exact review and accepted-versus-posted notice. Do not repeat those messages. If the review was cancelled or is absent, request a new transfer review; never suggest confirming the old review again.
+The host delivers the exact review and accepted-versus-posted notice. Do not repeat those messages. If the review was canceled or is absent, request a new transfer review; never suggest confirming the old review again.
