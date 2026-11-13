@@ -105,7 +105,7 @@ Follow these steps in order. Each step has a checkpoint so you know when to cont
 - **Open the assistant:** wait for `Rasa server is up and running`, then follow the printed Inspector link. The server uses port `5005`.
 <!-- codespaces:end -->
 
-This README documents the Codespaces path. It has no separate local-install instructions.
+This example runs only in GitHub Codespaces, which gives everyone the same tested setup. There are no local setup steps: running it on your own computer is not tested or supported.
 
 ### 3. Download Fiserv's API definitions
 

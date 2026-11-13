@@ -47,7 +47,7 @@ You need three things. Each takes a few minutes and costs nothing to set up.
 
 ## Start it
 
-This example runs in a GitHub Codespace. This README has no separate local set-up.
+This example runs only in GitHub Codespaces, which gives everyone the same tested setup. There are no local setup steps: running it on your own computer is not tested or supported.
 
 Follow the download and upload steps before running `make run`. A setup log ending in `READY` means the environment is prepared. Wait for `Rasa server is up and running` before opening the printed Inspector link. For a typed conversation, click **Type your message**, enter the prompt, and press **Enter**. A typed check does not verify speech.
 
@@ -224,7 +224,7 @@ Fiserv may publish a corrected release. This example then needs a reviewed updat
 - **Older sample labels:** `Avail` and `Total` come from Fiserv's official Premier sample collection R2026.3.3, not from this release.
 - **Runtime:** rasa-pro 3.21.0.dev5, Python 3.12.
 
-A version record for this example is being added.
+The exact files and their hashes are in [VENDOR-FILES.md](VENDOR-FILES.md), and what changed over time is in [CHANGELOG.md](CHANGELOG.md).
 
 ## Change it
 

@@ -1264,12 +1264,21 @@ BANK_README_HEADINGS = (
 
 def _level_two_headings(text: str) -> list[tuple[int, str]]:
     """(line, title) for each '## ' heading outside fenced code blocks."""
-    headings, fenced = [], False
+    headings, fence = [], None  # the open fence's character and length, if any
     for number, line in enumerate(text.splitlines(), 1):
-        if line.lstrip().startswith(("```", "~~~")):
-            fenced = not fenced
-            continue
-        if not fenced and line.startswith("## "):
+        stripped = line.lstrip()
+        marker = re.match(r"(`{3,}|~{3,})", stripped)
+        if marker:
+            run = marker.group(1)
+            if fence is None:
+                fence = (run[0], len(run))
+                continue
+            # Only a run of the same character, at least as long, and with nothing
+            # after it closes the block; a shorter inner fence is block content.
+            if run[0] == fence[0] and len(run) >= fence[1] and not stripped[len(run):].strip():
+                fence = None
+                continue
+        if fence is None and line.startswith("## "):
             headings.append((number, line[3:].strip()))
     return headings
 

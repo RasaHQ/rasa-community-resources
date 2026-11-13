@@ -1399,6 +1399,12 @@ class TestBankReadmes(unittest.TestCase):
                 found = lint_repo.check_bank_readmes()
                 self.assertTrue(any(expected[case] in f.message for f in found), found)
 
+    def test_an_inner_fence_does_not_end_a_longer_code_block(self):
+        body = self.GOOD + "````markdown\n```sh\n## not a heading\n```\n## still not a heading\n````\n"
+        with FakeRepo() as repo:
+            repo.index("examples/jack-henry-symitar/README.md", body)
+            self.assertEqual(lint_repo.check_bank_readmes(), [])
+
     def test_absent_examples_are_skipped_and_a_missing_readme_is_reported(self):
         with FakeRepo() as repo:
             self.assertEqual(lint_repo.check_bank_readmes(), [])

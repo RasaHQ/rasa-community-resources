@@ -94,7 +94,7 @@ These are **Codespaces secrets**, not GitHub Actions secrets. Each secret needs 
 
 ## Start it
 
-This example runs in GitHub Codespaces.
+This example runs only in GitHub Codespaces, which gives everyone the same tested setup. There are no local setup steps: running it on your own computer is not tested or supported.
 
 <!-- codespaces:start -->
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-jack-henry-silverlake/devcontainer.json)

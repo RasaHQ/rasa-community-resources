@@ -87,7 +87,7 @@ If the Codespace already exists, stop and restart it after adding or changing a 
 
 ## Start it
 
-This example runs in GitHub Codespaces. Follow these steps in order. Each step includes a checkpoint.
+This example runs only in GitHub Codespaces, which gives everyone the same tested setup. There are no local setup steps: running it on your own computer is not tested or supported. Follow these steps in order. Each step includes a checkpoint.
 
 <!-- codespaces:start -->
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-jack-henry-symitar/devcontainer.json)
