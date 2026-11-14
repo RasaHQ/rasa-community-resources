@@ -2,6 +2,7 @@
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from datetime import date
 from check_self_contained import inspect, exception_findings, KNOWN
@@ -237,6 +238,17 @@ class RuntimeScopeTests(unittest.TestCase):
         self.assertEqual(self.findings(),[])
 
     def test_debt_only_shrinks_and_expires(self):
+        # A fixed debt list, so this keeps testing the rules after the real list is empty.
+        sample = {'example-one': ('patterns/one', '2026-11-13'), 'example-two': ('patterns/two', '2026-11-14')}
+        with patch.dict('check_self_contained.KNOWN', sample, clear=True):
+            self._debt_rules()
+
+    def test_the_real_debt_list_cannot_grow(self):
+        rows = [{'example': key, 'violation': val[0], 'fix_by': val[1]} for key, val in KNOWN.items()]
+        added = rows + [{'example': 'unlisted-example', 'violation': 'patterns/x', 'fix_by': '2099-01-01'}]
+        self.assertTrue(exception_findings(added, rows, date(2026, 11, 12)))
+
+    def _debt_rules(self):
         rows = [{'example': key, 'violation': val[0], 'fix_by': val[1]} for key, val in KNOWN.items()]
         self.assertEqual(exception_findings(rows, today=date(2026,11,12)), [])
         self.assertEqual(exception_findings(rows[:-1], rows, date(2026,11,12)), [])
