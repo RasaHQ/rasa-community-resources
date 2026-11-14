@@ -4,7 +4,7 @@ import tempfile
 import unittest
 
 from datetime import date
-from check_self_contained import inspect, exception_findings, KNOWN
+from check_self_contained import BANK_EXAMPLES, inspect, exception_findings, KNOWN
 
 
 class ExampleClosureTests(unittest.TestCase):
@@ -49,11 +49,25 @@ class ExampleClosureTests(unittest.TestCase):
         self.assertTrue(self.findings())
 
     def test_zeo_imports_are_refused_under_aliases(self):
-        self.put('examples/a/app.py', 'import zeocore as core\nfrom zeointegrations.client import Client as C\nfrom zeo_integrations import Client\nimport zeo_core\n')
+        self.put('examples/jack-henry-symitar/app.py', 'import zeocore as core\nfrom zeointegrations.client import Client as C\nfrom zeo_integrations import Client\nimport zeo_core\n')
         self.assertEqual(len(self.findings()), 4)
 
+    def test_zeocore_is_allowed_outside_the_banking_examples_but_zeointegrations_is_not(self):
+        self.put('examples/a/app.py', 'import zeocore\nimport zeo_core\n')
+        self.put('examples/a/pyproject.toml', '[project]\ndependencies=["zeocore==0.36.3"]\n')
+        self.assertEqual(self.findings(), [])
+        self.put('examples/a/app.py', 'import zeocore\nfrom zeointegrations.client import Client\n')
+        self.assertEqual(len(self.findings()), 1)
+
+    def test_the_banking_examples_refuse_the_zeocore_distribution(self):
+        for bank in sorted(BANK_EXAMPLES):
+            with self.subTest(bank=bank):
+                self.files = []
+                self.put(f'examples/{bank}/pyproject.toml', '[project]\ndependencies=["zeocore==0.36.3"]\n')
+                self.assertTrue(self.findings())
+
     def test_literal_dynamic_import_and_concatenation_are_refused(self):
-        self.put('examples/a/app.py', 'from importlib import import_module as load\nload("zeo"+"core")\n')
+        self.put('examples/jack-henry-symitar/app.py', 'from importlib import import_module as load\nload("zeo"+"core")\n')
         self.assertTrue(self.findings())
 
     def test_repository_namespace_import_is_not_a_package_escape(self):
@@ -133,7 +147,7 @@ class RuntimeScopeTests(unittest.TestCase):
         self.assertEqual(self.findings(), [])
 
     def test_authoring_exclusion_cannot_hide_forbidden_import(self):
-        self.put('examples/a/tests/test_parity.py', 'import zeocore\n')
+        self.put('examples/jack-henry-symitar/tests/test_parity.py', 'import zeocore\n')
         self.assertTrue(self.findings())
 
     def test_runtime_import_promotes_control_back_into_scope(self):
@@ -166,19 +180,17 @@ class RuntimeScopeTests(unittest.TestCase):
         self.put('examples/a/pyproject.toml', '[tool.uv.sources]\nrouter={path="../../patterns/voice-vendor-router"}\n')
         self.assertTrue(inspect(self.root, self.files, rows))
 
-    def test_debt_cannot_waive_python_import(self):
-        self.put('examples/mantle-factory-agent/app.py', 'import zeocore\n')
-        rows = [{'example': 'mantle-factory-agent', 'violation': 'zeocore distribution'}]
+    def test_no_exception_row_can_waive_zeocore_in_a_banking_example(self):
+        self.put('examples/jack-henry-symitar/app.py', 'import zeocore\n')
+        rows = [{'example': 'jack-henry-symitar', 'violation': 'zeocore distribution'}]
         self.assertTrue(inspect(self.root, self.files, rows))
 
-    def test_flight_exception_only_covers_zeocore_and_its_own_example(self):
+    def test_former_zeocore_exceptions_need_no_row_now(self):
+        self.put('examples/mantle-factory-agent/pyproject.toml', '[project]\ndependencies=["zeocore==0.35.6"]\n')
         self.put('examples/mantle-flight-briefing-openai-agents/app.py', 'import zeo_core\n')
-        rows = [{'example': 'mantle-flight-briefing-openai-agents', 'violation': 'zeocore distribution and zeo_core runtime imports'}]
-        self.assertEqual(inspect(self.root, self.files, rows), [])
+        self.assertEqual(inspect(self.root, self.files, []), [])
         self.put('examples/mantle-flight-briefing-openai-agents/app.py', 'import zeo_integrations\n')
-        self.assertTrue(inspect(self.root, self.files, rows))
-        self.put('examples/b/app.py', 'import zeo_core\n')
-        self.assertTrue(inspect(self.root, self.files, rows))
+        self.assertTrue(inspect(self.root, self.files, []))
 
     def test_literal_subprocess_script_outside_example_is_refused(self):
         self.put('examples/a/app.py', 'import subprocess\nsubprocess.run(["python", "../b/run.py"])\n')
