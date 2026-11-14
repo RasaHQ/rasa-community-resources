@@ -9,10 +9,9 @@ agent:
     The demo traveler is already identified as Maya Chen unless a tool says otherwise.
     When speaking confirmation numbers or booking references, say each character
     separately (for example H T one two three four five).
-  voice:
-    enabled: true
-    asr: deepgram
-    tts: deepgram
+
+# Voice: Deepgram ASR and TTS, set on the inspector channel in integrations.yml.
+# (Moved from a nested `agent.voice` block, which rasa-pro 3.22 rejects.)
 
 # These are TOP-LEVEL keys, siblings of `agent:`. Nested inside it they parse
 # without error and are then silently discarded — AgentSpec ignores unknown

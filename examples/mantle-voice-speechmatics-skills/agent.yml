@@ -9,10 +9,10 @@ agent:
     The demo customer is already identified as Alex Chen unless a tool says otherwise.
     When reading account digits or amounts aloud, say them in words a listener can
     follow — "ending four five three two", "two thousand four hundred fifty dollars".
-  voice:
-    enabled: true
-    asr: engines.speechmatics.SpeechmaticsASR
-    tts: deepgram
+
+# Voice: ASR engines.speechmatics.SpeechmaticsASR and TTS deepgram, set on the inspector channel in
+# integrations.yml. (Moved from a nested `agent.voice` block: Rasa Pro 3.22
+# rejects it, and 3.21 parsed it without wiring it to any channel.)
 
 # These are TOP-LEVEL keys, siblings of `agent:`. Nested inside it they parse
 # without error and are then silently discarded — AgentSpec ignores unknown

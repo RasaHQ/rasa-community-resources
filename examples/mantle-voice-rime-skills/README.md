@@ -54,16 +54,9 @@ channels:
       model_id: mistv2
 ```
 
-```yaml
-# agent.yml
-agent:
-  voice:
-    enabled: true
-    asr: deepgram
-    tts: rime
-```
-
-That is the entire integration. `RIME_API_KEY` is read from the environment by
+That is the entire integration: the engines live on the channel, and
+`agent.yml` needs no voice block. (A nested `agent.voice` block is ignored by
+Rasa Pro 3.21 and rejected by 3.22.) `RIME_API_KEY` is read from the environment by
 the engine itself — it is never named in configuration.
 
 Three details, the third of which cost real time:

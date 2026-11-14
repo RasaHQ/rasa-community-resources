@@ -5,7 +5,7 @@ This directory is a **Rasa Skills / Mantle** agent that teaches building a
 
 ## Layout
 
-- `agent.yml` — identity, persona (Atlas), voice flags, rules
+- `agent.yml` — identity, persona (Atlas), rules
 - `integrations.yml` — OpenAI LLM + Inspector channel with Deepgram ASR/TTS
 - `endpoints.yml` — optional platform services (response rephraser, tracing)
 - `memory.yml` — project-wide memory

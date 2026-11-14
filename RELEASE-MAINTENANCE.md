@@ -25,7 +25,15 @@ contains the candidate patch, compatibility receipts and redacted project logs.
 `proposal.json` distinguishes an unmerged PR from a successful merge followed
 by a failed validation dispatch. No issues or messages are sent automatically.
 
-Local reproduction requires Python 3.12, uv, the Rasa licence and the provider
+A release can be held. `RASA_RELEASE_HOLD.json` names a version range and the
+reason; a matching release is never selected, migrated, trained or proposed,
+so it cannot be merged automatically. The newest release outside the hold is
+still adopted as usual, so a patch for the current line keeps flowing. Rasa Pro 3.22 is held today:
+it validates the catalog but silently ignores agent.yml keys the projects rely
+on and breaks two custom speech engines at runtime. Delete the file in the
+change that resolves the reason it gives.
+
+Local reproduction requires Python 3.12, uv, the Rasa license and the provider
 credentials declared by the maintained projects:
 
 ```sh

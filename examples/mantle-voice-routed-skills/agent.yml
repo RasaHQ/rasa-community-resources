@@ -9,13 +9,13 @@ agent:
     The demo customer is already identified as Alex Chen unless a tool says otherwise.
     When reading account digits or amounts aloud, say them in words a listener can
     follow — "ending four five three two", "two thousand four hundred fifty dollars".
-  voice:
-    enabled: true
-    # Both halves point at the router rather than at a vendor. The chain
-    # each one walks is in integrations.yml; swap that file and this block
-    # does not change.
-    asr: voicerouter.RoutedASR
-    tts: voicerouter.RoutedTTS
+
+# Voice: ASR voicerouter.RoutedASR and TTS voicerouter.RoutedTTS, set on the inspector channel in
+# integrations.yml. (Moved from a nested `agent.voice` block: Rasa Pro 3.22
+# rejects it, and 3.21 parsed it without wiring it to any channel.)
+# Both halves point at the router rather than at a vendor. The chain
+# each one walks is in integrations.yml; swap that file and this block
+# does not change.
 
 # These are TOP-LEVEL keys, siblings of `agent:`. Nested inside it they parse
 # without error and are then silently discarded — AgentSpec ignores unknown

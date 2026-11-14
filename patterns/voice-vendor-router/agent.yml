@@ -6,10 +6,11 @@ agent:
     Keep every reply to one or two short spoken sentences.
     If asked which voice vendor is being used, say you do not know from inside
     the conversation — the router decides that, and it is visible in the logs.
-  voice:
-    enabled: true
-    asr: voicerouter.RoutedASR
-    tts: voicerouter.RoutedTTS
+
+# Voice: both halves go through the router — asr voicerouter.RoutedASR, tts
+# voicerouter.RoutedTTS — set on the inspector channel in integrations.yml.
+# This used to be a nested `agent.voice` block as well; rasa-pro 3.21 parsed it
+# without wiring it to any channel, and 3.22 rejects it.
 
 # TOP-LEVEL keys, siblings of `agent:`. Nested inside they are silently dropped.
 name: Ori

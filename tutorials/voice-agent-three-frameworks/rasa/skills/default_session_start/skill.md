@@ -8,7 +8,7 @@ routing:
 
 :::ordered_block id=main
 name: default_session_start
-description: "Greet the caller."
+# Greet the caller.
 steps:
   - id: greet
     action: utter_greet

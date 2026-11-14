@@ -3,11 +3,12 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+from pathlib import Path
 import urllib.request
 import zipfile
 from datetime import datetime, timezone
 from packaging.version import Version, InvalidVersion
-from packaging.specifiers import SpecifierSet
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
 
 PACKAGE = 'rasa-pro'
 REQUIRED_MODULE = 'rasa/mantle/'
@@ -56,9 +57,51 @@ def inspect_release(version, data=None, fetch=None):
             'mantlePresent': any(name.startswith(REQUIRED_MODULE) for name in names)}
 
 
-def discover(data=None, inspect=inspect_release):
+HOLD = Path(__file__).resolve().parents[2] / 'RASA_RELEASE_HOLD.json'
+FROM_FILE = object()  # default: read the repository's hold file
+
+
+def validate_hold(hold):
+    """A present hold must be complete; anything else fails closed, never lifts the hold."""
+    if not isinstance(hold, dict):
+        raise ValueError('A release hold must be a JSON object')
+    spec, reason = hold.get('held'), hold.get('reason')
+    if not isinstance(spec, str) or not spec.strip() or not isinstance(reason, str) or not reason.strip():
+        raise ValueError('A release hold needs a non-empty held range and reason')
+    try:
+        SpecifierSet(spec, prereleases=True)
+    except InvalidSpecifier:
+        raise ValueError('A release hold has an invalid held range') from None
+    return hold
+
+
+def load_hold(path=None):
+    """None only when the file is absent; a present file is validated or the run fails."""
+    path = HOLD if path is None else path
+    if not path.exists():
+        return None
+    return validate_hold(json.loads(path.read_text()))
+
+
+def held(version, hold):
+    """The hold that keeps this version from being adopted, or None when there is no hold."""
+    if hold is None:
+        return None
+    validate_hold(hold)
+    return hold if SpecifierSet(hold['held'], prereleases=True).contains(version) else None
+
+
+def unheld(versions, hold):
+    return [v for v in versions if not held(v, hold)]
+
+
+def discover(data=None, inspect=inspect_release, hold=FROM_FILE):
     data = data or get_json(f'https://pypi.org/pypi/{PACKAGE}/json')
-    versions = candidates(data)
+    hold = load_hold() if hold is FROM_FILE else hold
+    if hold is not None:
+        validate_hold(hold)
+    # A held release is never selected; the newest unheld release is.
+    versions = unheld(candidates(data), hold)
     if not versions:
         raise ValueError('No usable Rasa release found')
     latest = versions[-1]
@@ -67,7 +110,7 @@ def discover(data=None, inspect=inspect_release):
     latest_stable = inspect(stable[-1]) if stable and stable[-1] != latest else selected
     return {'schema': 1, 'checkedAt': datetime.now(timezone.utc).isoformat(),
             'index': 'https://pypi.org/pypi/rasa-pro/json',
-            'policy': 'highest non-yanked PEP 440 wheel version for Python 3.12, including prereleases; require rasa.mantle; never silently fall back',
+            'policy': 'highest non-yanked PEP 440 wheel version for Python 3.12, including prereleases, outside RASA_RELEASE_HOLD.json; require rasa.mantle; never silently fall back',
             'selected': selected, 'latestStable': latest_stable}
 
 

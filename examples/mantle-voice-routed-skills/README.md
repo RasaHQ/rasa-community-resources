@@ -33,17 +33,19 @@ was halfway through a transfer. Here each half of the stack names a *chain*, and
 
 ## The whole difference
 
-`agent.yml` points at the router instead of at a vendor:
+The inspector channel in `integrations.yml` points at the router instead of at
+a vendor:
 
 ```yaml
-agent:
-  voice:
-    enabled: true
-    asr: voicerouter.RoutedASR
-    tts: voicerouter.RoutedTTS
+channels:
+  inspector:
+    asr:
+      name: voicerouter.RoutedASR
+    tts:
+      name: voicerouter.RoutedTTS
 ```
 
-and `integrations.yml` says who to try, in order:
+and the router's own settings in the same file say who to try, in order:
 
 ```yaml
 tts:

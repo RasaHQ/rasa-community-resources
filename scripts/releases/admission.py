@@ -4,19 +4,23 @@ import os
 from pathlib import Path
 import subprocess
 from packaging.version import Version
-from index import candidates, get_json
+from index import candidates, get_json, held, load_hold, unheld
 
 INDEX = 'https://pypi.org/pypi/rasa-pro/json'
-
-
-def decide(current, data, open_prs=(), owner=None):
-    versions = candidates(data)
-    if not versions:
+def decide(current, data, open_prs=(), owner=None, hold=None):
+    everything = candidates(data)
+    if not everything:
         raise ValueError('No usable Rasa release found')
-    latest = str(Version(versions[-1]))
-    if Version(latest) < Version(current):
+    newest = str(Version(everything[-1]))
+    if Version(newest) < Version(current):
         raise ValueError('Index would downgrade the catalog; investigation required')
-    if Version(latest) == Version(current):
+    # The newest release outside the hold is the candidate; a held one is never proposed.
+    versions = unheld(everything, hold)
+    latest = str(Version(versions[-1])) if versions else current
+    if Version(latest) <= Version(current):
+        reason = held(newest, hold)
+        if reason:
+            return {'status': 'held', 'version': newest, 'held': reason['held'], 'reason': reason['reason']}
         return {'status': 'unchanged', 'version': latest}
     branch = 'automation/rasa-' + latest
     for pr in open_prs:
@@ -29,8 +33,9 @@ def decide(current, data, open_prs=(), owner=None):
 def check():
     data = get_json(INDEX)
     current = Path('RASA_PRO_VERSION').read_text().strip()
-    # An adopted version needs no GitHub request either.
-    result = decide(current, data)
+    hold = load_hold()
+    # An adopted or held version needs no GitHub request either.
+    result = decide(current, data, hold=hold)
     if result['status'] != 'candidate':
         return result
     repo = os.environ.get('GITHUB_REPOSITORY')
@@ -40,4 +45,4 @@ def check():
     prs = json.loads(subprocess.check_output(
         ['gh', 'pr', 'list', '--repo', repo, '--head', branch, '--base', 'main',
          '--state', 'open', '--json', 'url,headRefName,baseRefName,headRepositoryOwner'], text=True))
-    return decide(current, data, prs, repo.split('/')[0])
+    return decide(current, data, prs, repo.split('/')[0], hold)

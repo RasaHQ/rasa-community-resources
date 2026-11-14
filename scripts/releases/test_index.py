@@ -26,7 +26,7 @@ class ReleaseTests(unittest.TestCase):
 
     def test_newest_incompatible_engine_is_reported_without_fallback(self):
         data = {'releases': {v: [release(v)] for v in ['3.20.0.dev9', '4.0.0']}}
-        report = discover(data, lambda v: {'version': v, 'mantlePresent': v != '4.0.0'})
+        report = discover(data, lambda v: {'version': v, 'mantlePresent': v != '4.0.0'}, hold=None)  # no release hold here
         self.assertEqual(report['selected']['version'], '4.0.0')
         self.assertFalse(report['selected']['mantlePresent'])
 

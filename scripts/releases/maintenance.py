@@ -148,8 +148,10 @@ def run(kind, companion, output):
             admission = check()
             write_json(output / 'admission.json', admission)
             state['admission'] = admission
+            if admission['status'] == 'held':
+                print(f"Rasa Pro {admission.get('version')} is held ({admission.get('held')}): {admission.get('reason')}", flush=True)
             if admission['status'] != 'candidate':
-                state['status'] = 'unchanged'
+                state['status'] = 'held' if admission['status'] == 'held' else 'unchanged'
                 write_json(output / 'run.json', state)
                 return 0
         step('release-tests', [sys.executable, '-m', 'unittest', 'discover', '-s', 'scripts/releases'])
