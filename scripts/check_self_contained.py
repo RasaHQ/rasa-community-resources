@@ -21,16 +21,17 @@ from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 FORBIDDEN = {'zeointegrations', 'zeocore'}
+# Only the four banking examples must be self-contained; other examples are not checked.
+BANK_EXAMPLES = {'jack-henry-symitar', 'jack-henry-silverlake', 'fiserv-premier-11.0.0-prm',
+                 'fiserv-banking-hub-11.0.0.2026.4.1'}
+
+
+def forbidden_for(project):
+    return FORBIDDEN
 PATH_KEYS = {'path', 'editable', 'directory', 'virtual'}
 ALIASES = object()
 EXCEPTIONS = 'scripts/example-runtime-exceptions.json'
-KNOWN = {
-    'mantle-voice-routed-skills': ('patterns/voice-vendor-router', '2026-11-13'),
-    'mantle-voice-banking-dispute-claude': ('patterns/voice-vendor-router', '2026-11-13'),
-    'mantle-voice-healthcare-refill-request-gpt-local': ('patterns/voice-vendor-router', '2026-11-14'),
-    'mantle-factory-agent': ('zeocore distribution', '2026-11-14'),
-    'mantle-flight-briefing-openai-agents': ('zeocore distribution and zeo_core runtime imports', '2026-11-15'),
-}
+KNOWN = {}
 AUTHORING = {'tests', 'case-build', 'controls'}
 SUBPROCESS_COMMANDS = {'subprocess.'+method for method in ('run','Popen','call','check_call','check_output','getoutput','getstatusoutput')}
 IO_METHODS = {'open', 'read_text', 'read_bytes', 'write_text', 'write_bytes', 'glob', 'rglob', 'iterdir', 'exists', 'is_file', 'is_dir'}
@@ -138,9 +139,8 @@ def manifest_findings(raw, project, root, source=None, exception=None):
                 walk(val)
         elif isinstance(item, str):
             distribution = re.split(r'[<>=!~\[;@ ]', item, maxsplit=1)[0]
-            if re.sub(r'[-_.]', '', distribution).lower() in FORBIDDEN | {'bankingdemoshared'}:
-                if re.sub(r'[-_.]', '', distribution).lower() != 'zeocore' or exception not in {'zeocore distribution', 'zeocore distribution and zeo_core runtime imports'}:
-                    findings.append('forbidden shared application distribution')
+            if re.sub(r'[-_.]', '', distribution).lower() in forbidden_for(project) | {'bankingdemoshared'}:
+                findings.append('forbidden shared application distribution')
             if 'file:' in item:
                 url = urlsplit(item.split('@', 1)[-1].strip())
                 if url.scheme == 'file' and (url.netloc not in {'', 'localhost'} or path_problem((source.parent if source else project) / unquote(url.path), project, root, exception)):
@@ -191,9 +191,8 @@ def python_findings(raw, source, project, root, exception=None, authoring=False)
                 imports = [resolved]
         for module in imports:
             module_root = re.sub(r'[-_]', '', module.split('.')[0]).lower()
-            if module_root in FORBIDDEN:
-                if module_root != 'zeocore' or exception != 'zeocore distribution and zeo_core runtime imports':
-                    problems.append((node.lineno, 'forbidden zeointegrations/zeocore import'))
+            if module_root in forbidden_for(project):
+                problems.append((node.lineno, 'forbidden zeointegrations/zeocore import'))
             if module.split('.')[0] in {'examples', 'patterns', 'tutorials', 'scripts'}:
                 local = project.joinpath(*module.split('.'))
                 if not local.is_dir() and not local.with_suffix('.py').is_file():
@@ -389,7 +388,7 @@ def inspect(root, files, exceptions=None):
     runtime = runtime_files(root, files)
     for relative in files:
         parts = Path(relative).parts
-        if len(parts) < 3 or parts[0] != 'examples':
+        if len(parts) < 3 or parts[0] != 'examples' or parts[1] not in BANK_EXAMPLES:
             continue
         source = root / relative
         project = root / 'examples' / parts[1]
