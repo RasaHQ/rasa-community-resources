@@ -124,7 +124,7 @@ def _review_call(native, text):
 def _submit_call():
     """A confirmation is answered by the host's submit path, whatever the model wrote:
     it sends only for an armed review and the exact raw phrase, and otherwise speaks
-    the cancelled or unknown sentence itself."""
+    the canceled or unknown sentence itself."""
     return {"id": "host-confirm-" + uuid4().hex, "tool_name": "banking_submit_transfer",
             "tool_args": {}, "type": "function"}
 
