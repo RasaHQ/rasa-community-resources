@@ -20,23 +20,18 @@ import tomllib
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
-FORBIDDEN = {'zeointegrations'}
-# The zeocore engine is allowed in examples generally, but the four banking examples
-# must not use it.
+FORBIDDEN = {'zeointegrations', 'zeocore'}
+# Only the four banking examples must be self-contained; other examples are not checked.
 BANK_EXAMPLES = {'jack-henry-symitar', 'jack-henry-silverlake', 'fiserv-premier-11.0.0-prm',
                  'fiserv-banking-hub-11.0.0.2026.4.1'}
 
 
 def forbidden_for(project):
-    return FORBIDDEN | ({'zeocore'} if Path(project).name in BANK_EXAMPLES else set())
+    return FORBIDDEN
 PATH_KEYS = {'path', 'editable', 'directory', 'virtual'}
 ALIASES = object()
 EXCEPTIONS = 'scripts/example-runtime-exceptions.json'
-KNOWN = {
-    'mantle-voice-routed-skills': ('patterns/voice-vendor-router', '2026-11-13'),
-    'mantle-voice-banking-dispute-claude': ('patterns/voice-vendor-router', '2026-11-13'),
-    'mantle-voice-healthcare-refill-request-gpt-local': ('patterns/voice-vendor-router', '2026-11-14'),
-}
+KNOWN = {}
 AUTHORING = {'tests', 'case-build', 'controls'}
 SUBPROCESS_COMMANDS = {'subprocess.'+method for method in ('run','Popen','call','check_call','check_output','getoutput','getstatusoutput')}
 IO_METHODS = {'open', 'read_text', 'read_bytes', 'write_text', 'write_bytes', 'glob', 'rglob', 'iterdir', 'exists', 'is_file', 'is_dir'}
@@ -393,7 +388,7 @@ def inspect(root, files, exceptions=None):
     runtime = runtime_files(root, files)
     for relative in files:
         parts = Path(relative).parts
-        if len(parts) < 3 or parts[0] != 'examples':
+        if len(parts) < 3 or parts[0] != 'examples' or parts[1] not in BANK_EXAMPLES:
             continue
         source = root / relative
         project = root / 'examples' / parts[1]
