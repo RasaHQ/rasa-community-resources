@@ -7,7 +7,8 @@ requires-python = ">=3.11,<3.13"
 dependencies = [
     "rasa-pro==3.21.0.dev5",
     # Speechmatics speech-to-text is not built into Rasa. The adapter is the
-    # companion's voice-vendor-router package, used as a plain engine class
+    # companion's voice-vendor-router package, vendored in
+    # vendor/voice-vendor-router and used as a plain engine class
     # (voicerouter.providers.speechmatics.SpeechmaticsASR), not through RoutedASR.
     "voice-vendor-router",
 ]
@@ -15,11 +16,11 @@ dependencies = [
 [tool.rasa-catalog]
 required-secrets = ["ANTHROPIC_API_KEY", "SPEECHMATICS_API_KEY", "RIME_API_KEY"]
 
-# A path source, because the router lives in this repository. Lifted out on its
-# own, replace it with a git source:
-#   voice-vendor-router = { git = "https://github.com/RasaHQ/rasa-community-resources", subdirectory = "patterns/voice-vendor-router" }
+# A path source inside this example: vendor/voice-vendor-router is a copy of
+# patterns/voice-vendor-router (its README names the commit), so this folder
+# works on its own.
 [tool.uv.sources]
-voice-vendor-router = { path = "../../patterns/voice-vendor-router", editable = true }
+voice-vendor-router = { path = "vendor/voice-vendor-router", editable = true }
 
 [tool.uv]
 prerelease = "allow"

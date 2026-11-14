@@ -74,14 +74,14 @@ channels:
       hotwords: Cedar Clinic lisinopril atorvastatin albuterol budesonide lorazepam simvastatin metformin sertraline amoxicillin
     # NeuTTS-2E, native: llama.cpp (Metal) generates speech codes and a C++
     # ONNX Runtime program decodes them. Built by
-    # patterns/voice-vendor-router/native/neutts/build.sh, models placed and
+    # vendor/voice-vendor-router/native/neutts/build.sh, models placed and
     # digest-checked by prepare_models.py. `voice` is the speaker: sophie,
     # one of NeuTTS-2E's four fixed English speakers. A fixed seed makes the
     # same sentence sound the same on every call.
     tts:
       name: voicerouter.providers.neutts_native.NeuTTSNative
-      runtime_dir: ../../patterns/voice-vendor-router/native/neutts/build
-      models_dir: ../../patterns/voice-vendor-router/native/neutts/models
+      runtime_dir: vendor/voice-vendor-router/native/neutts/build
+      models_dir: vendor/voice-vendor-router/native/neutts/models
       language_map:
         en:
           voice: sophie
@@ -112,8 +112,8 @@ channels:
       hotwords: Cedar Clinic lisinopril atorvastatin albuterol budesonide lorazepam simvastatin metformin sertraline amoxicillin
     tts:
       name: voicerouter.providers.neutts_native.NeuTTSNative
-      runtime_dir: ../../patterns/voice-vendor-router/native/neutts/build
-      models_dir: ../../patterns/voice-vendor-router/native/neutts/models
+      runtime_dir: vendor/voice-vendor-router/native/neutts/build
+      models_dir: vendor/voice-vendor-router/native/neutts/models
       language_map:
         en:
           voice: sophie

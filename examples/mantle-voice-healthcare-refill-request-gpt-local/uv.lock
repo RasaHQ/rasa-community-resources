@@ -1689,7 +1689,7 @@ dependencies = [
 requires-dist = [
     { name = "faster-whisper", specifier = "==1.2.1" },
     { name = "rasa-pro", specifier = "==3.21.0.dev5" },
-    { name = "voice-vendor-router", editable = "../../patterns/voice-vendor-router" },
+    { name = "voice-vendor-router", editable = "vendor/voice-vendor-router" },
 ]
 
 [[package]]
@@ -3743,7 +3743,7 @@ wheels = [
 [[package]]
 name = "voice-vendor-router"
 version = "0.1.0"
-source = { editable = "../../patterns/voice-vendor-router" }
+source = { editable = "vendor/voice-vendor-router" }
 dependencies = [
     { name = "aiohttp" },
     { name = "pydantic" },
@@ -3766,9 +3766,6 @@ requires-dist = [
     { name = "websockets", specifier = ">=15" },
 ]
 provides-extras = ["aws", "google", "local-asr"]
-
-[package.metadata.requires-dev]
-rasa = [{ name = "rasa-pro", specifier = "==3.21.0.dev5" }]
 
 [[package]]
 name = "wcwidth"

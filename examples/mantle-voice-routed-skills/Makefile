@@ -29,7 +29,7 @@ RASA   := $(RUN) rasa
 .DEFAULT_GOAL := help
 
 .PHONY: help check-uv env install verify validate train inspect run \
-        guard-env show-demo-data drill stack clean clean-all
+        guard-env show-demo-data drill stack router-test clean clean-all
 
 # ==============================================================================
 # 📖 Help
@@ -48,6 +48,7 @@ help: ## Show this help message
 	@echo '$(YELLOW)Diagnostics:$(RESET)'
 	@echo '  $(GREEN)make verify$(RESET)           Full pre-flight diagnostics (start here if stuck)'
 	@echo '  $(GREEN)make validate$(RESET)         Fast skill/memory/tool validation only'
+	@echo '  $(GREEN)make router-test$(RESET)      Offline tests of the vendored router'
 	@echo ''
 	@echo '$(YELLOW)Run:$(RESET)'
 	@echo '  $(GREEN)make inspect$(RESET)          Inspector UI — speak or type to Vela'
@@ -187,6 +188,9 @@ else
 	@echo "$(GREEN)✓ Now running the '$(STACK)' voice stack.$(RESET)"
 	@echo "$(YELLOW)  See what it does:$(RESET) make drill"
 endif
+
+router-test: check-uv ## Offline tests of the vendored router (no network, no credentials)
+	@$(RUN) --locked python -m unittest discover -s vendor/voice-vendor-router/tests -t vendor/voice-vendor-router -v
 
 # ==============================================================================
 # 🏦 Demo data

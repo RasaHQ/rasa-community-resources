@@ -16,7 +16,11 @@ Metal plus a C++ NeuCodec decoder) out. Neither goes through `RoutedASR` or
 - `integrations.yml`: the OpenAI model group and both voice channels. Mantle
   reads channels here; it never reads `credentials.yml`
 - `pyproject.toml`: pins rasa-pro and faster-whisper, and installs
-  `patterns/voice-vendor-router` as a path dependency
+  `vendor/voice-vendor-router` (a copy of `patterns/voice-vendor-router`) as a
+  path dependency
+- `vendor/voice-vendor-router/`: the vendored router, its offline tests
+  (`make router-test`) and the native NeuTTS build files; its README names
+  the source commit
 - `hooks.py`: output guard; a model response that describes the request as
   approved, renewed or ready, or gives dose advice, is sent back
 - `memory.yml`: project memory, written by `verify_patient` only

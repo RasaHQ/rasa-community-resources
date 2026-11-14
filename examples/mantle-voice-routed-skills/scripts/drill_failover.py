@@ -30,12 +30,13 @@ from unittest import mock
 import yaml
 
 PROJECT = Path(__file__).resolve().parent.parent
-# The router is an installed dependency (see pyproject.toml). Falling back to
-# the in-repo path keeps the drill runnable straight after a clone, before sync.
+# The router is an installed dependency (see pyproject.toml), vendored in
+# vendor/voice-vendor-router. Falling back to that folder keeps the drill
+# runnable straight after a clone, before sync.
 try:
     import voicerouter  # noqa: F401
 except ModuleNotFoundError:  # pragma: no cover - convenience path
-    sys.path.insert(0, str(PROJECT.parent.parent / "patterns" / "voice-vendor-router"))
+    sys.path.insert(0, str(PROJECT / "vendor" / "voice-vendor-router"))
 
 from voicerouter.base import BuiltProvider, ProviderSpec, RouterPolicy  # noqa: E402
 from voicerouter.health import reset_shared_registries  # noqa: E402

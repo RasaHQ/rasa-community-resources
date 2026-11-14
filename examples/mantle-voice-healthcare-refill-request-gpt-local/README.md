@@ -159,7 +159,7 @@ can pick any id. `inspector` carries the same stack for `rasa inspect`.
 
 **Speech-to-text: faster-whisper `small.en` on the CPU.** It uses the
 companion's adapter,
-[`voicerouter.providers.whisper.FasterWhisperASR`](../../patterns/voice-vendor-router/voicerouter/providers/whisper.py),
+[`voicerouter.providers.whisper.FasterWhisperASR`](vendor/voice-vendor-router/voicerouter/providers/whisper.py),
 named by dotted path and used directly, not through `RoutedASR` (which breaks
 calls on this Rasa release; see the Northgate dispute build). CTranslate2,
 faster-whisper's runtime, has no Metal or Core ML backend: on this Mac it
@@ -200,10 +200,10 @@ The `endpoint-700ms` variant restores the default.
 **Text-to-speech: NeuTTS-2E, native on Metal.** The Python `neutts` package
 cannot share rasa-pro's environment (it needs a newer numpy) and pulls in
 torch. This build does not use it. The companion's
-[`native/neutts/`](../../patterns/voice-vendor-router/native/neutts/) builds
+[`native/neutts/`](vendor/voice-vendor-router/native/neutts/) builds
 Neuphonic's llama.cpp fork with Metal and a small C++ NeuCodec decoder on
 ONNX Runtime from pinned sources, and checks the model files by digest.
-[`voicerouter.providers.neutts_native.NeuTTSNative`](../../patterns/voice-vendor-router/voicerouter/providers/neutts_native.py)
+[`voicerouter.providers.neutts_native.NeuTTSNative`](vendor/voice-vendor-router/voicerouter/providers/neutts_native.py)
 is the Rasa TTS engine that drives them. It runs in this project's venv with
 no torch and no numpy. It starts `llama-server` (loopback only) and the
 decoder once per Rasa process, keeps both loaded, and decodes speech codes in
@@ -411,6 +411,7 @@ audio cost 0.12.
 | `integrations.yml` | GPT-5.5 model group; `browser_audio` and `inspector`, faster-whisper in and NeuTTS out |
 | `hooks.py` | Output guard for approval wording |
 | `pyproject.toml` | rasa-pro and faster-whisper pins, and the `voice-vendor-router` path dependency |
+| `vendor/voice-vendor-router/` | A copy of `patterns/voice-vendor-router`: the router package and its offline tests (`make router-test`), and the native NeuTTS build files; its README names the source commit |
 | `memory.yml` | Project memory written by `verify_patient` |
 | `skills/request_refill/` | The skill, its tools, the confirmation responses and selection memory |
 | `lib/refills.py` | Records, request service, question queue and guard, no Rasa imports |

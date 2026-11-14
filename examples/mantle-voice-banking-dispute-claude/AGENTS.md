@@ -14,8 +14,11 @@ Rime Mist v3 (`ironwood`) out. Channels: `browser_audio` (raw WebSocket) and
 - `agent.yml`: identity, persona, rules and voice rules (siblings of `agent:`)
 - `integrations.yml`: the Anthropic model group and both voice channels. Mantle
   reads channels here; it never reads `credentials.yml`
-- `pyproject.toml`: pins rasa-pro and installs `patterns/voice-vendor-router`
-  as a path dependency, so the Speechmatics engine imports by dotted path
+- `pyproject.toml`: pins rasa-pro and installs `vendor/voice-vendor-router`
+  (a copy of `patterns/voice-vendor-router`) as a path dependency, so the
+  Speechmatics engine imports by dotted path
+- `vendor/voice-vendor-router/`: the vendored router and its offline tests
+  (`make router-test`); its README names the source commit
 - `memory.yml`: project memory, written by `verify_caller` only
 - `responses.yml`: the greeting
 - `skills/open_dispute/`: the skill, its tools, its confirmation responses and

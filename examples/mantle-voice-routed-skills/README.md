@@ -70,7 +70,7 @@ only variable between the three.
 ## Quick start
 
 ```bash
-make install                 # installs the router from ../../patterns/ too
+make install                 # installs the vendored router in vendor/ too
 make env                     # then put at least OPENAI_API_KEY + DEEPGRAM_API_KEY in .env
 make verify                  # prints both chains and which links your keys reach
 make train
@@ -118,7 +118,7 @@ That contrast is the design. **Vela changes voice only when she has to** — the
 vendor is out of credits, the key is rejected, or the API is unreachable. A rate
 limit or a 5xx is retried on the same provider after 250 ms first, because a
 caller notices a new person far more than a quarter-second pause. The rule lives
-in [`voicerouter/failures.py`](../../patterns/voice-vendor-router/voicerouter/failures.py);
+in [`voicerouter/failures.py`](vendor/voice-vendor-router/voicerouter/failures.py);
 `make drill SCENARIO=bad-key` and `SCENARIO=unreachable` are the other two.
 
 Health is process-scoped, so what one call learns the next one starts with — the

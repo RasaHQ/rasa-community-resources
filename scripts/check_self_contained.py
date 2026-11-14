@@ -25,9 +25,6 @@ PATH_KEYS = {'path', 'editable', 'directory', 'virtual'}
 ALIASES = object()
 EXCEPTIONS = 'scripts/example-runtime-exceptions.json'
 KNOWN = {
-    'mantle-voice-routed-skills': ('patterns/voice-vendor-router', '2026-11-13'),
-    'mantle-voice-banking-dispute-claude': ('patterns/voice-vendor-router', '2026-11-13'),
-    'mantle-voice-healthcare-refill-request-gpt-local': ('patterns/voice-vendor-router', '2026-11-14'),
     'mantle-factory-agent': ('zeocore distribution', '2026-11-14'),
     'mantle-flight-briefing-openai-agents': ('zeocore distribution and zeo_core runtime imports', '2026-11-15'),
 }

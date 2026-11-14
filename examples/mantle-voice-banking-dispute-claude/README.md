@@ -133,9 +133,9 @@ stack for `rasa inspect`.
 
 **Speech-to-text: Speechmatics.** Rasa does not ship it. The engine is the
 companion's adapter,
-[`voicerouter.providers.speechmatics.SpeechmaticsASR`](../../patterns/voice-vendor-router/voicerouter/providers/speechmatics.py),
-named by dotted path and installed as a path dependency in
-`pyproject.toml`. It is used directly, not through `voicerouter.RoutedASR`
+[`voicerouter.providers.speechmatics.SpeechmaticsASR`](vendor/voice-vendor-router/voicerouter/providers/speechmatics.py),
+named by dotted path and installed from the vendored copy in
+`vendor/voice-vendor-router` as a path dependency in `pyproject.toml`. It is used directly, not through `voicerouter.RoutedASR`
 (see "The router"). Settings: `language: en` (the adapter sends no locale,
 so the Indian English caller goes to Speechmatics' global English),
 `operating_point: enhanced`, `max_delay: 1.0`, partials on, and
@@ -432,6 +432,7 @@ variants and the two held-out vocabulary runs (2.17).
 | `agent.yml` | Persona, rules and voice rules |
 | `integrations.yml` | Claude model group; `browser_audio` and `inspector` channels, Speechmatics in and Rime out |
 | `pyproject.toml` | rasa-pro pin and the `voice-vendor-router` path dependency |
+| `vendor/voice-vendor-router/` | A copy of `patterns/voice-vendor-router`: the router package and its offline tests (`make router-test`); its README names the source commit |
 | `memory.yml` | Project memory written by `verify_caller` |
 | `skills/open_dispute/` | The skill, its tools, the confirmation responses and selection memory |
 | `lib/disputes.py` | Ledger, case service and guard, no Rasa imports |

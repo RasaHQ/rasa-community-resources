@@ -7,13 +7,13 @@ UV     := $(shell command -v uv 2>/dev/null)
 RASA   := uv run --locked rasa
 REPO   := ../..
 BUILD  := examples/mantle-voice-healthcare-refill-request-gpt-local
-NEUTTS := $(REPO)/patterns/voice-vendor-router/native/neutts
+NEUTTS := vendor/voice-vendor-router/native/neutts
 WHISPER_MODEL ?= small.en
 # Where prepare_models.py looks for NeuTTS files you already have (it checks digests).
 NEUTTS_FROM ?= $(HOME)/models/neutts
 
 .DEFAULT_GOAL := help
-.PHONY: help install env native voice-models whisper-model neutts-models proof validate train inspect run caller-audio conversations dry-run clean
+.PHONY: help install env native voice-models whisper-model neutts-models proof router-test validate train inspect run caller-audio conversations dry-run clean
 
 help: ## Show targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-14s %s\n", $$1, $$2}'
@@ -38,6 +38,9 @@ neutts-models: ## Verify and link the NeuTTS-2E files (NEUTTS_FROM=dir), or HF_T
 
 proof: ## Offline guard tests (no licence, no model, no network)
 	python3 -m unittest discover -s tests -v
+
+router-test: ## Offline tests of the vendored router in vendor/ (no licence, no network)
+	uv run --locked python -m unittest discover -s vendor/voice-vendor-router/tests -t vendor/voice-vendor-router -v
 
 validate: ## Mantle project validation
 	uv run --locked python -c "from pathlib import Path; from rasa.mantle.validation import validate_project; validate_project(Path('.')); print('validate_project: ok')"
