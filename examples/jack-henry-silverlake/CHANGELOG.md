@@ -8,6 +8,7 @@ Newest first. "Vendor files" entries record what changed in Jack Henry's jXchang
 
 ## Example changes
 
+- 15 Nov 2026: pressing Ctrl+C in the terminal that runs the example now stops it quietly. Before, the services could exit with the interrupt first and the launcher printed "Not ready. An owned service failed" after you had asked it to stop.
 - 13 Nov 2026: a different Jack Henry archive starts the example when everything it uses still fits, and it says so; otherwise it stops and names the operation. Added this changelog and the version table.
 - 13 Nov 2026 (#225): every "yes" or "confirm" is answered by the host: it sends only an armed review after the exact words "confirm transfer"; otherwise it says the review was cancelled, or that an earlier outcome is unknown and must not be retried, including after a restart or when the status cannot be read. A transfer review the model types itself becomes the real review call. A question about another person's account no longer stalls.
 - 12 Nov 2026 (#220): the assistant knows the account names from the start and does not repeat itself. Only the host speaks a transfer review or "accepted". "Verify me" is answered only when the host refreshes verification from that turn, including as the very first message. After a review is cancelled or interrupted, nothing accepts it.

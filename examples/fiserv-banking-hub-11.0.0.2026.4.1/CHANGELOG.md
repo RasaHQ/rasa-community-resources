@@ -8,4 +8,5 @@ Newest first. "Vendor files" entries record what changed in Fiserv's Banking Hub
 
 ## Example changes
 
+- 15 Nov 2026: pressing Ctrl+C in the terminal that runs the example now stops it quietly. Before, the services could exit with the interrupt first and the launcher printed "Not ready. An owned service failed" after you had asked it to stop.
 - 13 Nov 2026 (#217): first version of this example: reads from four of the release's definitions, the available balance and next loan payment labels from Fiserv's official Premier sample collection, one immediate own-account transfer reviewed and confirmed by the host, and history reported as unavailable because of an error in the release's transaction definition.
