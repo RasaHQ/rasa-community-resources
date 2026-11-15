@@ -27,6 +27,15 @@ class DriftTests(unittest.TestCase):
             patch.start()
             self.addCleanup(patch.stop)
 
+    def test_the_daily_check_names_an_example_it_cannot_download_instead_of_failing(self):
+        scope = ["jack-henry-symitar", "jack-henry-silverlake", "fiserv-premier-11.0.0-prm",
+                 "fiserv-banking-hub-11.0.0.2026.4.1"]
+        checked, skipped = drift.select(scope)
+        self.assertEqual(checked, scope[:3])
+        self.assertEqual(skipped, ["fiserv-banking-hub-11.0.0.2026.4.1"])
+        self.assertEqual(drift.select([]), ([], []))
+        self.assertNotIn("fiserv-banking-hub-11.0.0.2026.4.1", drift.EXAMPLES)
+
     def test_a_download_records_hashes_and_writes_only_into_vendor_inputs(self):
         result = drift.download("jack-henry-silverlake", opener=lambda request, timeout: Reply(b"zip bytes"))
         self.assertEqual(result["status"], "downloaded")

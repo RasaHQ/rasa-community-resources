@@ -24,8 +24,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - id: projects
-        name: Select the bank examples present on this revision
-        run: python3 scripts/banking_contract_scope.py
+        name: Select the bank examples this check can download for
+        run: python3 scripts/vendor_drift.py select
   drift:
     needs: selected
     if: ${{ needs.selected.outputs.projects != '[]' }}
