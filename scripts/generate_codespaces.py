@@ -181,18 +181,19 @@ def recipe(makefile_text: str, target: str) -> str:
     return match.group(1) if match else ""
 
 
-def ports(path: Path) -> tuple[int, list[int]]:
+def ports(path: Path) -> tuple[int | None, list[int]]:
     """(primary port, every port to forward): explicit --port/-p values in the run or inspect recipe, else 5005,
-    plus any other port the Makefile documents for a helper service."""
+    plus any other port the Makefile documents for a helper service.
+    An explicit empty list declares a terminal-only resource with no server."""
     pyproject = path / "pyproject.toml"
     if pyproject.is_file():
         catalog = tomllib.loads(pyproject.read_text()).get("tool", {}).get("rasa-catalog", {})
         declared = catalog.get("forward-ports")
         if declared is not None:
-            if (not isinstance(declared, list) or not declared
+            if (not isinstance(declared, list)
                     or any(type(port) is not int or not 1 <= port <= 65535 for port in declared)):
-                raise ValueError("forward-ports must be a nonempty list of TCP port numbers")
-            return declared[0], sorted(set(declared))
+                raise ValueError("forward-ports must be a list of TCP port numbers")
+            return (declared[0] if declared else None), sorted(set(declared))
     makefile = path / "Makefile"
     text = makefile.read_text(encoding="utf-8") if makefile.is_file() else ""
     explicit = [int(n) for target in ("inspect", "run") for n in re.findall(r"(?:--port|\s-p)\s+(\d{4,5})\b", recipe(text, target))]
@@ -253,7 +254,8 @@ def manifest(project) -> dict:
         )
     elif first_target == "run":
         first = train + "make run"
-        see = f"{'training finishes, then ' if train else ''}the server starts on port {primary}."
+        see = (f"{'training finishes, then ' if train else ''}the server starts on port {primary}."
+               if primary is not None else "the command starts in this terminal.")
     else:
         first, see = None, None
     first_needs_none = project.rel in FIRST_NEEDS_NONE
@@ -328,9 +330,9 @@ def manifest(project) -> dict:
         entry.update(
             install='cd "$(git rev-parse --show-toplevel)/examples/shop-assistant" && make setup',
             ready='test -x .venv/bin/python && test -x server/.venv/bin/python && test -x consent/.venv/bin/python',
-            first="make consent",
-            see="the Google consent link. Save its token as GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.",
-            before_first="Create a blank demo Sheet, set the named Codespace secrets and start the private laptop callback forward described below.",
+            first="make google-signin",
+            see="the Google sign-in link. Paste the final browser address back into this terminal, save GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.",
+            before_first="Create a blank demo Sheet and add the initial Codespace secrets. Google sign-in produces GOOGLE_TOKEN_JSON. All commands run in this Codespace terminal.",
             secrets={license_secret: True, "OPENAI_API_KEY": True, "TELEGRAM_BOT_TOKEN": True,
                      "GOOGLE_CLIENT_SECRETS_JSON": True, "GOOGLE_TOKEN_JSON": True,
                      "SHOP_SHEET_ID": True, "SHOP_OPERATOR_CHAT_ID": True},

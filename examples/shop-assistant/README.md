@@ -4,9 +4,9 @@
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-shop-assistant/devcontainer.json)
 
 - **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_PRO_LICENSE`, `OPENAI_API_KEY`, `TELEGRAM_BOT_TOKEN`, `GOOGLE_CLIENT_SECRETS_JSON`, `GOOGLE_TOKEN_JSON`, `SHOP_SHEET_ID`, `SHOP_OPERATOR_CHAT_ID`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
-- **Before the first command:** Create a blank demo Sheet, set the named Codespace secrets and start the private laptop callback forward described below.
-- **First command:** `make consent`. The terminal opens in this folder, and the creation log ends with `READY`.
-- **You should see:** the Google consent link. Save its token as GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.
+- **Before the first command:** Create a blank demo Sheet and add the initial Codespace secrets. Google sign-in produces GOOGLE_TOKEN_JSON. All commands run in this Codespace terminal.
+- **First command:** `make google-signin`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** the Google sign-in link. Paste the final browser address back into this terminal, save GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.
 <!-- codespaces:end -->
 
 Author: Rasa Community contributors  
@@ -53,15 +53,18 @@ this repository. Stop and start the Codespace after adding secrets.
 | `GOOGLE_CLIENT_SECRETS_JSON` | The complete Google Desktop OAuth client JSON, for consent only |
 | `GOOGLE_TOKEN_JSON` | The authorized-user JSON returned by consent; required before setup and run |
 
+Send `/start` to your own bot so it may message you later. It will not answer
+until the demo is running. To find your private chat ID, search Telegram for
+`userinfobot`, send that bot `/start`, and copy the number after `Id:` into
+`SHOP_OPERATOR_CHAT_ID`.
+
 Enable the Google Sheets API for the OAuth client project. If its consent
 screen is in Testing, add your Google account as a test user. Use the Sheets
 permission; the example needs no Drive-wide permission.
 
-The consent helper reads client JSON from the environment and keeps the token
+The sign-in command reads client JSON from the environment and keeps the token
 in memory. It prints the authorized token for you to save as a Codespace
-secret. It does not write client or token files. Its callback listens on
-loopback port 8766 for five minutes. When the browser is on your laptop,
-forward that port privately before opening the consent link.
+secret. It does not write client or token files.
 
 ## Sign in, set up the Sheet and start
 
@@ -70,25 +73,30 @@ three separate environments from their locks: native Rasa, the Core MCP server
 and Google consent. It refuses to replace an existing environment. A Codespace
 created from this example's launch button performs that setup during creation.
 
-Then run these commands from this example's directory in this order:
+Run every command below in this example's Codespace terminal. First sign in:
 
 ```sh
-make consent
+make google-signin
+```
+
+Open the printed Google link in your browser and allow Sheets access.
+Google redirects to `http://127.0.0.1:8766/`. Your browser should say it cannot
+connect; that is expected. Copy the whole address from its address bar and
+paste it at the `Address:` prompt in the Codespace terminal. Keep that address
+private: it contains a one-time authorization code.
+
+The command checks the redirect and sign-in state, then exchanges the code
+using PKCE. It requires a refresh token and prints one token JSON line. Save
+that line as `GOOGLE_TOKEN_JSON` in your personal Codespace secrets, grant it
+access to this repository, and clear the terminal. Restart or rebuild the
+Codespace so its processes receive the new secret.
+
+Then return to this example's Codespace terminal:
+
+```sh
 make setup-sheet
 make run
 ```
-
-For browser Codespaces, first keep a private laptop port forward running:
-
-```sh
-gh codespace ports forward 8766:8766
-```
-
-Choose the running demo Codespace when prompted. Then run `make consent` in
-its terminal and open the printed Google link in your laptop browser. Save
-the resulting token as `GOOGLE_TOKEN_JSON` and stop/start the Codespace before
-running setup. Close the laptop forward after consent. Keep that terminal
-private; it displays the token.
 
 `make setup-sheet` uses the same Google token and `SHOP_SHEET_ID`. It creates
 `Products` and `Orders` only when they are missing. In an empty Products tab,
@@ -147,7 +155,7 @@ updates or 15 minutes, whichever comes first.
 
 ## Development checks
 
-`make test` checks the shop, durable conversation and Google consent helper
+`make test` checks the shop, durable conversation and Google sign-in helper
 with synthetic provider responses. `make test-native` uses the actual locked
 Rasa runtime and two MCP environments. It checks packaging, processor startup
 and the protocol between the native client and Core server. The startup

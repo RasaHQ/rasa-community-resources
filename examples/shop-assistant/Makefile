@@ -2,7 +2,7 @@ PYTHON ?= .venv/bin/python
 CONSENT_PYTHON ?= consent/.venv/bin/python
 SERVER_PYTHON ?= server/.venv/bin/python
 
-.PHONY: setup run consent setup-sheet test test-native
+.PHONY: setup run google-signin consent setup-sheet test test-native
 setup:
 	python3 ../../scripts/workspace.py start . --owner shop-native
 	python3 ../../scripts/workspace.py start server --owner shop-server
@@ -11,8 +11,10 @@ setup:
 run:
 	$(PYTHON) -B -m shop_demo.launcher
 
-consent:
-	$(CONSENT_PYTHON) -B -m shop_demo.google_consent
+google-signin:
+	$(CONSENT_PYTHON) -B -m shop_demo.google_signin
+
+consent: google-signin
 
 setup-sheet:
 	$(SERVER_PYTHON) -B -m shop_demo.setup_sheet

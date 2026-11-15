@@ -22,10 +22,11 @@ class GeneratedFilesTests(unittest.TestCase):
         configuration = json.loads(g.config(entry))
         self.assertIn("make setup", configuration["onCreateCommand"])
         self.assertNotIn("make-env", configuration["onCreateCommand"])
-        self.assertEqual(configuration["forwardPorts"], [8766])
+        self.assertEqual(configuration.get("forwardPorts", []), [])
         self.assertIn("server/.venv/bin/python", entry["ready"])
         self.assertIn("consent/.venv/bin/python", entry["ready"])
-        self.assertEqual(entry["first"], "make consent")
+        self.assertEqual(entry["first"], "make google-signin")
+        self.assertNotIn("forward", entry["before_first"])
         self.assertTrue(entry["secrets"]["GOOGLE_TOKEN_JSON"])
 
     def test_nothing_is_missing_or_stale(self):
@@ -276,7 +277,10 @@ class PortTests(unittest.TestCase):
         for project in discover_projects("catalog"):
             primary, forward = g.ports(project.path)
             self.assertEqual(self.forwarded(project.rel), forward, project.rel)
-            self.assertIn(primary, forward, project.rel)
+            if primary is None:
+                self.assertEqual(forward, [], project.rel)
+            else:
+                self.assertIn(primary, forward, project.rel)
             readme = (project.path / "README.md").read_text(encoding="utf-8")
             if "starts on port" in readme:
                 self.assertIn(f"port {primary}.", readme.split(g.END)[0], project.rel)
