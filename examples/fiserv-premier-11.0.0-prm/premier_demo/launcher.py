@@ -178,7 +178,8 @@ def main(project):
                 if server.poll() is not None:
                     raise RuntimeError("backend_exited")
                 time.sleep(.2)
-            return inspector.returncode
+            # A Ctrl+C reaches Rasa too; its own exit code is then not a failure.
+            return 0 if stopped_by_the_caller() else inspector.returncode
     except KeyboardInterrupt:
         return 0
     except Exception:
