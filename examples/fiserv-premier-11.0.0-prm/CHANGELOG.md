@@ -8,6 +8,7 @@ Newest first. "Vendor files" entries record what changed in Fiserv's Premier def
 
 ## Example changes
 
+- 15 Nov 2026: when a confirmed transfer is refused, the host now says "This transfer was refused, and nothing was sent." The wording names no cause because a refusal can come from the bank or from a check before anything is sent. Before, the model could describe it as a canceled review. The skill tells the model not to.
 - 13 Nov 2026: a different Fiserv download starts the example when nothing it uses has changed, and it says so; otherwise it stops and names the change. Added this changelog and the version table.
 - 13 Nov 2026 (#225): every "yes" or "confirm" is answered by the host: it sends only an armed review after the exact words "confirm transfer"; otherwise it says the review was cancelled, or that an earlier outcome is unknown and must not be retried, including after a restart or when the status cannot be read. A transfer review the model types itself becomes the real review call.
 - 12 Nov 2026 (#224): the assistant knows the account names from the start and does not repeat itself. Only the host speaks a transfer review or "accepted". "Verify me" is answered only when the host refreshes verification from that turn, including as the very first message. After a review is cancelled or interrupted, nothing accepts it.

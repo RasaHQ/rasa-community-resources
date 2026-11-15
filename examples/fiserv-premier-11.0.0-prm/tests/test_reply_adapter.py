@@ -44,6 +44,21 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.host.sends,1)
         self.assertIn("Accepted does not mean posted",self.messages[-1])
 
+    async def test_a_refused_transfer_is_spoken_by_the_host_and_is_not_a_canceled_review(self):
+        await self.review()
+        self.turn("confirm transfer")
+        self.host.state="refused"
+        result=await adapter.banking_submit_transfer(context=self.context)
+        self.assertEqual(result.llm_response["state"],"refused")
+        self.assertEqual(self.messages[-1],adapter.REFUSED_TRANSFER_TEXT)
+        self.assertNotIn("cancel",self.messages[-1].casefold())
+        self.assertNotIn("accepted",self.messages[-1].casefold())
+
+    def test_the_skill_tells_the_model_not_to_call_a_refused_transfer_a_canceled_review(self):
+        from pathlib import Path
+        skill=(Path(__file__).resolve().parents[1]/"skills"/"banking"/"skill.md").read_text()
+        self.assertIn("When a confirmed transfer is refused, the host says so itself; never call that a canceled review.",skill)
+
     async def test_intervening_read_cancels_review_and_confirmation_requires_new_request(self):
         await self.review();self.turn("balance")
         await adapter.banking_balance("checking-A",context=self.context)
