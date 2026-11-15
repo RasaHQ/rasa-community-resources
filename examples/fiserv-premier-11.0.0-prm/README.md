@@ -509,7 +509,7 @@ make test
 
 Runs source and mock tests. Tests that require the Fiserv file skip if it is missing.
 
-To regenerate the models after a vendor update (needs the pinned ZIP in `vendor-inputs/`), run `make models`; `make models-check` fails if the committed models differ from a fresh generation. The generator, datamodel-code-generator, is installed only for these two commands.
+To regenerate the models after a vendor update (needs the pinned ZIP in `vendor-inputs/`), run `make models`; `make models-check` fails if the committed models differ from a fresh generation. The generator, datamodel-code-generator, is installed for these two commands and for `make test`, so the test that regenerates the models from the pinned ZIP runs instead of being skipped.
 
 ```bash
 make contract-test
