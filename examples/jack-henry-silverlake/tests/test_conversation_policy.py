@@ -57,7 +57,7 @@ class NoRepeatedText(unittest.TestCase):
 
     def test_the_skill_sends_a_later_transfer_request_to_the_review_tool(self):
         skill = (HOOKS.parent / "skills" / "banking" / "skill.md").read_text()
-        self.assertIn("That sentence is only for the turn right after a review.", skill)
+        self.assertIn("The canceled-review reply is only for the turn right after a review.", skill)
         self.assertIn("always call @tool.banking_review_transfer", skill)
         self.assertIn("including when it refuses because the verification expired", skill)
 
