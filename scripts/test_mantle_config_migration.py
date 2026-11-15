@@ -3,6 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from migrate_mantle_config import migrate
+from migrate_rasa_pro import requires_agent_model_group
 
 
 class ConfigMigrationTests(unittest.TestCase):
@@ -62,6 +63,14 @@ class ConfigMigrationTests(unittest.TestCase):
             path.write_text(path.read_text() + 'orchestrator:\n' + guard)
             migrate(root)
             self.assertIn('orchestrator:\n  model_group: local_model\n' + guard, path.read_text())
+
+
+class WhichReleasesNeedTheMoveTests(unittest.TestCase):
+    def test_the_3_21_stable_line_and_3_22_are_migrated_but_3_21_development_builds_are_not(self):
+        for version in ('3.21.4', '3.21.0', '3.22.0.dev3', '3.22.1', '3.23.0'):
+            self.assertTrue(requires_agent_model_group(version), version)
+        for version in ('3.21.0.dev5', '3.20.9', '3.9.0'):
+            self.assertFalse(requires_agent_model_group(version), version)
 
 
 if __name__ == '__main__':
