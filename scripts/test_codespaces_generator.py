@@ -23,6 +23,7 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertIn("make setup", configuration["onCreateCommand"])
         self.assertNotIn("make-env", configuration["onCreateCommand"])
         self.assertEqual(configuration.get("forwardPorts", []), [])
+        self.assertNotIn("features", configuration)
         self.assertIn("server/.venv/bin/python", entry["ready"])
         self.assertIn("consent/.venv/bin/python", entry["ready"])
         self.assertEqual(entry["first"], "make google-signin")
@@ -177,7 +178,7 @@ class GeneratedFilesTests(unittest.TestCase):
         selected.update(m["path"] for m in g.MANUAL)
         for path in selected:
             body = json.loads((REPO_ROOT / ".devcontainer" / g.slug(path) / "devcontainer.json").read_text())
-            self.assertFalse(any("/python:" in name for name in body["features"]), path)
+            self.assertFalse(any("/python:" in name for name in body.get("features", {})), path)
             self.assertEqual(body["build"]["dockerfile"], "../resource-base/Dockerfile")
         dockerfile = (REPO_ROOT / ".devcontainer/resource-base/Dockerfile").read_text()
         self.assertRegex(dockerfile, r"FROM mcr\.microsoft\.com/devcontainers/python:1-3\.12-bookworm@sha256:[0-9a-f]{64}")
@@ -186,7 +187,10 @@ class GeneratedFilesTests(unittest.TestCase):
     def test_sshd_feature_is_pinned_to_an_exact_version(self):
         for project in discover_projects("catalog"):
             body = json.loads((REPO_ROOT / ".devcontainer" / g.slug(project.rel) / "devcontainer.json").read_text())
-            sshd = [name for name in body["features"] if "/sshd:" in name]
+            sshd = [name for name in body.get("features", {}) if "/sshd:" in name]
+            if project.rel == "examples/shop-assistant":
+                self.assertEqual(sshd, [])
+                continue
             self.assertEqual(sshd, [g.SSHD_FEATURE], project.rel)
             self.assertRegex(sshd[0], r":\d+\.\d+\.\d+$")
             self.assertEqual(body["features"][sshd[0]], {})

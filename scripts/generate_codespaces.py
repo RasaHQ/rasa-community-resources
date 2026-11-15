@@ -372,6 +372,9 @@ def config(entry: dict) -> str:
         "onCreateCommand": install,
         "postCreateCommand": ready,
     }
+    if entry["path"] == "examples/shop-assistant":
+        # Paste-back sign-in and the terminal assistant need no SSH server.
+        body.pop("features")
     remote_env = dict(entry.get("remote_env", {}))
     if entry["alias_license"]:
         # Holds for non-interactive shells, tasks and launch configurations, unlike a line in ~/.bashrc.

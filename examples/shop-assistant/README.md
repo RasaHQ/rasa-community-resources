@@ -54,9 +54,11 @@ this repository. Stop and start the Codespace after adding secrets.
 | `GOOGLE_TOKEN_JSON` | The authorized-user JSON returned by consent; required before setup and run |
 
 Send `/start` to your own bot so it may message you later. It will not answer
-until the demo is running. To find your private chat ID, search Telegram for
-`userinfobot`, send that bot `/start`, and copy the number after `Id:` into
-`SHOP_OPERATOR_CHAT_ID`.
+until the demo is running. To find your private chat ID without another bot,
+open [Telegram Web A](https://web.telegram.org/a/), select Saved Messages,
+and copy the number after `#` in the address into `SHOP_OPERATOR_CHAT_ID`.
+Alternatively, `@userinfobot` is a third-party bot: send it `/start` and copy
+the number after `Id:`.
 
 Enable the Google Sheets API for the OAuth client project. If its consent
 screen is in Testing, add your Google account as a test user. Use the Sheets
