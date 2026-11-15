@@ -15,6 +15,19 @@ from rasa_projects import REPO_ROOT, discover_projects  # noqa: E402
 
 
 class GeneratedFilesTests(unittest.TestCase):
+    def test_shop_setup_uses_separate_locks_without_writing_credential_files(self):
+        project = next(project for project in discover_projects("catalog")
+                       if project.rel == "examples/shop-assistant")
+        entry = g.manifest(project)
+        configuration = json.loads(g.config(entry))
+        self.assertIn("make setup", configuration["onCreateCommand"])
+        self.assertNotIn("make-env", configuration["onCreateCommand"])
+        self.assertEqual(configuration["forwardPorts"], [8766])
+        self.assertIn("server/.venv/bin/python", entry["ready"])
+        self.assertIn("consent/.venv/bin/python", entry["ready"])
+        self.assertEqual(entry["first"], "make consent")
+        self.assertFalse(entry["secrets"]["GOOGLE_TOKEN_JSON"])
+
     def test_nothing_is_missing_or_stale(self):
         stale = [path for path, content in g.plan()
                  if not path.is_file() or path.read_text(encoding="utf-8") != content]

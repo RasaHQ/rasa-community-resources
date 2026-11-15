@@ -1,0 +1,15 @@
+[project]
+name = "shop-native-assistant"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = ["rasa-pro==3.21.0.dev5", "mcp==1.28.1", "pydantic==2.13.5"]
+
+[tool.uv]
+prerelease = "allow"
+package = false
+
+[tool.rasa-catalog]
+license-secret = "RASA_PRO_LICENSE"
+secret-setup = "personal"
+forward-ports = [8766]
+required-secrets = ["OPENAI_API_KEY", "TELEGRAM_BOT_TOKEN", "GOOGLE_TOKEN_JSON", "SHOP_SHEET_ID", "SHOP_OPERATOR_CHAT_ID"]

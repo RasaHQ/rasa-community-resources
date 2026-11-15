@@ -88,6 +88,8 @@ Looking for a case build? The case-build rows below are in the order the builds 
 | Willow Shop subscriptions and memberships on GPT (text, web chat; Telegram target) | Willow Shop member assistant | Retail loyalty / casebook case build | [`mantle-text-retail-loyalty-gpt`](mantle-text-retail-loyalty-gpt) | 2026-09-30 |
 | Horizon Travel journey changes on GPT with Deepgram and Rime (browser voice; a flight changes only with its linked services) | Horizon Travel trip help | Travel / casebook case build | [`mantle-voice-travel-booking-gpt`](mantle-voice-travel-booking-gpt) | 2026-09-30 |
 
+| Telegram shop assistant | Shop order assistant | Retail / work in progress | [`shop-assistant`](shop-assistant) | 2026-11-15 |
+
 When you add an example, append a row here in the same PR.
 
 ---

@@ -45,6 +45,11 @@ KNOWN_SECRETS = {
     "DEEPGRAM_API_KEY": "Deepgram key for speech recognition and spoken replies",
     "RIME_API_KEY": "Rime key for spoken replies",
     "SPEECHMATICS_API_KEY": "Speechmatics key for speech recognition",
+    "TELEGRAM_BOT_TOKEN": "BotFather token for the private Telegram shop bot",
+    "GOOGLE_CLIENT_SECRETS_JSON": "Complete Google Desktop OAuth client JSON for one-time Sheets consent",
+    "GOOGLE_TOKEN_JSON": "Authorized-user JSON produced by the Sheets consent command",
+    "SHOP_SHEET_ID": "Identifier of the dedicated blank demo spreadsheet",
+    "SHOP_OPERATOR_CHAT_ID": "Positive private Telegram chat ID used by the demo operator",
 }
 # Exact feature version, so a published change to the feature cannot alter a configuration unseen.
 SSHD_FEATURE = "ghcr.io/devcontainers/features/sshd:1.1.0"
@@ -179,6 +184,15 @@ def recipe(makefile_text: str, target: str) -> str:
 def ports(path: Path) -> tuple[int, list[int]]:
     """(primary port, every port to forward): explicit --port/-p values in the run or inspect recipe, else 5005,
     plus any other port the Makefile documents for a helper service."""
+    pyproject = path / "pyproject.toml"
+    if pyproject.is_file():
+        catalog = tomllib.loads(pyproject.read_text()).get("tool", {}).get("rasa-catalog", {})
+        declared = catalog.get("forward-ports")
+        if declared is not None:
+            if (not isinstance(declared, list) or not declared
+                    or any(type(port) is not int or not 1 <= port <= 65535 for port in declared)):
+                raise ValueError("forward-ports must be a nonempty list of TCP port numbers")
+            return declared[0], sorted(set(declared))
     makefile = path / "Makefile"
     text = makefile.read_text(encoding="utf-8") if makefile.is_file() else ""
     explicit = [int(n) for target in ("inspect", "run") for n in re.findall(r"(?:--port|\s-p)\s+(\d{4,5})\b", recipe(text, target))]
@@ -289,7 +303,7 @@ def manifest(project) -> dict:
         ready += ' && uv run --locked --no-sync python -m unittest discover -s tests -v'
     if project.rel == 'heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval':
         ready += ' && uv run --locked --no-sync pytest && uv run --locked --no-sync ruff check src tests scripts'
-    return {
+    entry = {
         "snapshot": snapshot,
         "provider_note": provider_note,
         "before_first": before_first,
@@ -308,6 +322,20 @@ def manifest(project) -> dict:
         "ports": forward,
         "inspect_helper": first_target == "inspect" and project.rel not in FIRST,
     }
+    if project.rel == "examples/shop-assistant":
+        # This resource owns separate locked native, MCP-server and consent
+        # environments. It uses injected credentials only, with no dotenv step.
+        entry.update(
+            install='cd "$(git rev-parse --show-toplevel)/examples/shop-assistant" && make setup',
+            ready='test -x .venv/bin/python && test -x server/.venv/bin/python && test -x consent/.venv/bin/python',
+            first="make consent",
+            see="the Google consent link. Save its token as GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.",
+            before_first="Create a blank demo Sheet, set the named Codespace secrets and start the private laptop callback forward described below.",
+            secrets={license_secret: True, "OPENAI_API_KEY": True, "TELEGRAM_BOT_TOKEN": True,
+                     "GOOGLE_CLIENT_SECRETS_JSON": True, "GOOGLE_TOKEN_JSON": False,
+                     "SHOP_SHEET_ID": True, "SHOP_OPERATOR_CHAT_ID": True},
+        )
+    return entry
 
 
 def manual_manifest(item: dict) -> dict:

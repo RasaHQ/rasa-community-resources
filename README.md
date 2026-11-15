@@ -30,7 +30,7 @@ Each Codespace also runs an SSH server (a way to log in to it remotely) so that 
 
 ## Find a resource by industry
 
-There are 82 resources: 4 bank integrations, 19 voice agents, 22 text agents, 1 example, 19 tutorials, 6 patterns, 1 community, 1 workshop, 9 Heroes wave projects. 1 more is still a work in progress, listed at the end. Each **Open** link starts that resource's own Codespace; it is the same link as the button in its README. **General** resources teach a technique that works in any industry.
+There are 82 resources: 4 bank integrations, 19 voice agents, 22 text agents, 1 example, 19 tutorials, 6 patterns, 1 community, 1 workshop, 9 Heroes wave projects. 2 more are still a work in progress, listed at the end. Each **Open** link starts that resource's own Codespace; it is the same link as the button in its README. **General** resources teach a technique that works in any industry.
 
 ### Banking
 
@@ -185,6 +185,7 @@ These resources are not finished yet. Their READMEs say what still needs checkin
 | Resource | Kind | What you learn | Open |
 | --- | --- | --- | --- |
 | [Pre-flight briefing agent with OpenAI Agents](examples/mantle-flight-briefing-openai-agents/) | Example | How a Mantle agent shows a pre-flight briefing built from public sources beside the conversation. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-mantle-flight-briefing-openai-agents/devcontainer.json) |
+| [Telegram shop assistant](examples/shop-assistant/) | Example | How to review a Telegram basket, record it in Sheets and send a shipping message. | [Open](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-shop-assistant/devcontainer.json) |
 
 <!-- catalog:end -->
 
