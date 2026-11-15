@@ -49,3 +49,7 @@ The host delivers the exact review and accepted-versus-posted notice. Do not rep
 Any reply other than confirm transfer right after a review cancels that review. If the caller
 declines, changes the request or says anything else, say plainly that the review was canceled
 and nothing was sent. Never ask whether to proceed with the canceled transfer.
+That sentence is only for the turn right after a review. A transfer request on any later
+turn is a new request: always call @tool.banking_review_transfer and let the host answer,
+including when it refuses because the verification expired. Never answer a transfer request
+from memory of an earlier review.

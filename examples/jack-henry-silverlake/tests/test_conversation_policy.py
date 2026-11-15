@@ -55,6 +55,12 @@ class NoRepeatedText(unittest.TestCase):
         self.assertEqual(self.say("Your balance is USD 1,250.00. What would you like to do next?"),
                          "Your balance is USD 1,250.00.")
 
+    def test_the_skill_sends_a_later_transfer_request_to_the_review_tool(self):
+        skill = (HOOKS.parent / "skills" / "banking" / "skill.md").read_text()
+        self.assertIn("That sentence is only for the turn right after a review.", skill)
+        self.assertIn("always call @tool.banking_review_transfer", skill)
+        self.assertIn("including when it refuses because the verification expired", skill)
+
     def test_no_greeting_is_spoken_alongside_skill_activation(self):
         reply = policy.drop_repeated_text(ModelResponsePayload(sender_id="caller",
             text="How can I assist you with your banking accounts today?",
