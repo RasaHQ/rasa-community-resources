@@ -226,7 +226,29 @@ Then add a new row to `{folder}/VENDOR-FILES.md` (keep the old rows) and open on
     return title, body
 
 
+def select(selected_examples=None, scope_root=ROOT):
+    """The bank examples the daily check can run for, and those it cannot.
+
+    An example is checked only when this file knows an official download link for it. The
+    Fiserv Banking Hub v11 file has no direct link (it is a browser download), so the daily
+    check names it as not checked instead of failing on an unknown example every day."""
+    if selected_examples is None:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from banking_contract_scope import selected
+        selected_examples = selected(scope_root)
+    checked = [name for name in selected_examples if name in EXAMPLES]
+    return checked, [name for name in selected_examples if name not in EXAMPLES]
+
+
 def main(argv):
+    if argv[1] == "select":
+        checked, skipped = select()
+        print("Checked daily: " + (", ".join(checked) or "none"))
+        for name in skipped:
+            print("Not checked daily (no direct official download link): " + name)
+        with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+            output.write("projects=" + json.dumps(checked) + "\n")
+        return
     command, example = argv[1], argv[2]
     if example not in EXAMPLES:
         raise SystemExit("unknown example: " + example)
