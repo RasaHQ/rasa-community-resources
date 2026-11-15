@@ -89,9 +89,12 @@ class Conversation:
     def quarantine(self, raw):
         number = raw["update_id"]
         self.db.execute("INSERT OR IGNORE INTO quarantine VALUES(?,?)", (number, "UNSUPPORTED_PROVIDER_UPDATE"))
-        self.db.execute("UPDATE inbox SET phase='quarantined' WHERE update_id=? AND phase='saved'", (number,))
+        changed = self.db.execute("UPDATE inbox SET phase='quarantined' WHERE update_id=? AND phase='saved'", (number,))
+        if changed.rowcount:
+            print("A Telegram update needs private inspection. Check the local journal.", flush=True)
         message = raw.get("message") or raw.get("edited_message")
-        if isinstance(message, dict) and message.get("chat", {}).get("id") == self.chat_id:
+        chat = message.get("chat") if isinstance(message, dict) else None
+        if isinstance(chat, dict) and chat.get("id") == self.chat_id:
             self.db.execute("DELETE FROM review WHERE singleton=1")
 
     def assert_restart_safe(self):

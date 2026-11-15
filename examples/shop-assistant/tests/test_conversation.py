@@ -1,6 +1,8 @@
 """Confirmation and delivery boundaries with real state and fake providers."""
 from datetime import datetime, timedelta, timezone
 import asyncio
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 from types import SimpleNamespace
 import tempfile
@@ -138,7 +140,11 @@ class ConversationTests(unittest.IsolatedAsyncioTestCase):
         await self.review()
         raw = self.raw(11, 102, None)
         self.chat.retain([raw])
-        self.chat.quarantine(raw)
+        output = StringIO()
+        with redirect_stdout(output):
+            self.chat.quarantine(raw)
+            self.chat.quarantine(raw)
+        self.assertEqual(output.getvalue(), "A Telegram update needs private inspection. Check the local journal.\n")
         self.assertEqual(self.chat.saved(), [])
         self.assertEqual(self.chat.db.execute("SELECT COUNT(*) FROM quarantine").fetchone()[0], 1)
         await self.receive(self.raw(12, 104, "confirm"))
