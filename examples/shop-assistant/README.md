@@ -3,7 +3,7 @@
 <!-- codespaces:start -->
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-shop-assistant/devcontainer.json)
 
-- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_PRO_LICENSE`, `OPENAI_API_KEY`, `TELEGRAM_BOT_TOKEN`, `GOOGLE_CLIENT_SECRETS_JSON`, `SHOP_SHEET_ID`, `SHOP_OPERATOR_CHAT_ID`; optional `GOOGLE_TOKEN_JSON` (the resource runs without them), saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
+- **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_PRO_LICENSE`, `OPENAI_API_KEY`, `TELEGRAM_BOT_TOKEN`, `GOOGLE_CLIENT_SECRETS_JSON`, `GOOGLE_TOKEN_JSON`, `SHOP_SHEET_ID`, `SHOP_OPERATOR_CHAT_ID`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
 - **Before the first command:** Create a blank demo Sheet, set the named Codespace secrets and start the private laptop callback forward described below.
 - **First command:** `make consent`. The terminal opens in this folder, and the creation log ends with `READY`.
 - **You should see:** the Google consent link. Save its token as GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.
@@ -51,7 +51,7 @@ this repository. Stop and start the Codespace after adding secrets.
 | `SHOP_OPERATOR_CHAT_ID` | Your positive private Telegram chat ID |
 | `SHOP_SHEET_ID` | The identifier from the dedicated Sheet URL |
 | `GOOGLE_CLIENT_SECRETS_JSON` | The complete Google Desktop OAuth client JSON, for consent only |
-| `GOOGLE_TOKEN_JSON` | The authorized-user JSON returned by consent |
+| `GOOGLE_TOKEN_JSON` | The authorized-user JSON returned by consent; required before setup and run |
 
 Enable the Google Sheets API for the OAuth client project. If its consent
 screen is in Testing, add your Google account as a test user. Use the Sheets

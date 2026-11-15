@@ -26,7 +26,7 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertIn("server/.venv/bin/python", entry["ready"])
         self.assertIn("consent/.venv/bin/python", entry["ready"])
         self.assertEqual(entry["first"], "make consent")
-        self.assertFalse(entry["secrets"]["GOOGLE_TOKEN_JSON"])
+        self.assertTrue(entry["secrets"]["GOOGLE_TOKEN_JSON"])
 
     def test_nothing_is_missing_or_stale(self):
         stale = [path for path, content in g.plan()

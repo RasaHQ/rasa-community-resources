@@ -47,7 +47,7 @@ KNOWN_SECRETS = {
     "SPEECHMATICS_API_KEY": "Speechmatics key for speech recognition",
     "TELEGRAM_BOT_TOKEN": "BotFather token for the private Telegram shop bot",
     "GOOGLE_CLIENT_SECRETS_JSON": "Complete Google Desktop OAuth client JSON for one-time Sheets consent",
-    "GOOGLE_TOKEN_JSON": "Authorized-user JSON produced by the Sheets consent command",
+    "GOOGLE_TOKEN_JSON": "Authorized-user JSON from consent; required before Sheet setup and the shop run",
     "SHOP_SHEET_ID": "Identifier of the dedicated blank demo spreadsheet",
     "SHOP_OPERATOR_CHAT_ID": "Positive private Telegram chat ID used by the demo operator",
 }
@@ -332,7 +332,7 @@ def manifest(project) -> dict:
             see="the Google consent link. Save its token as GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.",
             before_first="Create a blank demo Sheet, set the named Codespace secrets and start the private laptop callback forward described below.",
             secrets={license_secret: True, "OPENAI_API_KEY": True, "TELEGRAM_BOT_TOKEN": True,
-                     "GOOGLE_CLIENT_SECRETS_JSON": True, "GOOGLE_TOKEN_JSON": False,
+                     "GOOGLE_CLIENT_SECRETS_JSON": True, "GOOGLE_TOKEN_JSON": True,
                      "SHOP_SHEET_ID": True, "SHOP_OPERATOR_CHAT_ID": True},
         )
     return entry
