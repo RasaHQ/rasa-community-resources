@@ -84,6 +84,18 @@ GREEN, YELLOW, RED, BLUE, DIM, RESET = (
 # ------------------------------------------------------------------------------
 
 
+def requires_agent_model_group(version: str) -> bool:
+    """True when this Rasa release rejects the legacy `llm:` section in integrations.yml.
+
+    Rasa 3.22 does, and so does the 3.21 stable line (3.21.4 reports `unexpected_llm` and
+    `invalid_agent_section` for every maintained project). The 3.21.0 development builds
+    still accept the legacy form, so they are not migrated."""
+    major, minor = (int(part) for part in version.split('.')[:2])
+    if (major, minor) >= (3, 22):
+        return True
+    return (major, minor) == (3, 21) and 'dev' not in version
+
+
 def _replace_pin(text: str, new_version: str) -> tuple[str, str | None, bool]:
     match = RASA_PRO_DEP_RE.search(text)
     if not match:
@@ -313,7 +325,7 @@ def migrate_project(
         result["prerelease"] = prerelease_note
         result["pin_changed"] = pin_changed
 
-        if tuple(map(int, new_version.split('.')[:2])) >= (3, 22):
+        if requires_agent_model_group(new_version):
             result["config"] = migrate_mantle_config(project.path, dry_run=dry_run)
 
         if (pin_changed or prerelease_note) and not dry_run:
