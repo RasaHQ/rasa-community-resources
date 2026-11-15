@@ -38,6 +38,30 @@ def _listener():
     return sock
 
 
+_interrupted = False
+
+
+def install_stop_handlers():
+    """Ctrl+C and a plain terminate both mean "stop". Neither may be reported as a failure.
+
+    Ctrl+C reaches the owned services as well, so they can exit before this process
+    notices its own interrupt; the flag lets the failure branch tell the two apart."""
+    global _interrupted
+    _interrupted = False
+
+    def stop(*_):
+        global _interrupted
+        _interrupted = True
+        raise KeyboardInterrupt
+
+    signal.signal(signal.SIGINT, stop)
+    signal.signal(signal.SIGTERM, stop)
+
+
+def stopped_by_the_caller():
+    return _interrupted
+
+
 def main(project):
     # The demo data seed is chosen once and printed first, so any run can be repeated.
     try:
@@ -94,7 +118,7 @@ def main(project):
     origin, inspector_url = inspector_address(args.port)
     server = inspector = None
     # A plain terminate (closing the terminal, a kill) must also stop the owned services.
-    signal.signal(signal.SIGTERM, lambda *_: (_ for _ in ()).throw(KeyboardInterrupt()))
+    install_stop_handlers()
     try:
         with _listener() as mock_socket, _listener() as mcp_socket:
             capability = secrets.token_urlsafe(32)
@@ -158,6 +182,8 @@ def main(project):
     except KeyboardInterrupt:
         return 0
     except Exception:
+        if stopped_by_the_caller():
+            return 0
         print("Not ready. An owned service failed; no secret or raw service error is shown.")
         return 1
     finally:
