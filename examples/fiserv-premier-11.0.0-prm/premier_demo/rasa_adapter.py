@@ -133,6 +133,7 @@ UNKNOWN_OUTCOME_TEXT = "The earlier transfer outcome is unknown. Do not retry. C
 EXPIRED_REVIEW_TEXT = ("Your verification has expired, so this transfer was not reviewed and nothing was sent. "
                        "Say verify me, then ask for the transfer again.")
 REVIEW_NOT_MADE_TEXT = "That transfer was not reviewed, and nothing was sent."
+REFUSED_TRANSFER_TEXT = "This transfer was refused, and nothing was sent."
 REVIEW_UNAVAILABLE_TEXT = ("The transfer review is unavailable, and nothing was sent. "
                            "Check the original transfer status before making another request.")
 STALE_REVIEW_TEXT = ("That review can no longer be confirmed, and nothing was sent. "
@@ -344,6 +345,12 @@ async def banking_submit_transfer(context: ToolContext = None) -> ToolResult:
         host.last_submit_state = result["state"]
         if result.get("state") == "accepted":
             await deliver_reply(context, "The transfer request was accepted. Accepted does not mean posted.")
+        elif result.get("state") == "refused":
+            # Either the bank answered 4xx or the request never left (an inexact amount, a body
+            # that does not fit the model, an invalid header, the trial quota): a clean refusal
+            # in every case, so the wording names no cause. The host says it itself, so the
+            # model cannot call it a canceled review.
+            await deliver_reply(context, REFUSED_TRANSFER_TEXT)
         return ToolResult(llm_response=_safe(result))
     except Exception:
         if dispatched:
