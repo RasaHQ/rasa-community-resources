@@ -295,6 +295,7 @@ make contract-test  # the contract tests (need the release file; skipped without
 make validate       # Rasa project validation
 make models         # regenerate bh_demo/vendor_models/ (needs the release file)
 make models-check   # fail if the committed models differ from a fresh generation
+# make test also installs the models group, so its regeneration test runs, not skips
 ```
 
 CI has no Fiserv file, so contract-dependent tests print that they were skipped. A skipped input never qualifies the contract.

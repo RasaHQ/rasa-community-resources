@@ -4,7 +4,7 @@ run:
 	uv run --locked python run_demo.py --port 5005
 
 test:
-	uv run --locked python -m unittest discover -s tests -v
+	uv run --locked --group models python -m unittest discover -s tests -v
 
 contract-test:
 	uv run --locked python -m unittest tests.test_contract -v
