@@ -17,6 +17,17 @@ PROJECT = Path(__file__).resolve().parent.parent
 
 
 class NativeChecks(unittest.IsolatedAsyncioTestCase):
+    async def test_invalid_token_stops_before_mcp_without_printing_secret(self):
+        from pydantic import SecretStr
+        from shop_demo.launcher import StartupConfigurationError, telegram_client
+        secret = "synthetic-malformed-token-never-print"
+        with patch.object(socket.socket, "connect", side_effect=AssertionError("No request for an invalid token")):
+            with self.assertRaises(StartupConfigurationError) as caught:
+                telegram_client(SecretStr(secret))
+        self.assertIn("TELEGRAM_BOT_TOKEN", str(caught.exception))
+        self.assertIn("BotFather", str(caught.exception))
+        self.assertNotIn(secret, str(caught.exception))
+
     async def test_installed_telegram_contract_preserves_updates_and_send_receipts(self):
         import httpx
         from pydantic import SecretStr

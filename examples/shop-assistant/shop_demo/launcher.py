@@ -17,6 +17,23 @@ from .settings import Settings
 from .state import open_state
 
 
+class StartupConfigurationError(ValueError):
+    """An actionable configuration failure whose message contains no inputs."""
+
+
+def telegram_client(token):
+    from zeo_integrations.telegram.direct import TelegramClient, TelegramError
+    try:
+        return TelegramClient(token)
+    except TelegramError as error:
+        if error.code == "invalid_configuration":
+            raise StartupConfigurationError(
+                "TELEGRAM_BOT_TOKEN was rejected. Save the exact BotFather token "
+                "as a Codespace secret, then restart the Codespace."
+            ) from None
+        raise
+
+
 async def drive(conversation, telegram, stop, *, max_turns=30, seconds=900):
     conversation.assert_restart_safe()
     deadline = asyncio.get_running_loop().time() + seconds
@@ -41,7 +58,6 @@ async def drive(conversation, telegram, stop, *, max_turns=30, seconds=900):
 
 
 async def run():
-    from zeo_integrations.telegram.direct import TelegramClient
     settings = Settings.environment()
     project = Path(__file__).resolve().parent.parent
     server_python = project / "server" / ".venv" / "bin" / "python"
@@ -65,9 +81,9 @@ async def run():
                 PYTHONDONTWRITEBYTECODE="1")
             clock = lambda: datetime.now(timezone.utc)
             async with AsyncExitStack() as stack:
+                telegram = await stack.enter_async_context(telegram_client(settings.telegram_token))
                 client = await stack.enter_async_context(ShopClient(str(server_python),
                     arguments=["-B", "-m", "shop_demo.server"], environment=child_env, directory=project))
-                telegram = await stack.enter_async_context(TelegramClient(settings.telegram_token))
                 assistant = await stack.enter_async_context(Assistant(client, project=project,
                     state_directory=settings.state_directory, clock=clock))
                 conversation = Conversation(settings.state_directory / "conversation.sqlite3",
@@ -86,6 +102,9 @@ async def run():
 def main():
     try:
         asyncio.run(run())
+    except StartupConfigurationError as error:
+        print(str(error), file=sys.stderr)
+        return 1
     except (Exception, KeyboardInterrupt):
         print("Shop assistant stopped. Preserve .state and inspect the original turn before restarting.", file=sys.stderr)
         return 1
