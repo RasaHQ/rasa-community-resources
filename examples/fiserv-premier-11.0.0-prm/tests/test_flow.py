@@ -231,6 +231,27 @@ class HostTests(unittest.TestCase):
         self.assertTrue(reopened.held("demo-A"))
         self.assertFalse(reopened.held("demo-B"))
 
+    def test_the_journal_refuses_a_second_marker_while_an_outcome_is_unknown(self):
+        # The send-time hold on its own: no service and no review, only the journal's rule.
+        self.build()
+        self.journal.mark_pending("demo-A", "first", self.journal.epoch)
+        self.journal.settle("first", "unknown")
+        with self.assertRaises(Refused):
+            self.journal.mark_pending("demo-A", "second", self.journal.epoch)
+
+    def test_a_review_made_before_an_unknown_outcome_cannot_be_sent_after_it(self):
+        # Two reviews are open. The first is sent and its reply is lost. The second was made
+        # before that, so the review-time hold cannot stop it; only the send-time hold can.
+        context = self.build(fault="transfer-response-lost")
+        first = self.review(context)
+        second = self.review(context, "7.00")
+        self.service.confirm(context, first["review"], self.exact(first))
+        self.assertEqual(self.service.submit(context, first["review"])["state"], "unknown")
+        self.service.confirm(context, second["review"], self.exact(second))
+        with self.assertRaises(Refused):
+            self.service.submit(context, second["review"])
+        self.assertEqual(self.fx.mock.transfers, 1)
+
     def test_journal_has_one_owner_and_stores_no_financial_payload(self):
         self.build()
         with self.assertRaises(Refused):
