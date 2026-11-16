@@ -17,6 +17,72 @@ PROJECT = Path(__file__).resolve().parent.parent
 
 
 class NativeChecks(unittest.IsolatedAsyncioTestCase):
+    async def test_operator_product_question_reaches_catalog_through_native_rasa(self):
+        from datetime import datetime, timezone
+        from shop_demo.assistant import Assistant
+        from shop_demo.conversation import Incoming
+        from shop_demo.models import Product
+        from shop_demo.operations import Catalog
+
+        class CatalogClient:
+            calls = 0
+
+            async def catalog(self):
+                self.calls += 1
+                return Catalog(currency="MXN", products=(
+                    Product(code="NOTEBOOK", name="Notebook", price_cents=12900, stock=12),))
+
+        completions = []
+        selected_tools = []
+
+        async def complete(*args, **kwargs):
+            completions.append(kwargs)
+            functions = {tool["function"]["name"]: tool["function"]
+                         for tool in kwargs["tools"]}
+            question_present = "What products are available?" in json.dumps(kwargs["messages"])
+            if "record_discovered_facts" in functions:
+                # Rasa's post-turn memory pass has no configured fields here.
+                name, arguments = "record_discovered_facts", "{}"
+            elif not question_present:
+                # The native session-start turn precedes the user's question.
+                name, arguments = "listen", "{}"
+            elif "product_catalog" not in functions:
+                name, arguments = "activate", '{"target_id":"shopping"}'
+            elif "product_catalog" not in selected_tools:
+                name, arguments = "product_catalog", "{}"
+            else:
+                name, arguments = "listen", "{}"
+            self.assertIn(name, functions)
+            selected_tools.append(name)
+            return ModelResponse(model="gpt-4o-mini", choices=[{
+                "index": 0, "finish_reason": "tool_calls",
+                "message": {"role": "assistant", "content": None, "tool_calls": [{
+                    "id": f"synthetic-{len(completions)}", "type": "function",
+                    "function": {"name": name, "arguments": arguments}}]}}])
+
+        client = CatalogClient()
+        now = datetime.now(timezone.utc)
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.dict(os.environ, {"OPENAI_API_KEY": "synthetic-never-a-real-key",
+                "RASA_TELEMETRY_ENABLED": "false", "LITELLM_LOCAL_MODEL_COST_MAP": "True"}), \
+                    patch.object(socket.socket, "connect", side_effect=AssertionError("No network in native catalog control")), \
+                    patch("rasa.utils.licensing.validate_license_from_env"), \
+                    patch("rasa.shared.providers.llm._base_litellm_client.acompletion", side_effect=complete):
+                from litellm import ModelResponse
+                async with Assistant(client, project=PROJECT, state_directory=Path(directory),
+                        clock=lambda: now) as assistant:
+                    answer = await assistant.respond(Incoming(update_id=1, message_id=1,
+                        chat_id=7, date=int(now.timestamp()), text="What products are available?"), None)
+        self.assertEqual(client.calls, 1)
+        self.assertIn("NOTEBOOK: Notebook, MXN 129.00", answer)
+        self.assertIn("activate", selected_tools)
+        self.assertEqual(selected_tools.count("product_catalog"), 1)
+        self.assertLessEqual(len(completions), 5)
+        functions = {tool["function"]["name"]: tool["function"]
+                     for request in completions for tool in request["tools"]}
+        for name in ("product_catalog", "price_basket", "order_progress", "ask_basket_details"):
+            self.assertNotIn("context", functions[name]["parameters"].get("properties", {}))
+
     async def test_invalid_token_stops_before_mcp_without_printing_secret(self):
         from pydantic import SecretStr
         from shop_demo.launcher import StartupConfigurationError, telegram_client
