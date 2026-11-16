@@ -210,3 +210,4 @@ Finished example agents that are not case builds ([catalog](examples/README.md))
 - [`examples/mantle-voice-routed-skills`](examples/mantle-voice-routed-skills/): Vela — voice banking on a routed vendor stack
 - [`examples/mantle-voice-speechmatics-skills`](examples/mantle-voice-speechmatics-skills/): Vela — voice banking on a custom Speechmatics ASR engine
 - [`examples/mantle-voice-telco-skills`](examples/mantle-voice-telco-skills/): Telano — Voice Telecom Care with Rasa Mantle
+- [`examples/shop-assistant`](examples/shop-assistant/): Shop orders through Telegram and Google Sheets

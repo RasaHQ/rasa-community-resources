@@ -1,0 +1,39 @@
+{
+  "name": "Rasa resource: examples/shop-assistant",
+  "build": {
+    "dockerfile": "../resource-base/Dockerfile"
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/examples/shop-assistant",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [],
+  "portsAttributes": {},
+  "secrets": {
+    "RASA_PRO_LICENSE": {
+      "description": "Required. Full Rasa Developer Edition license"
+    },
+    "OPENAI_API_KEY": {
+      "description": "Required. OpenAI project key used for this resource's model calls"
+    },
+    "TELEGRAM_BOT_TOKEN": {
+      "description": "Required. BotFather token for the private Telegram shop bot"
+    },
+    "GOOGLE_CLIENT_SECRETS_JSON": {
+      "description": "Required. Complete Google Desktop OAuth client JSON for one-time Sheets consent"
+    },
+    "GOOGLE_TOKEN_JSON": {
+      "description": "Required. Authorized-user JSON from consent; required before Sheet setup and the shop run"
+    },
+    "SHOP_SHEET_ID": {
+      "description": "Required. Identifier of the dedicated blank demo spreadsheet"
+    },
+    "SHOP_OPERATOR_CHAT_ID": {
+      "description": "Required. Positive private Telegram chat ID used by the demo operator"
+    }
+  },
+  "onCreateCommand": "cd \"$(git rev-parse --show-toplevel)/examples/shop-assistant\" && make setup",
+  "postCreateCommand": "bash \"$(git rev-parse --show-toplevel)/.devcontainer/resource-base/ready.sh\" examples/shop-assistant \"test -x .venv/bin/python && test -x server/.venv/bin/python && test -x consent/.venv/bin/python\""
+}

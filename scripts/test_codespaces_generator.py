@@ -15,6 +15,21 @@ from rasa_projects import REPO_ROOT, discover_projects  # noqa: E402
 
 
 class GeneratedFilesTests(unittest.TestCase):
+    def test_shop_setup_uses_separate_locks_without_writing_credential_files(self):
+        project = next(project for project in discover_projects("catalog")
+                       if project.rel == "examples/shop-assistant")
+        entry = g.manifest(project)
+        configuration = json.loads(g.config(entry))
+        self.assertIn("make setup", configuration["onCreateCommand"])
+        self.assertNotIn("make-env", configuration["onCreateCommand"])
+        self.assertEqual(configuration.get("forwardPorts", []), [])
+        self.assertNotIn("features", configuration)
+        self.assertIn("server/.venv/bin/python", entry["ready"])
+        self.assertIn("consent/.venv/bin/python", entry["ready"])
+        self.assertEqual(entry["first"], "make google-signin")
+        self.assertNotIn("forward", entry["before_first"])
+        self.assertTrue(entry["secrets"]["GOOGLE_TOKEN_JSON"])
+
     def test_nothing_is_missing_or_stale(self):
         stale = [path for path, content in g.plan()
                  if not path.is_file() or path.read_text(encoding="utf-8") != content]
@@ -163,7 +178,7 @@ class GeneratedFilesTests(unittest.TestCase):
         selected.update(m["path"] for m in g.MANUAL)
         for path in selected:
             body = json.loads((REPO_ROOT / ".devcontainer" / g.slug(path) / "devcontainer.json").read_text())
-            self.assertFalse(any("/python:" in name for name in body["features"]), path)
+            self.assertFalse(any("/python:" in name for name in body.get("features", {})), path)
             self.assertEqual(body["build"]["dockerfile"], "../resource-base/Dockerfile")
         dockerfile = (REPO_ROOT / ".devcontainer/resource-base/Dockerfile").read_text()
         self.assertRegex(dockerfile, r"FROM mcr\.microsoft\.com/devcontainers/python:1-3\.12-bookworm@sha256:[0-9a-f]{64}")
@@ -172,7 +187,10 @@ class GeneratedFilesTests(unittest.TestCase):
     def test_sshd_feature_is_pinned_to_an_exact_version(self):
         for project in discover_projects("catalog"):
             body = json.loads((REPO_ROOT / ".devcontainer" / g.slug(project.rel) / "devcontainer.json").read_text())
-            sshd = [name for name in body["features"] if "/sshd:" in name]
+            sshd = [name for name in body.get("features", {}) if "/sshd:" in name]
+            if project.rel == "examples/shop-assistant":
+                self.assertEqual(sshd, [])
+                continue
             self.assertEqual(sshd, [g.SSHD_FEATURE], project.rel)
             self.assertRegex(sshd[0], r":\d+\.\d+\.\d+$")
             self.assertEqual(body["features"][sshd[0]], {})
@@ -263,7 +281,10 @@ class PortTests(unittest.TestCase):
         for project in discover_projects("catalog"):
             primary, forward = g.ports(project.path)
             self.assertEqual(self.forwarded(project.rel), forward, project.rel)
-            self.assertIn(primary, forward, project.rel)
+            if primary is None:
+                self.assertEqual(forward, [], project.rel)
+            else:
+                self.assertIn(primary, forward, project.rel)
             readme = (project.path / "README.md").read_text(encoding="utf-8")
             if "starts on port" in readme:
                 self.assertIn(f"port {primary}.", readme.split(g.END)[0], project.rel)

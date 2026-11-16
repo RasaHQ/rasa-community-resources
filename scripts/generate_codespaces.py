@@ -45,6 +45,11 @@ KNOWN_SECRETS = {
     "DEEPGRAM_API_KEY": "Deepgram key for speech recognition and spoken replies",
     "RIME_API_KEY": "Rime key for spoken replies",
     "SPEECHMATICS_API_KEY": "Speechmatics key for speech recognition",
+    "TELEGRAM_BOT_TOKEN": "BotFather token for the private Telegram shop bot",
+    "GOOGLE_CLIENT_SECRETS_JSON": "Complete Google Desktop OAuth client JSON for one-time Sheets consent",
+    "GOOGLE_TOKEN_JSON": "Authorized-user JSON from consent; required before Sheet setup and the shop run",
+    "SHOP_SHEET_ID": "Identifier of the dedicated blank demo spreadsheet",
+    "SHOP_OPERATOR_CHAT_ID": "Positive private Telegram chat ID used by the demo operator",
 }
 # Exact feature version, so a published change to the feature cannot alter a configuration unseen.
 SSHD_FEATURE = "ghcr.io/devcontainers/features/sshd:1.1.0"
@@ -176,9 +181,19 @@ def recipe(makefile_text: str, target: str) -> str:
     return match.group(1) if match else ""
 
 
-def ports(path: Path) -> tuple[int, list[int]]:
+def ports(path: Path) -> tuple[int | None, list[int]]:
     """(primary port, every port to forward): explicit --port/-p values in the run or inspect recipe, else 5005,
-    plus any other port the Makefile documents for a helper service."""
+    plus any other port the Makefile documents for a helper service.
+    An explicit empty list declares a terminal-only resource with no server."""
+    pyproject = path / "pyproject.toml"
+    if pyproject.is_file():
+        catalog = tomllib.loads(pyproject.read_text()).get("tool", {}).get("rasa-catalog", {})
+        declared = catalog.get("forward-ports")
+        if declared is not None:
+            if (not isinstance(declared, list)
+                    or any(type(port) is not int or not 1 <= port <= 65535 for port in declared)):
+                raise ValueError("forward-ports must be a list of TCP port numbers")
+            return (declared[0] if declared else None), sorted(set(declared))
     makefile = path / "Makefile"
     text = makefile.read_text(encoding="utf-8") if makefile.is_file() else ""
     explicit = [int(n) for target in ("inspect", "run") for n in re.findall(r"(?:--port|\s-p)\s+(\d{4,5})\b", recipe(text, target))]
@@ -239,7 +254,8 @@ def manifest(project) -> dict:
         )
     elif first_target == "run":
         first = train + "make run"
-        see = f"{'training finishes, then ' if train else ''}the server starts on port {primary}."
+        see = (f"{'training finishes, then ' if train else ''}the server starts on port {primary}."
+               if primary is not None else "the command starts in this terminal.")
     else:
         first, see = None, None
     first_needs_none = project.rel in FIRST_NEEDS_NONE
@@ -289,7 +305,7 @@ def manifest(project) -> dict:
         ready += ' && uv run --locked --no-sync python -m unittest discover -s tests -v'
     if project.rel == 'heroes/wave-01-mantle/projects/incrementaliser-rasa-skill-eval':
         ready += ' && uv run --locked --no-sync pytest && uv run --locked --no-sync ruff check src tests scripts'
-    return {
+    entry = {
         "snapshot": snapshot,
         "provider_note": provider_note,
         "before_first": before_first,
@@ -308,6 +324,20 @@ def manifest(project) -> dict:
         "ports": forward,
         "inspect_helper": first_target == "inspect" and project.rel not in FIRST,
     }
+    if project.rel == "examples/shop-assistant":
+        # This resource owns separate locked native, MCP-server and consent
+        # environments. It uses injected credentials only, with no dotenv step.
+        entry.update(
+            install='cd "$(git rev-parse --show-toplevel)/examples/shop-assistant" && make setup',
+            ready='test -x .venv/bin/python && test -x server/.venv/bin/python && test -x consent/.venv/bin/python',
+            first="make google-signin",
+            see="the Google sign-in link. Paste the final browser address back into this terminal, save GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.",
+            before_first="Create a blank demo Sheet and add the initial Codespace secrets. Google sign-in produces GOOGLE_TOKEN_JSON. All commands run in this Codespace terminal.",
+            secrets={license_secret: True, "OPENAI_API_KEY": True, "TELEGRAM_BOT_TOKEN": True,
+                     "GOOGLE_CLIENT_SECRETS_JSON": True, "GOOGLE_TOKEN_JSON": True,
+                     "SHOP_SHEET_ID": True, "SHOP_OPERATOR_CHAT_ID": True},
+        )
+    return entry
 
 
 def manual_manifest(item: dict) -> dict:
@@ -342,6 +372,9 @@ def config(entry: dict) -> str:
         "onCreateCommand": install,
         "postCreateCommand": ready,
     }
+    if entry["path"] == "examples/shop-assistant":
+        # Paste-back sign-in and the terminal assistant need no SSH server.
+        body.pop("features")
     remote_env = dict(entry.get("remote_env", {}))
     if entry["alias_license"]:
         # Holds for non-interactive shells, tasks and launch configurations, unlike a line in ~/.bashrc.
