@@ -7,9 +7,6 @@ resolution-markers = [
     "sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 
-[options]
-prerelease-mode = "allow"
-
 [[package]]
 name = "a2a-sdk"
 version = "0.3.26"
@@ -607,6 +604,19 @@ version = "0.0.2"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8c/5d/5768d1265635da997edeb7da697fe5674be08997d438c5d1c41b23c172cd/duoname-0.0.2-py3-none-any.whl", hash = "sha256:cb9e3f9eee162cba89b8d801b36e8079d240cf006c0e11e620df16c855b3d2b9", size = 18674, upload-time = "2024-01-23T19:19:45.793Z" },
+]
+
+[[package]]
+name = "email-validator"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "dnspython" },
+    { name = "idna" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c0/4d/f5e9d9de19f4b8f9e33d802fe3efb0ef96e88d4d6d45d604f335bef2f1ef/email_validator-2.4.0.tar.gz", hash = "sha256:be487bc50bc3bd832a98515a55a15649d9bec06d954fa178663190714b6c4ee1", size = 55168, upload-time = "2026-11-14T20:21:28.125Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b8/8b/99e715c59560afa0bf68f21ed16eec794d94293945f57934b70c5255d741/email_validator-2.4.0-py3-none-any.whl", hash = "sha256:4454e41c4e1c6b6caee34a1dc71d5e736791562be8fd179b02e298f796522684", size = 36810, upload-time = "2026-11-14T20:21:27.14Z" },
 ]
 
 [[package]]
@@ -2083,6 +2093,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/eb/47/c95ffc2009878c7aac0c5e08528022dcb885933252a88b5f170058014464/pydantic-2.13.5-py3-none-any.whl", hash = "sha256:346a034f080da3755d8e9cb5e00e8b07de1d39e4f6e2c87d8ab7cafa0b269a73", size = 472589, upload-time = "2026-08-28T14:03:59.136Z" },
 ]
 
+[package.optional-dependencies]
+email = [
+    { name = "email-validator" },
+]
+
 [[package]]
 name = "pydantic-core"
 version = "2.46.5"
@@ -2597,6 +2612,15 @@ wheels = [
 ]
 
 [[package]]
+name = "rfc8785"
+version = "0.1.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ef/2f/fa1d2e740c490191b572d33dbca5daa180cb423c24396b856f5886371d8b/rfc8785-0.1.4.tar.gz", hash = "sha256:e545841329fe0eee4f6a3b44e7034343100c12b4ec566dc06ca9735681deb4da", size = 14321, upload-time = "2024-09-27T16:33:31.206Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4d/78/119878110660b2ad709888c8a1614fce7e2fab39080ab960656dc8605bf6/rfc8785-0.1.4-py3-none-any.whl", hash = "sha256:520d690b448ecf0703691c76e1a34a24ddcd4fc5bc41d589cb7c58ec651bcd48", size = 9240, upload-time = "2024-09-27T16:33:29.683Z" },
+]
+
+[[package]]
 name = "rich"
 version = "14.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2802,6 +2826,8 @@ dependencies = [
     { name = "mcp" },
     { name = "pydantic" },
     { name = "rasa-pro" },
+    { name = "zeo-integrations" },
+    { name = "zeocore" },
 ]
 
 [package.metadata]
@@ -2809,6 +2835,8 @@ requires-dist = [
     { name = "mcp", specifier = "==1.28.1" },
     { name = "pydantic", specifier = "==2.13.5" },
     { name = "rasa-pro", specifier = "==3.21.0.dev5" },
+    { name = "zeo-integrations", git = "https://github.com/zeroemployeeorg/zeointegrations.git?rev=3a5c24db7111935b44e6fe6752ef57e1404debbc" },
+    { name = "zeocore", specifier = "==0.53.5" },
 ]
 
 [[package]]
@@ -3164,8 +3192,8 @@ name = "uvicorn"
 version = "0.54.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "click" },
-    { name = "h11" },
+    { name = "click", marker = "sys_platform != 'emscripten'" },
+    { name = "h11", marker = "sys_platform != 'emscripten'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/da/34/30e9280707135d2cfc589dfff3cb796bd07a3aeb1a3e415ba09dd89d7bb4/uvicorn-0.54.0.tar.gz", hash = "sha256:a2e33cbfaa0306f8e6b0c13e0cb89d7d7a2da3e62b90c66e18c33d9807b28620", size = 112283, upload-time = "2026-09-25T06:52:37.601Z" }
 wheels = [
@@ -3291,6 +3319,35 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/bb/cc/51a7b4abf4ac593b8e7eb3794b28e5a35ae26eed8bc04787628d215af82f/yarl-1.25.1-cp312-cp312-win_amd64.whl", hash = "sha256:7d575b54cb3863ef9bc290ea4b009999d55dc237326131e4853cf33e888fee03", size = 102593, upload-time = "2026-09-15T19:31:33.329Z" },
     { url = "https://files.pythonhosted.org/packages/9d/21/0941a6b93a58b59a1ec75e5333bf06929b671309c43c0cd201c172d9c39f/yarl-1.25.1-cp312-cp312-win_arm64.whl", hash = "sha256:bc3ac7bf569f6b64dad04dd7808c7872dae8a97df657856eac05e9b7e3614a85", size = 97697, upload-time = "2026-09-15T19:31:35.855Z" },
     { url = "https://files.pythonhosted.org/packages/54/22/318c7980066769c6bcd9221ed2248294f5698811da099013098c670565ed/yarl-1.25.1-py3-none-any.whl", hash = "sha256:681c758b0490f9e96b78e5fa8e8dc6e648e9185bb6eaebe73183c33ea0c445f3", size = 63617, upload-time = "2026-09-15T19:34:59.616Z" },
+]
+
+[[package]]
+name = "zeo-integrations"
+version = "0.1.0"
+source = { git = "https://github.com/zeroemployeeorg/zeointegrations.git?rev=3a5c24db7111935b44e6fe6752ef57e1404debbc#3a5c24db7111935b44e6fe6752ef57e1404debbc" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "zeocore" },
+]
+
+[[package]]
+name = "zeocore"
+version = "0.53.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "jinja2" },
+    { name = "pydantic", extra = ["email"] },
+    { name = "python-dotenv" },
+    { name = "pyyaml" },
+    { name = "rfc8785" },
+    { name = "rich" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/98/e3/37ca5b0d2308d2ce4df572690e495b2a0f2efa11b042c183520d7b3520eb/zeocore-0.53.5.tar.gz", hash = "sha256:e39d9f1b30f63e77f047c743ff36710467cefe50d68bb943713bbd8edfec6198", size = 3198780, upload-time = "2026-11-14T04:40:07.924Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fb/f1/156beab7d8e12272015c75609d879207a5056757bc30d7eed1fbb3040b79/zeocore-0.53.5-py3-none-any.whl", hash = "sha256:c5de72a9e4818f61ff86921a6c348766c48c0eea898e2039d3f6932deecec08b", size = 1167675, upload-time = "2026-11-14T04:40:05.515Z" },
 ]
 
 [[package]]

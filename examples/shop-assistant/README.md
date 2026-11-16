@@ -23,9 +23,11 @@ order in a private Telegram chat. Google Sheets holds the catalog and order
 rows. Change an order's status to `shipped` in the Sheet to send a shipping
 message to the same chat.
 
-**Work in progress:** the direct integration dependency awaits its reviewed
-release pin. Provider calls and the complete rehearsal have not run. The
-current locks cover the native Rasa, Core MCP and consent checks only.
+**Work in progress:** provider calls and the complete rehearsal have not run.
+The native and server environments pin the reviewed
+[integration release](https://github.com/zeroemployeeorg/zeointegrations/commit/3a5c24db7111935b44e6fe6752ef57e1404debbc).
+The server installs its Google extra; the native environment uses its direct
+Telegram client. The two environments keep their MCP versions separate.
 
 Rasa reads the shopping request and calls the read or quote tools. Python owns
 the prices, confirmation and writes. The model has no order-placement tool.
@@ -160,8 +162,10 @@ updates or 15 minutes, whichever comes first.
 `make test` checks the shop, durable conversation and Google sign-in helper
 with synthetic provider responses. `make test-native` uses the actual locked
 Rasa runtime and two MCP environments. It checks packaging, processor startup
-and the protocol between the native client and Core server. The startup
-fixture stubs license validation and blocks network connections.
+and the protocol between the native client and Core server. It also checks
+the installed Telegram client and Sheets SDK against synthetic responses,
+including cancellation and raw cell appends. The startup fixture stubs
+license validation and blocks network connections.
 
 These checks do not prove Google consent, model behavior or Telegram delivery.
 Complete the live walkthrough separately with the configured operator and

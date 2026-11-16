@@ -24,3 +24,4 @@ test:
 
 test-native:
 	RASA_TELEMETRY_ENABLED=false LITELLM_LOCAL_MODEL_COST_MAP=True SHOP_TEST_SERVER_PYTHON=$(abspath $(SERVER_PYTHON)) PYTHONPATH=.:tests $(PYTHON) -B tests/native_check.py -v
+	PYTHONPATH=. $(SERVER_PYTHON) -B tests/integration_server_check.py -v
