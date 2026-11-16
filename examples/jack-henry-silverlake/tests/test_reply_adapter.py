@@ -3,7 +3,7 @@ import os
 import time
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 from silverlake_demo import rasa_adapter as adapter
 from lib import reply_policy as policy
 
@@ -43,6 +43,36 @@ class ReplyAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.llm_response["state"],"accepted")
         self.assertEqual(self.host.sends,1)
         self.assertIn("Accepted does not mean posted",self.messages[-1])
+
+    async def _fresh_review(self):
+        adapter._conversations.clear(); policy._delivered.clear(); policy._sent.clear()
+        self.host = Host()
+        self.conversation = adapter._Conversation("http://127.0.0.1:1", self.host, "session")
+        adapter._conversations[("http://127.0.0.1:1", self.native.sender_id)] = self.conversation
+        self.turn("review"); await self.review()
+
+    async def test_any_reply_but_the_exact_words_straight_after_a_review_sends_nothing(self):
+        # The phrase rule alone: each reply is the very next turn, so adjacency cannot be what stops it.
+        for reply in ("Yes.", "yes", "Confirm.", "confirmed", "Please confirm transfer"):
+            with self.subTest(reply=reply):
+                await self._fresh_review()
+                self.turn(reply)
+                result = await adapter.banking_submit_transfer(context=self.context)
+                self.assertNotEqual(result.llm_response["state"], "accepted")
+                self.assertEqual(self.host.sends, 0)
+
+    async def test_the_submit_tool_checks_the_words_and_the_turn_itself(self):
+        # The submit tool's own check, with the host-side check that normally cancels first
+        # replaced by a stand-in that hands back the armed review unchanged.
+        for replies in (("Yes.",), ("What is my balance?", "Confirm transfer.")):
+            with self.subTest(replies=replies):
+                await self._fresh_review()
+                for reply in replies:
+                    self.turn(reply)
+                with patch.object(adapter, "_host", new=AsyncMock(return_value=self.conversation)):
+                    result = await adapter.banking_submit_transfer(context=self.context)
+                self.assertNotEqual(result.llm_response["state"], "accepted")
+                self.assertEqual(self.host.sends, 0)
 
     async def test_intervening_read_cancels_review_and_confirmation_requires_new_request(self):
         await self.review();self.turn("balance")
