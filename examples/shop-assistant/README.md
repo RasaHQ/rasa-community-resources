@@ -1,5 +1,40 @@
 # Shop orders through Telegram and Google Sheets
 
+This example lets one operator browse products, review a basket and place an
+order in a private Telegram chat. Google Sheets holds the catalog and order
+rows. Change an order's status to `shipped` in the Sheet to send a shipping
+message to the same chat.
+
+Google Sheets is the small ERP in this example: `Products` is its catalog and
+`Orders` is its order book. Rasa handles the conversation. The model chooses
+read and quote tools; Python checks confirmation before recording an order.
+
+```mermaid
+flowchart LR
+    T[Telegram private chat] --> R[Rasa Mantle and OpenAI]
+    R --> S[shopping skill]
+    S --> M[Shop MCP server]
+    M --> G[Google Sheets: Products and Orders]
+    T --> H[Python host: separate exact confirm]
+    H --> M
+```
+
+Author: Rasa Community contributors  
+Assessed on: 2026-11-16  
+Assessed by: Offline shop and consent checks; native processor and MCP protocol checks  
+Verified with: rasa-pro 3.21.0.dev5 (synthetic controls; live order walkthrough incomplete)  
+Industry: Retail  
+You learn: How to review a Telegram basket, record it in Sheets and send a shipping message.  
+Catalog name: Telegram shop assistant  
+Status: work in progress
+
+The **skill** is the shopping instructions and tools Rasa gives the model.
+**MCP** connects those tools to the shop server. A **quote** is a basket review,
+with a price and expiry; it is not an order yet. Replies return to the same chat.
+
+Open a fresh Codespace from the **RasaHQ main** button below. Each reader runs
+their own bot and dedicated Sheet.
+
 <!-- codespaces:start -->
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/RasaHQ/rasa-community-resources?ref=main&devcontainer_path=.devcontainer/examples-shop-assistant/devcontainer.json)
 
@@ -9,21 +44,7 @@
 - **You should see:** the Google sign-in link. Paste the final browser address back into this terminal, save GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.
 <!-- codespaces:end -->
 
-Author: Rasa Community contributors  
-Assessed on: 2026-11-15  
-Assessed by: Offline shop and consent checks; native processor and MCP protocol checks  
-Verified with: rasa-pro 3.21.0.dev5 (synthetic inputs; provider rehearsal has not run)  
-Industry: Retail  
-You learn: How to review a Telegram basket, record it in Sheets and send a shipping message.  
-Catalog name: Telegram shop assistant  
-Status: work in progress
-
-This example lets one operator browse products, review a basket and place an
-order in a private Telegram chat. Google Sheets holds the catalog and order
-rows. Change an order's status to `shipped` in the Sheet to send a shipping
-message to the same chat.
-
-**Work in progress:** provider calls and the complete rehearsal have not run.
+**Work in progress:** the complete live order walkthrough has not passed.
 The native and server environments pin the reviewed
 [integration release](https://github.com/zeroemployeeorg/zeointegrations/commit/3a5c24db7111935b44e6fe6752ef57e1404debbc).
 The server installs its Google extra; the native environment uses its direct
@@ -33,6 +54,21 @@ Rasa reads the shopping request and calls the read or quote tools. Python owns
 the prices, confirmation and writes. The model has no order-placement tool.
 A separate exact `confirm` reply places the reviewed basket. Any other reply
 cancels that review. A changed request can produce a new review.
+
+## See Rasa handle the message
+
+At startup, the terminal names `MantleMessageProcessor` in the
+`rasa.core.processor.create_message_processor` trace. This is the Rasa
+component receiving each Telegram message through `Agent.handle_message`.
+Its `shopping` skill gives the OpenAI model four tools. The model runs inside
+Rasa and chooses among those tools.
+
+When you ask for products, look for `mantle.tool.dispatched` with
+`tool_name=product_catalog`. That native Rasa tool calls the catalog operation
+through MCP, and the server reads the Products tab through zeointegrations.
+The host displays the returned product data. For a basket, Rasa calls
+`price_basket`; Python calculates the price and holds the review. A later
+literal `confirm` is handled by the host before the Sheets write.
 
 ## Create a blank Sheet
 
@@ -44,6 +80,11 @@ missing tabs and seeds empty ones. Use this Sheet only for the example.
 
 Use Python 3.12. Set these values through Codespace secrets, with access to
 this repository. Stop and start the Codespace after adding secrets.
+
+Open [personal Codespaces settings](https://github.com/settings/codespaces).
+For each value below, choose **New secret**, enter its name and value, grant
+`RasaHQ/rasa-community-resources` access, and save. Paste only the value, without
+a name prefix or surrounding quotes. GitHub hides the saved values.
 
 | Name | Value |
 | --- | --- |
@@ -65,6 +106,11 @@ the number after `Id:`.
 Enable the Google Sheets API for the OAuth client project. If its consent
 screen is in Testing, add your Google account as a test user. Use the Sheets
 permission; the example needs no Drive-wide permission.
+
+Google's [Sheets setup guide](https://developers.google.com/workspace/sheets/api/quickstart/python#authorize_credentials_for_a_desktop_application)
+shows how to enable the API and create a **Desktop app** OAuth client. Copy
+the complete downloaded client JSON into `GOOGLE_CLIENT_SECRETS_JSON`.
+Use `make google-signin` below for this example's Codespace sign-in.
 
 The sign-in command reads client JSON from the environment and keeps the token
 in memory. It prints the authorized token for you to save as a Codespace
@@ -94,6 +140,10 @@ using PKCE. It requires a refresh token and prints one token JSON line. Save
 that line as `GOOGLE_TOKEN_JSON` in your personal Codespace secrets, grant it
 access to this repository, and clear the terminal. Restart or rebuild the
 Codespace so its processes receive the new secret.
+
+Before that restart, a readiness message may name `GOOGLE_TOKEN_JSON` as
+missing. Complete sign-in and save the token first. `READY` describes the
+environment checks; the bot starts only when you run `make run`.
 
 Then return to this example's Codespace terminal:
 
@@ -157,6 +207,19 @@ Ctrl-C requests a clean stop after the current bounded operation. Repeating
 Ctrl-C cannot skip closing the owned clients. A run stops after 30 retained
 updates or 15 minutes, whichever comes first.
 
+## Troubleshooting
+
+| What you see | What to check |
+| --- | --- |
+| A missing-secret message | Save the named value in personal Codespaces secrets, grant this repository access, then stop and start the Codespace. GitHub Actions secrets are a different setting. |
+| `TELEGRAM_BOT_TOKEN was rejected` | Copy only the bot token from BotFather, without labels or quotes. Save it again and restart the Codespace. Keep its value private. |
+| No reply in Telegram | Wait for the terminal's ready message, send `/start` to the intended bot, and check that `SHOP_OPERATOR_CHAT_ID` is your private chat ID. Run one assistant for this bot and Sheet. |
+| The fallback repeats and the trace says `unexpected keyword argument 'context'` | Stop this old version and preserve `.state`. Use the reviewed fix from RasaHQ main: every native tool must accept the `ToolContext` Rasa supplies. This is a Python tool-signature error, not a different way to phrase the question. |
+| The catalog check reports a missing `google_auth_oauthlib` | Use this example's locked development dependencies. `make test` runs in the consent environment; native catalog discovery also needs the declared OAuth test SDK. |
+| Google sign-in or Sheet setup stops | Check that the Desktop OAuth client, Sheets API, token, and dedicated Sheet belong to the same demo setup. Inspect the Sheet before repeating a setup or write. |
+| A review is no longer active | Ask for a new basket, wait for its review, then send a separate `confirm` within five minutes. |
+| A write or send is uncertain | Stop and preserve `.state`. Inspect the original Sheet row or Telegram message before restarting; do not delete the journal or repeat the write. |
+
 ## Development checks
 
 `make test` checks the shop, durable conversation and Google sign-in helper
@@ -166,6 +229,14 @@ and the protocol between the native client and Core server. It also checks
 the installed Telegram client and Sheets SDK against synthetic responses,
 including cancellation and raw cell appends. The startup fixture stubs
 license validation and blocks network connections.
+
+Catalog compatibility runs that native target too. Its locked server worker
+is installed separately. The consent-only `make test` environment reports one
+explicit skip for this native wrapper because it has no Rasa installation;
+`make test-native` executes the native controls directly. The product-question
+control passes “What products are available?” through the real Rasa processor,
+shopping-skill activation and tool execution, using synthetic model responses
+and a counted catalog client. It makes no provider request.
 
 These checks do not prove Google consent, model behavior or Telegram delivery.
 Complete the live walkthrough separately with the configured operator and

@@ -23,7 +23,7 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertIn("make setup", configuration["onCreateCommand"])
         self.assertNotIn("make-env", configuration["onCreateCommand"])
         self.assertEqual(configuration.get("forwardPorts", []), [])
-        self.assertNotIn("features", configuration)
+        self.assertEqual(configuration["features"], {g.SSHD_FEATURE: {}})
         self.assertIn("server/.venv/bin/python", entry["ready"])
         self.assertIn("consent/.venv/bin/python", entry["ready"])
         self.assertEqual(entry["first"], "make google-signin")
@@ -188,9 +188,6 @@ class GeneratedFilesTests(unittest.TestCase):
         for project in discover_projects("catalog"):
             body = json.loads((REPO_ROOT / ".devcontainer" / g.slug(project.rel) / "devcontainer.json").read_text())
             sshd = [name for name in body.get("features", {}) if "/sshd:" in name]
-            if project.rel == "examples/shop-assistant":
-                self.assertEqual(sshd, [])
-                continue
             self.assertEqual(sshd, [g.SSHD_FEATURE], project.rel)
             self.assertRegex(sshd[0], r":\d+\.\d+\.\d+$")
             self.assertEqual(body["features"][sshd[0]], {})

@@ -10,11 +10,17 @@ dependencies = [
     "zeo-integrations @ git+https://github.com/zeroemployeeorg/zeointegrations.git@3a5c24db7111935b44e6fe6752ef57e1404debbc",
 ]
 
+[dependency-groups]
+# Catalog discovery runs every test module in this locked native environment.
+# The sign-in controls exercise the same SDK installed by the consent project.
+dev = ["google-auth-oauthlib>=1.2,<2"]
+
 [tool.uv]
 prerelease = "allow"
 package = false
 
 [tool.rasa-catalog]
+test-workers = ["server"]
 license-secret = "RASA_PRO_LICENSE"
 secret-setup = "personal"
 forward-ports = []
