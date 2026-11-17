@@ -16,6 +16,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt
 
+from .activity import clear_activity
 from .state import open_state
 
 HELP = {
@@ -70,21 +71,22 @@ def discovery_lock(directory):
     descriptor = os.open(path, os.O_RDWR | os.O_NOFOLLOW)
     try:
         fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        clear_activity(directory)
         yield
     finally:
         os.close(descriptor)
 
 
-def telegram_request(token, method, payload):
+def telegram_request(token, method, payload, *, timeout=15):
     request = urllib.request.Request('https://api.telegram.org/bot' + token + '/' + method,
         data=json.dumps(payload).encode(), headers={'Content-Type': 'application/json'}, method='POST')
-    with urllib.request.urlopen(request, timeout=15) as response:
+    with urllib.request.urlopen(request, timeout=timeout) as response:
         return json.loads(response.read(1024 * 1024))
 
 
 def read_updates(token):
     return telegram_request(token, 'getUpdates', {'timeout': 0, 'limit': 100,
-        'allowed_updates': ['message', 'edited_message', 'my_chat_member']})
+        'allowed_updates': ['message', 'edited_message', 'my_chat_member', 'callback_query']})
 
 
 def read_identity(token):
@@ -176,6 +178,16 @@ def failure_hint(error):
     name = safe_error_type(error)
     if isinstance(error, BlockingIOError):
         hint = 'Another assistant holds this state directory. Stop that process before restarting.'
+    elif name == 'TelegramError':
+        code = getattr(error, 'code', None)
+        if getattr(error, 'retry_after_seconds', None) is not None:
+            hint = 'Telegram rate-limited the request. Wait before restarting; preserve and inspect any uncertain send.'
+        elif code == 'invalid_configuration':
+            hint = 'Copy the exact token from BotFather and run make telegram; save it and restart if using Codespaces secrets.'
+        elif code == 'provider_refused':
+            hint = 'Run make status to check the bot token and webhook; stop any other reader. Preserve the original turn before restarting.'
+        else:
+            hint = 'Check the network and run make status. Preserve the original turn and inspect any uncertain send before restarting.'
     elif isinstance(error, (ImportError, FileNotFoundError)):
         hint = 'Run make setup to check the three locked environments, then make doctor.'
     elif isinstance(error, ValueError):

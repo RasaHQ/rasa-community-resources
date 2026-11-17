@@ -96,26 +96,71 @@ a name prefix or surrounding quotes. GitHub hides the saved values.
 | `GOOGLE_CLIENT_SECRETS_JSON` | The complete Google Desktop OAuth client JSON, for consent only |
 | `GOOGLE_TOKEN_JSON` | The authorized-user JSON returned by consent; required before setup and run |
 
-With the assistant stopped, identify the bot your token belongs to:
+## Telegram in 5 minutes
+
+Run this in the Codespace terminal after `make setup`, with the assistant stopped:
 
 ```sh
-make chat-id
+make telegram
 ```
 
-The command first prints `Listening as @<botname>: send /start to this bot`.
-Open that exact bot in a private Telegram chat and send `/start`. Run the
-command again to print your numeric private chat ID.
-It does not send a message or advance the update offset. Save that number as
-`SHOP_OPERATOR_CHAT_ID`. If no message has arrived, send `/start` to your own
-bot and run the command again. If several private chats are present, use a new
-personal bot for this example. If updates arrive without a private text message,
-the command lists only the update kinds it saw. Membership notifications are
-not text messages; send a new `/start` to the named bot in private. The command
-requests message, edited-message and bot-membership updates explicitly.
-Do not run another poller for this bot at the
-same time. The command uses a private local lock file under `.state` and refuses when
-the local assistant holds it. It does not write conversation or order records.
+1. Open Telegram and search for the verified **@BotFather**. Tap **Start**,
+   send `/newbot`, then choose a display name and a unique username ending in
+   `bot`. Copy the token into the command's hidden prompt. If the token is
+   already configured, the command asks whether to use it. It never displays it.
+2. You should see `This is @yourbot` with that bot's Telegram link. Open that
+   exact bot. A token from another bot means you would be listening elsewhere.
+3. The command checks for a webhook. If one exists, it explains how to use a
+   separate personal bot or ask its owner to remove the webhook. It changes
+   no webhook. With no webhook, it asks you to stop other Codespaces using the
+   same bot. It cannot prove that an idle remote reader is absent.
+4. Send `/start` in a private chat with the named bot. The command waits up to
+   90 seconds and then prints `Your private chat ID: ...`. Group messages and
+   membership notices do not count. If several private chats are present,
+   use a fresh personal bot. No message text or update offset is written.
+5. Choose where the two settings live. For a live class, answer **yes** to open
+   `shop-session>`. The token and chat setting exist in that child shell's
+   memory. Run `make doctor`, `make status` or `make run` there. Type `exit` to
+   leave it; your original terminal is unchanged. No credential file is saved.
+   To keep the settings, answer **no**, then save `TELEGRAM_BOT_TOKEN` and
+   `SHOP_OPERATOR_CHAT_ID` in [personal Codespaces secrets](https://github.com/settings/codespaces).
+   Grant this repository access, then stop and start the Codespace.
+
+A Make command cannot export values into the terminal that launched it.
+The session shell avoids a restart for these two settings only. It inherits
+other settings already available in that terminal; `make doctor` explains
+what is still missing. GitHub Actions secrets are a different setting.
+
+Use a separate bot for each Codespace. If another local command holds the
+shop lock, stop it with Ctrl-C before setup. A Telegram conflict may mean a
+remote reader; return to that command's terminal or use another personal bot.
+The setup command never starts the assistant, sends a reply, or writes an order.
+
+```sh
+make status
+```
+
+Status shows the verified `@bot`, whether the private-chat setting is present,
+and whether a local assistant holds the shop lock for those settings.
+It checks Sheet access by reading metadata in the separate server environment.
+It prints no settings values, rows or token. Status does not poll Telegram,
+change webhook settings, create local state or set up the Sheet.
+A configured chat setting alone does not prove that a message reached this bot.
+
+`make chat-id` remains a shorter discovery command. It prints the bot name,
+reads available private text messages and shows a single chat ID. Send `/start`
+to the named bot and rerun it if no private message is available. It uses the
+same local lock and leaves update offsets and conversation records unchanged.
+Discovery explicitly includes text, edited text, membership and callback updates.
+The running assistant uses the maintained client's explicit message/callback
+selection on each poll. Edited text is supported for setup discovery only;
+the current assistant does not treat an edit as a new order or confirmation.
+A callback is retained as input; it grants no admin authority.
 Your bot's ID or token is not your private chat ID.
+
+Telegram documents [BotFather setup](https://core.telegram.org/bots/features#creating-a-new-bot)
+and [polling versus webhooks](https://core.telegram.org/bots/api#getupdates).
+GitHub explains [when new Codespaces secrets become available](https://docs.github.com/en/codespaces/managing-your-codespaces/managing-your-account-specific-secrets-for-github-codespaces).
 
 Enable the Google Sheets API for the OAuth client project. If its consent
 screen is in Testing, add your Google account as a test user. Use the Sheets
@@ -148,7 +193,7 @@ make doctor
 Plain `make` only lists commands. `make doctor` makes no network calls or state
 changes. It checks all seven setting names without printing values. Follow its
 instructions for missing settings: create the Sheet and save its ID; use
-`make chat-id` after messaging your own bot; complete Google sign-in below.
+`make telegram` for your bot and private chat; complete Google sign-in below.
 The doctor may report the Google token missing until sign-in is complete.
 
 First sign in:
@@ -245,6 +290,10 @@ updates or 15 minutes, whichever comes first.
 | --- | --- |
 | `MISSING or INVALID` from doctor | Save the named value in personal Codespaces secrets, grant this repository access, then stop and start the Codespace. GitHub Actions secrets are a different setting. |
 | `TELEGRAM_BOT_TOKEN was rejected` | Copy only the bot token from BotFather, without labels or quotes. Save it again and restart the Codespace. Keep its value private. |
+| Telegram rejects the token (401) | Copy the exact token from BotFather, then run `make telegram` or save it and restart the Codespace. |
+| Telegram reports a conflict (409) | A webhook or another reader owns delivery. Follow the command's next step; use a separate personal bot or stop its other reader. |
+| Telegram asks you to wait (429) | Wait a minute, then run `make telegram` again. |
+| Telegram cannot connect | Check the Codespace network and token, then rerun setup. Preserve an uncertain order or send before restarting the assistant. |
 | No reply in Telegram | Wait for the terminal's ready message, send `/start` to the intended bot, and check that `SHOP_OPERATOR_CHAT_ID` is your private chat ID. Run one assistant for this bot and Sheet. |
 | The fallback repeats and the trace says `unexpected keyword argument 'context'` | Stop this old version and preserve `.state`. Use the reviewed fix from RasaHQ main: every native tool must accept the `ToolContext` Rasa supplies. This is a Python tool-signature error, not a different way to phrase the question. |
 | The catalog check reports a missing `google_auth_oauthlib` | Use this example's locked development dependencies. `make test` runs in the consent environment; native catalog discovery also needs the declared OAuth test SDK. |

@@ -10,12 +10,14 @@ from pathlib import Path
 import signal
 import sys
 
+from .activity import assistant_activity
 from .assistant import Assistant
 from .conversation import Conversation
 from .mcp_client import ShopClient
 from .settings import Settings
 from .state import open_state
 from .startup import failure_hint
+from .telegram_poll import POLL_TYPES, poll_updates
 
 
 class StartupConfigurationError(ValueError):
@@ -42,7 +44,8 @@ async def drive(conversation, telegram, stop, *, max_turns=30, seconds=900):
     while not stop.is_set() and turns < max_turns and asyncio.get_running_loop().time() < deadline:
         saved = conversation.saved()
         if not saved:
-            updates = await telegram.get_updates(offset=conversation.offset(), limit=20, timeout=10)
+            updates = await poll_updates(telegram, offset=conversation.offset(), limit=20, timeout=10,
+                    allowed_updates=POLL_TYPES)
             conversation.retain([update.raw_payload for update in updates])
             for update in updates:
                 if update.unsupported_reason is not None:
@@ -91,7 +94,8 @@ async def run():
                     chat_id=settings.operator_chat_id, telegram=telegram, assistant=assistant, orders=client, clock=clock)
                 stack.callback(conversation.close)
                 print("Shop assistant ready for the configured private chat. Ctrl-C requests a clean stop.", flush=True)
-                turns = await drive(conversation, telegram, stop, max_turns=settings.max_turns)
+                with assistant_activity(settings.state_directory, settings.telegram_token.get_secret_value(), settings.operator_chat_id):
+                    turns = await drive(conversation, telegram, stop, max_turns=settings.max_turns)
                 print(f"Shop assistant stopped after {turns} retained updates.", flush=True)
         finally:
             for sig in (signal.SIGINT, signal.SIGTERM):
