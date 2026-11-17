@@ -39,14 +39,25 @@ jobs:
       - name: Prove failed and timed-out test pipelines remain failures
         run: |
           set +e
-          python -c 'raise SystemExit(17)' 2>&1 | tee "$RUNNER_TEMP/shop-release-control-failed.log"
-          failed_status=$?
+          python -c 'raise SystemExit(17)' 2>&1 | tee "$RUNNER_TEMP/shop-release-control-unit.log"
+          unit_status=("$?" "${PIPESTATUS[@]}")
+          python -c 'raise SystemExit(23)' 2>&1 | tee "$RUNNER_TEMP/shop-release-control-native.log"
+          native_status=("$?" "${PIPESTATUS[@]}")
           timeout 1s python -c 'import time; time.sleep(10)' 2>&1 | tee "$RUNNER_TEMP/shop-release-control-timeout.log"
-          timeout_status=$?
+          timeout_status=("$?" "${PIPESTATUS[@]}")
+          printf 'logger failure control\n' | tee /dev/full
+          logger_status=("$?" "${PIPESTATUS[@]}")
           set -e
-          printf 'FAILED_TEST_EXIT=%s TIMEOUT_EXIT=%s\n' "$failed_status" "$timeout_status" | tee "$RUNNER_TEMP/shop-release-control-status.log"
-          test "$failed_status" -eq 17
-          test "$timeout_status" -eq 124
+          {
+            printf 'UNIT pipeline=%s producer=%s tee=%s\n' "${unit_status[@]}"
+            printf 'NATIVE pipeline=%s producer=%s tee=%s\n' "${native_status[@]}"
+            printf 'TIMEOUT pipeline=%s producer=%s tee=%s\n' "${timeout_status[@]}"
+            printf 'LOGGER pipeline=%s producer=%s tee=%s\n' "${logger_status[@]}"
+          } | tee "$RUNNER_TEMP/shop-release-control-status.log"
+          test "${unit_status[*]}" = '17 17 0'
+          test "${native_status[*]}" = '23 23 0'
+          test "${timeout_status[*]}" = '124 124 0'
+          test "${logger_status[*]}" = '1 0 1'
       - name: Apply the stock migration to the selected shop only
         run: |
           python - <<'PY'
@@ -75,13 +86,24 @@ jobs:
         run: |
           mkdir -p "$TMPDIR"
           .venv/bin/python -B -c 'from importlib.metadata import version; print("rasa-pro", version("rasa-pro"), "mcp", version("mcp"))'
+          set +e
           make test 2>&1 | tee "$RUNNER_TEMP/shop-release-unit.log"
+          unit_status=("$?" "${PIPESTATUS[@]}")
+          set -e
+          printf 'PIPELINE_EXIT=%s PRODUCER_EXIT=%s TEE_EXIT=%s\n' "${unit_status[@]}" | tee "$RUNNER_TEMP/shop-release-unit-status.log"
+          test "${unit_status[*]}" = '0 0 0'
+          set +e
           timeout --signal=ABRT --kill-after=15s 180s make test-native 2>&1 | tee "$RUNNER_TEMP/shop-release-native.log"
+          native_status=("$?" "${PIPESTATUS[@]}")
+          set -e
+          printf 'PIPELINE_EXIT=%s PRODUCER_EXIT=%s TEE_EXIT=%s\n' "${native_status[@]}" | tee "$RUNNER_TEMP/shop-release-native-status.log"
+          test "${native_status[*]}" = '0 0 0'
       - name: Preserve selected inputs and original test output
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: shop-release-${{ matrix.release }}
+          include-hidden-files: true
           path: |
             ${{ runner.temp }}/shop-release-*.log
             ${{ runner.temp }}/shop-release-fixtures
