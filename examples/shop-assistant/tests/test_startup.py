@@ -8,13 +8,19 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
-from unittest.mock import Mock
+import urllib.error
+from unittest.mock import Mock, patch
 
 from shop_demo.startup import HELP, chat_id, doctor, failure_hint
 from setup_environments import ensure
 
 
 class StartupTests(unittest.TestCase):
+    def setUp(self):
+        network = patch("urllib.request.urlopen", side_effect=AssertionError("Real Telegram HTTP is forbidden in startup tests"))
+        network.start()
+        self.addCleanup(network.stop)
+
     def test_doctor_explains_every_missing_name_without_io(self):
         output = io.StringIO()
         self.assertEqual(doctor({}, output), 1)
@@ -35,17 +41,59 @@ class StartupTests(unittest.TestCase):
         output = io.StringIO()
         fetch = Mock(return_value={'ok': True, 'result': result})
         with tempfile.TemporaryDirectory() as directory:
-            status = chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory}, fetch, output)
+            status = chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory}, fetch, output, identify=Mock(return_value={'username': 'my_shop_bot', 'is_bot': True}))
             self.assertEqual({p.name for p in Path(directory).iterdir()}, {'run.sqlite3'})
         return status, output.getvalue(), fetch
 
     def test_chat_id_private_only_and_deduplicates(self):
-        messages = [{'message': {'chat': {'id': 55, 'type': 'private'}}}] * 2
+        messages = [{'message': {'text': 'hello', 'chat': {'id': 55, 'type': 'private'}}}] * 2
         messages.append({'message': {'chat': {'id': -99, 'type': 'group'}}})
         status, output, fetch = self.discover(messages)
         self.assertEqual(status, 0)
         self.assertIn('Your private chat ID: 55', output)
+        self.assertLess(output.index('Listening as @my_shop_bot'), output.index('Your private chat ID: 55'))
         fetch.assert_called_once_with('123:SECRET')
+
+    def test_start_command_with_entities_and_edited_private_text(self):
+        for kind in ('message', 'edited_message'):
+            status, output, _ = self.discover([{kind: {'text': '/start',
+                'entities': [{'offset': 0, 'length': 6, 'type': 'bot_command'}],
+                'chat': {'id': 55, 'type': 'private'}}}])
+            self.assertEqual(status, 0)
+            self.assertIn('Your private chat ID: 55', output)
+            self.assertNotIn('/start\n', output)
+
+    def test_membership_and_unknown_updates_show_kinds_without_ids_or_text(self):
+        status, output, _ = self.discover([{'my_chat_member': {'chat': {'id': 987654321,
+            'type': 'private'}, 'text': 'PRIVATE_MESSAGE'}}, {'SECRET_KEY': 'PRIVATE_MESSAGE'}])
+        self.assertEqual(status, 1)
+        self.assertIn('Kinds seen: my_chat_member, other', output)
+        for value in ('987654321', 'PRIVATE_MESSAGE', 'SECRET_KEY'):
+            self.assertNotIn(value, output)
+
+    def test_identity_failure_refuses_before_updates(self):
+        fetch, output = Mock(), io.StringIO()
+        with tempfile.TemporaryDirectory() as directory:
+            status = chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory},
+                fetch, output, identify=Mock(return_value={'username': 'invalid\nSECRET', 'is_bot': True}))
+        self.assertEqual(status, 1)
+        fetch.assert_not_called()
+        self.assertNotIn('SECRET', output.getvalue())
+
+    def test_webhook_and_other_reader_errors_are_distinct_from_no_message(self):
+        for description, expected in [('Conflict: webhook SECRET', 'has a webhook'),
+                                      ('Conflict: terminated by other getUpdates request SECRET', 'Another reader')]:
+            error = urllib.error.HTTPError('https://SECRET', 409, 'SECRET', {},
+                io.BytesIO(json.dumps({'description': description}).encode()))
+            output = io.StringIO()
+            with tempfile.TemporaryDirectory() as directory:
+                status = chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory},
+                    Mock(side_effect=error), output,
+                    identify=Mock(return_value={'username': 'my_shop_bot', 'is_bot': True}))
+            self.assertEqual(status, 1)
+            self.assertIn(expected, output.getvalue())
+            self.assertNotIn('No private text message is available', output.getvalue())
+            self.assertNotIn('SECRET', output.getvalue())
 
     def test_no_messages_explains_start(self):
         status, output, _ = self.discover([])
@@ -53,7 +101,7 @@ class StartupTests(unittest.TestCase):
         self.assertIn('Send /start', output)
 
     def test_multiple_chats_no_guess(self):
-        status, output, _ = self.discover([{'message': {'chat': {'id': n, 'type': 'private'}}} for n in (1, 2)])
+        status, output, _ = self.discover([{'message': {'text': 'hello', 'chat': {'id': n, 'type': 'private'}}} for n in (1, 2)])
         self.assertEqual(status, 1)
         self.assertIn('no chat was selected', output)
 
@@ -78,7 +126,7 @@ class StartupTests(unittest.TestCase):
     def test_provider_error_does_not_leak_token_or_response(self):
         output = io.StringIO()
         with tempfile.TemporaryDirectory() as directory:
-            self.assertEqual(chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory}, Mock(side_effect=RuntimeError('123:SECRET response')), output), 1)
+            self.assertEqual(chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory}, Mock(side_effect=RuntimeError('123:SECRET response')), output, identify=Mock(return_value={'username': 'my_shop_bot', 'is_bot': True})), 1)
         self.assertNotIn('123:SECRET', output.getvalue())
         self.assertIn('RuntimeError', output.getvalue())
 
