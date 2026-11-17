@@ -69,6 +69,7 @@ jobs:
       # repository, so this never fails the build.
       - name: make outdated
         run: |
+          # Informational only: this pipeline is not a compatibility pass/fail gate.
           make outdated 2>&1 | tee /tmp/outdated.txt
           {
             echo '## Upstream rasa-pro'
@@ -184,10 +185,11 @@ jobs:
           SNAPSHOTS: ${{ needs.discover.outputs.snapshots }}
         run: |
           set -euo pipefail
-          mapfile -t PROJECTS < <(
-            printf '%s' "$SNAPSHOTS" |
-              python -c 'import json,sys; [print(p) for p in json.load(sys.stdin)]'
-          )
+          snapshot_projects_file=$(mktemp "$RUNNER_TEMP/snapshot-projects.XXXXXX")
+          trap 'rm -f "$snapshot_projects_file"' EXIT
+          printf '%s' "$SNAPSHOTS" |
+            python -c 'import json,sys; [print(p) for p in json.load(sys.stdin)]' > "$snapshot_projects_file"
+          mapfile -t PROJECTS < "$snapshot_projects_file"
           if [ "${#PROJECTS[@]}" -eq 0 ]; then
             echo "No frozen wave projects to check."
             echo "No frozen wave projects to check." >> "$GITHUB_STEP_SUMMARY"
