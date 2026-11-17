@@ -9,13 +9,18 @@ import subprocess
 import tempfile
 import unittest
 import urllib.error
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from shop_demo.startup import HELP, chat_id, doctor, failure_hint
 from setup_environments import ensure
 
 
 class StartupTests(unittest.TestCase):
+    def setUp(self):
+        network = patch("urllib.request.urlopen", side_effect=AssertionError("Real Telegram HTTP is forbidden in startup tests"))
+        network.start()
+        self.addCleanup(network.stop)
+
     def test_doctor_explains_every_missing_name_without_io(self):
         output = io.StringIO()
         self.assertEqual(doctor({}, output), 1)
@@ -87,7 +92,7 @@ class StartupTests(unittest.TestCase):
                     identify=Mock(return_value={'username': 'my_shop_bot', 'is_bot': True}))
             self.assertEqual(status, 1)
             self.assertIn(expected, output.getvalue())
-            self.assertNotIn('No private message has arrived', output.getvalue())
+            self.assertNotIn('No private text message is available', output.getvalue())
             self.assertNotIn('SECRET', output.getvalue())
 
     def test_no_messages_explains_start(self):
