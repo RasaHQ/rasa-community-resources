@@ -26,7 +26,7 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertEqual(configuration["features"], {g.SSHD_FEATURE: {}})
         self.assertIn("server/.venv/bin/python", entry["ready"])
         self.assertIn("consent/.venv/bin/python", entry["ready"])
-        self.assertEqual(entry["first"], "make google-signin")
+        self.assertEqual(entry["first"], "make doctor")
         self.assertNotIn("forward", entry["before_first"])
         self.assertTrue(entry["secrets"]["GOOGLE_TOKEN_JSON"])
 
