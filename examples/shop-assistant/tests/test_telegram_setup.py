@@ -73,6 +73,23 @@ class TelegramSetupTests(unittest.TestCase):
             self.assertEqual([call.args[1] for call in request.call_args_list], ['getMe', 'getWebhookInfo', 'getUpdates'])
             shell.assert_not_called()
 
+    def test_empty_poll_then_private_arrival_uses_same_token_without_offset(self):
+        polls = []
+        def request(token, method, payload, **kwargs):
+            if method == 'getMe':
+                return IDENTITY
+            if method == 'getWebhookInfo':
+                return {'url': ''}
+            polls.append(dict(payload))
+            self.assertEqual(token, TOKEN)
+            self.assertNotIn('offset', payload)
+            return [] if len(polls) == 1 else [PRIVATE]
+        result, text, _, _, clock = self.run_setup(request=request, ask=Mock(return_value='no'))
+        self.assertEqual(result, 0)
+        self.assertEqual(len(polls), 2)
+        self.assertEqual(clock.value, 2)
+        self.assertIn('Your private chat ID: 77', text)
+
     def test_empty_membership_and_group_time_out(self):
         for updates in ([], [{'my_chat_member': {'chat': {'id': 77, 'type': 'private'}}}],
                 [{'message': {'text': 'PRIVATE_TEXT_CANARY', 'chat': {'id': -9, 'type': 'group'}}}]):

@@ -22,12 +22,17 @@ def configuration_key(token, chat):
 
 
 def private_file(path, flags):
-    descriptor = os.open(path, flags | os.O_NOFOLLOW, 0o600)
-    info = os.fstat(descriptor)
-    if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
-            or stat.S_IMODE(info.st_mode) != 0o600 or info.st_nlink != 1):
+    # Opening a FIFO can block before fstat. Nonblocking admission applies to
+    # readers AND writers; unexpected objects must survive untouched.
+    descriptor = os.open(path, flags | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+    try:
+        info = os.fstat(descriptor)
+        if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+                or stat.S_IMODE(info.st_mode) != 0o600 or info.st_nlink != 1):
+            raise PermissionError('Use private local activity files')
+    except BaseException:
         os.close(descriptor)
-        raise PermissionError('Use private local activity files')
+        raise
     return descriptor
 
 
