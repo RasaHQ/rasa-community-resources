@@ -9,7 +9,10 @@ import os
 from pathlib import Path
 import re
 import sys
+import urllib.error
 import urllib.request
+
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt
 
@@ -24,6 +27,12 @@ HELP = {
     'SHOP_SHEET_ID': 'Create a dedicated blank Google Sheet. Copy only the identifier between /d/ and /edit in its browser address.',
     'SHOP_OPERATOR_CHAT_ID': 'Send /start to your own bot, stop any running assistant, then run make chat-id. Save the printed private chat ID.',
 }
+
+
+class BotIdentity(BaseModel):
+    model_config = ConfigDict(extra="ignore", strict=True, hide_input_in_errors=True)
+    username: str = Field(pattern=r"^[A-Za-z0-9_]{5,32}$")
+    is_bot: Literal[True]
 
 
 class PrivateChat(BaseModel):
@@ -66,14 +75,42 @@ def discovery_lock(directory):
         os.close(descriptor)
 
 
-def read_updates(token):
-    request = urllib.request.Request('https://api.telegram.org/bot' + token + '/getUpdates',
-        data=b'{"timeout":0,"limit":100}', headers={'Content-Type': 'application/json'}, method='POST')
+def telegram_request(token, method, payload):
+    request = urllib.request.Request('https://api.telegram.org/bot' + token + '/' + method,
+        data=json.dumps(payload).encode(), headers={'Content-Type': 'application/json'}, method='POST')
     with urllib.request.urlopen(request, timeout=15) as response:
         return json.loads(response.read(1024 * 1024))
 
 
-def chat_id(environ=None, fetch=None, output=None):
+def read_updates(token):
+    return telegram_request(token, 'getUpdates', {'timeout': 0, 'limit': 100,
+        'allowed_updates': ['message', 'edited_message', 'my_chat_member']})
+
+
+def read_identity(token):
+    payload = telegram_request(token, 'getMe', {})
+    if not isinstance(payload, dict) or payload.get('ok') is not True:
+        raise ValueError('Telegram identity response shape')
+    return payload.get('result')
+
+
+def http_failure_hint(error):
+    if error.code == 401:
+        return 'Telegram rejected TELEGRAM_BOT_TOKEN. Copy the exact token from @BotFather, save it as a Codespace secret and restart the Codespace.'
+    if error.code == 409:
+        try:
+            description = json.loads(error.read(8192)).get('description', '')
+        except Exception:
+            description = ''
+        if isinstance(description, str) and 'webhook' in description.lower():
+            return 'This bot has a webhook. Use a personal bot without a webhook, or review and remove that webhook before polling. No webhook was changed.'
+        return 'Another reader may be polling this bot. Stop the other assistant or poller before running make chat-id.'
+    if error.code == 429:
+        return 'Telegram rate-limited the request. Wait before running make chat-id again.'
+    return 'Telegram could not complete the request. Check the bot token and network; no update offset was advanced.'
+
+
+def chat_id(environ=None, fetch=None, output=None, *, identify=None):
     environ = os.environ if environ is None else environ
     output = sys.stdout if output is None else output
     token = environ.get('TELEGRAM_BOT_TOKEN', '')
@@ -82,22 +119,33 @@ def chat_id(environ=None, fetch=None, output=None):
         return 1
     try:
         with discovery_lock(environ.get('SHOP_STATE_DIR', '.state')):
+            identity = BotIdentity.model_validate((read_identity if identify is None else identify)(token))
+            print(f'Listening as @{identity.username}: send /start to this bot', file=output, flush=True)
             payload = (read_updates if fetch is None else fetch)(token)
         if not isinstance(payload, dict) or payload.get('ok') is not True or not isinstance(payload.get('result'), list):
             raise ValueError('Telegram response shape')
-        chats = set()
+        chats, kinds = set(), set()
+        known_kinds = {'message', 'edited_message', 'channel_post', 'edited_channel_post',
+            'my_chat_member', 'chat_member', 'callback_query', 'inline_query', 'chosen_inline_result',
+            'poll', 'poll_answer', 'message_reaction', 'message_reaction_count',
+            'business_connection', 'business_message', 'edited_business_message', 'deleted_business_messages'}
         for update in payload['result']:
             if not isinstance(update, dict):
+                kinds.add('other')
                 continue
-            message = update.get('message')
-            if not isinstance(message, dict) or not isinstance(message.get('chat'), dict):
+            observed = known_kinds.intersection(update)
+            kinds.update(observed or {'other'})
+            message = update.get('message', update.get('edited_message'))
+            if not isinstance(message, dict) or not isinstance(message.get('text'), str) or not isinstance(message.get('chat'), dict):
                 continue
             if message['chat'].get('type') != 'private':
                 continue
             chat = PrivateChat.model_validate(message['chat'])
             chats.add(chat.id)
         if not chats:
-            print('No private message has arrived yet. Send /start to your own bot in Telegram, then run make chat-id again. The assistant must be stopped.', file=output)
+            if payload['result']:
+                print('Updates arrived, but none is a private text message. Kinds seen: ' + ', '.join(sorted(kinds)) + '. No message text or chat IDs are shown.', file=output)
+            print('No private text message is available. Send /start to the bot named above in a private Telegram chat, then run make chat-id again. The assistant must be stopped.', file=output)
             return 1
         if len(chats) != 1:
             print('More than one private chat is present. Use a new personal bot for this example; no chat was selected.', file=output)
@@ -105,6 +153,8 @@ def chat_id(environ=None, fetch=None, output=None):
         print('Your private chat ID: ' + str(chats.pop()), file=output)
         print('Save this number as SHOP_OPERATOR_CHAT_ID in personal Codespaces secrets; grant this repository access and restart the Codespace.', file=output)
         return 0
+    except urllib.error.HTTPError as error:
+        print(f'Telegram HTTP {error.code}: ' + http_failure_hint(error), file=output)
     except BlockingIOError:
         print('The assistant is running. Stop it with Ctrl-C before make chat-id; two Telegram readers must not overlap.', file=output)
     except Exception as error:
