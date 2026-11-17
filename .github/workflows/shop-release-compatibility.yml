@@ -10,6 +10,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+defaults:
+  run:
+    shell: bash
 jobs:
   shop:
     name: shop / ${{ matrix.release }}
@@ -33,6 +36,17 @@ jobs:
         with:
           python-version: '3.12'
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - name: Prove failed and timed-out test pipelines remain failures
+        run: |
+          set +e
+          python -c 'raise SystemExit(17)' 2>&1 | tee "$RUNNER_TEMP/shop-release-control-failed.log"
+          failed_status=$?
+          timeout 1s python -c 'import time; time.sleep(10)' 2>&1 | tee "$RUNNER_TEMP/shop-release-control-timeout.log"
+          timeout_status=$?
+          set -e
+          printf 'FAILED_TEST_EXIT=%s TIMEOUT_EXIT=%s\n' "$failed_status" "$timeout_status" | tee "$RUNNER_TEMP/shop-release-control-status.log"
+          test "$failed_status" -eq 17
+          test "$timeout_status" -eq 124
       - name: Apply the stock migration to the selected shop only
         run: |
           python - <<'PY'
