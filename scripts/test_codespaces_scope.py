@@ -1,8 +1,10 @@
 """Which Codespace configurations the CI build covers on each kind of run."""
 import json
+import os
 import subprocess
 import sys
 import tempfile
+import textwrap
 import unittest
 from pathlib import Path
 
@@ -10,6 +12,58 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import codespaces_scope as scope
 
 RES = [{"path": f"examples/{n}", "slug": f"examples-{n}"} for n in ("a", "b", "c", "d")]
+
+
+class ReadinessPipelineTests(unittest.TestCase):
+    """Run the actual workflow recipe with synthetic producer/logger commands."""
+
+    def execute(self, producer_status=0, logger_status=0, ready=True):
+        workflow = (Path(__file__).resolve().parents[1] /
+                    ".github/workflows/codespaces-build.yml").read_text()
+        step = workflow.split("      - name: Resource reports READY\n", 1)[1]
+        recipe = step.split("        run: |\n", 1)[1].split("\n      - name:", 1)[0]
+        recipe = textwrap.dedent(recipe).replace("${{ matrix.resource.slug }}", "synthetic")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            tools = root / "tools"
+            tools.mkdir()
+            (tools / "jq").write_text("#!/bin/sh\nprintf 'synthetic-command\\n'\n")
+            marker = "READY: synthetic fixture" if ready else "NOT READY: synthetic fixture"
+            (tools / "devcontainer").write_text(
+                "#!/bin/sh\nprintf '%s\\n' '" + marker + "'\nexit " + str(producer_status) + "\n")
+            if logger_status:
+                (tools / "tee").write_text(
+                    '#!/bin/sh\ncat > "$1"\nexit ' + str(logger_status) + '\n')
+            for executable in tools.iterdir():
+                executable.chmod(0o755)
+            result = subprocess.run(["bash", "--noprofile", "--norc", "-e", "-c", recipe],
+                                    cwd=root, env=dict(os.environ, PATH=str(tools) + os.pathsep + os.environ["PATH"]),
+                                    capture_output=True, text=True, timeout=10)
+            return result.returncode, (root / "ready.txt").read_text(), (root / "ready-status.txt").read_text()
+
+    def test_ready_with_success_passes_and_retains_both_statuses(self):
+        code, output, statuses = self.execute()
+        self.assertEqual(code, 0)
+        self.assertIn("READY: synthetic fixture", output)
+        self.assertEqual(statuses, "producer=0\nlogger=0\n")
+
+    def test_ready_followed_by_producer_failure_is_not_a_pass(self):
+        code, output, statuses = self.execute(producer_status=17)
+        self.assertEqual(code, 17)
+        self.assertIn("READY: synthetic fixture", output)
+        self.assertEqual(statuses, "producer=17\nlogger=0\n")
+
+    def test_logger_failure_is_not_a_pass_even_with_ready_output(self):
+        code, output, statuses = self.execute(logger_status=9)
+        self.assertEqual(code, 9)
+        self.assertIn("READY: synthetic fixture", output)
+        self.assertEqual(statuses, "producer=0\nlogger=9\n")
+
+    def test_successful_producer_without_ready_marker_is_not_a_pass(self):
+        code, output, statuses = self.execute(ready=False)
+        self.assertNotEqual(code, 0)
+        self.assertIn("NOT READY", output)
+        self.assertEqual(statuses, "producer=0\nlogger=0\n")
 
 
 class Choose(unittest.TestCase):
