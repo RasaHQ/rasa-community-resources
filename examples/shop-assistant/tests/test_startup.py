@@ -77,7 +77,8 @@ class StartupTests(unittest.TestCase):
 
     def test_provider_error_does_not_leak_token_or_response(self):
         output = io.StringIO()
-        self.assertEqual(chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET'}, Mock(side_effect=RuntimeError('123:SECRET response')), output), 1)
+        with tempfile.TemporaryDirectory() as directory:
+            self.assertEqual(chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory}, Mock(side_effect=RuntimeError('123:SECRET response')), output), 1)
         self.assertNotIn('123:SECRET', output.getvalue())
         self.assertIn('RuntimeError', output.getvalue())
 

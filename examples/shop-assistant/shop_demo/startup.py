@@ -116,7 +116,8 @@ def chat_id(environ=None, fetch=None, output=None):
 def safe_error_type(error):
     known = {'ValueError', 'ValidationError', 'RuntimeError', 'TimeoutError', 'ConnectionError',
              'HTTPError', 'URLError', 'PermissionError', 'FileNotFoundError', 'BlockingIOError',
-             'ImportError', 'ModuleNotFoundError', 'OSError'}
+             'ImportError', 'ModuleNotFoundError', 'OSError', 'Held', 'SheetFailure',
+             'ShopError', 'TelegramError', 'McpError', 'StartupConfigurationError'}
     name = type(error).__name__
     return name if name in known else 'ProviderError'
 
