@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import socket
+import sys
 import tarfile
 import tempfile
 import unittest
@@ -82,6 +83,12 @@ class NativeChecks(unittest.IsolatedAsyncioTestCase):
                      for request in completions for tool in request["tools"]}
         for name in ("product_catalog", "price_basket", "order_progress", "ask_basket_details"):
             self.assertNotIn("context", functions[name]["parameters"].get("properties", {}))
+
+    async def test_owned_agent_process_exits_within_five_seconds_after_close(self):
+        from child_exit_control import require_process_exit
+        code, transcript = await require_process_exit([sys.executable, '-B',
+            str(PROJECT / 'tests/agent_exit_check.py')], cwd=PROJECT)
+        self.assertEqual(code, 0, transcript)
 
     async def test_invalid_token_stops_before_mcp_without_printing_secret(self):
         from pydantic import SecretStr
@@ -187,6 +194,11 @@ class NativeChecks(unittest.IsolatedAsyncioTestCase):
                 async with Assistant(object(), project=PROJECT, state_directory=Path(directory),
                     clock=lambda: datetime.now(timezone.utc)) as assistant:
                     self.assertIsNotNone(assistant.agent)
+                    manager = assistant.agent.privacy_manager
+                if manager is not None:
+                    self.assertFalse(manager.can_consume_from_tracker_queue)
+                    self.assertFalse(manager.background_scheduler.running)
+                self.assertIsNone(assistant.agent)
 
     async def test_mcp1_client_calls_mcp2_core_server_and_replays_original(self):
         with tempfile.TemporaryDirectory() as directory:

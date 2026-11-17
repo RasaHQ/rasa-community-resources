@@ -15,9 +15,8 @@ class ShopClient:
         self.stack, self.session = None, None
 
     async def __aenter__(self):
-        from importlib.metadata import version
-        if version("mcp") != "1.28.1":
-            raise RuntimeError("The assistant requires its locked MCP client environment")
+        from .locked_versions import require_locked_version
+        require_locked_version(self.directory, "mcp")
         from mcp import ClientSession, StdioServerParameters
         from mcp.client.stdio import stdio_client
         self.stack = AsyncExitStack()
