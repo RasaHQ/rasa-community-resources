@@ -49,6 +49,28 @@ class NativeHostTests(unittest.TestCase):
         review=self.gateway.control('review',{'credential':token})
         self.gateway.control('delivered',{'credential':token,'review':review['review']})
 
+    def test_pending_marker_is_committed_before_the_bank_client_is_called(self):
+        import sqlite3
+
+        observed = []
+        original_call = self.client.call
+
+        async def observe_call(name, body):
+            if name == 'postTransfer':
+                # A separate connection cannot see an uncommitted marker.
+                with sqlite3.connect(self.root / 'journal' / 'journal.sqlite3') as reader:
+                    observed.append(reader.execute('SELECT state FROM operations').fetchall())
+            return await original_call(name, body)
+
+        self.client.call = observe_call
+        self.turn(1, 'review a transfer')
+        self.review()
+        self.deliver()
+        self.assertEqual(self.turn(2, 'yes')['state'], 'accepted')
+        self.assertEqual(observed, [[('pending',)]],
+                         'the durable pending marker must be visible before the bank call')
+        self.assertEqual(len(self.client.sends), 1)
+
     def test_review_and_missing_delivery_never_send(self):
         self.turn(1,'review a transfer');self.review()
         self.assertEqual(self.client.sends,[])
