@@ -5,6 +5,7 @@ SERVER_PYTHON ?= server/.venv/bin/python
 
 .PHONY: help setup doctor chat-id run google-signin consent setup-sheet test test-native test-startup
 help:
+	@echo "help           List the available commands (the default)"
 	@echo "setup          Create missing locked environments; reuse matching existing ones"
 	@echo "doctor         Check settings by name and explain missing values"
 	@echo "chat-id        Read your private chat ID after you message your own bot"
