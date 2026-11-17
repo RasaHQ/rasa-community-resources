@@ -82,9 +82,8 @@ class Assistant:
             raise RuntimeError("Only one shop assistant may run in this process")
         os.environ["LITELLM_LOCAL_MODEL_COST_MAP"] = "True"
         os.environ["RASA_TELEMETRY_ENABLED"] = "false"
-        from importlib.metadata import version
-        if version("rasa-pro") != "3.21.0.dev5":
-            raise RuntimeError("Use the example's locked Rasa environment")
+        from .locked_versions import require_locked_version
+        require_locked_version(self.project, "rasa-pro")
         from rasa.utils.licensing import validate_license_from_env
         validate_license_from_env()
         from rasa.mantle.model_archive.snapshot import package_model_archive
