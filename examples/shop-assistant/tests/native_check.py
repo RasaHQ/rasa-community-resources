@@ -85,31 +85,10 @@ class NativeChecks(unittest.IsolatedAsyncioTestCase):
             self.assertNotIn("context", functions[name]["parameters"].get("properties", {}))
 
     async def test_owned_agent_process_exits_within_five_seconds_after_close(self):
-        import signal
-        child = await asyncio.create_subprocess_exec(sys.executable, '-B',
-            str(PROJECT / 'tests/agent_exit_check.py'), cwd=PROJECT,
-            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT,
-            start_new_session=True)
-        lines = []
-        try:
-            async with asyncio.timeout(60):
-                while True:
-                    line = await child.stdout.readline()
-                    lines.append(line.decode(errors='replace'))
-                    if line == b'AGENT_CLOSE_COMPLETE\n':
-                        break
-                    self.assertTrue(line, ''.join(lines))
-            try:
-                async with asyncio.timeout(5):
-                    remainder = await child.stdout.read()
-                    await child.wait()
-            except TimeoutError:
-                self.fail('Agent process did not exit within five seconds after close: ' + ''.join(lines))
-            self.assertEqual(child.returncode, 0, ''.join(lines) + remainder.decode(errors='replace'))
-        finally:
-            if child.returncode is None:
-                os.killpg(child.pid, signal.SIGKILL)
-                await child.wait()
+        from child_exit_control import require_process_exit
+        code, transcript = await require_process_exit([sys.executable, '-B',
+            str(PROJECT / 'tests/agent_exit_check.py')], cwd=PROJECT)
+        self.assertEqual(code, 0, transcript)
 
     async def test_invalid_token_stops_before_mcp_without_printing_secret(self):
         from pydantic import SecretStr
