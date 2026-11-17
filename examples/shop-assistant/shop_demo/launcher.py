@@ -15,6 +15,7 @@ from .conversation import Conversation
 from .mcp_client import ShopClient
 from .settings import Settings
 from .state import open_state
+from .startup import failure_hint
 
 
 class StartupConfigurationError(ValueError):
@@ -105,8 +106,11 @@ def main():
     except StartupConfigurationError as error:
         print(str(error), file=sys.stderr)
         return 1
-    except (Exception, KeyboardInterrupt):
-        print("Shop assistant stopped. Preserve .state and inspect the original turn before restarting.", file=sys.stderr)
+    except KeyboardInterrupt:
+        print("Shop assistant stopped by keyboard. Preserve .state before restarting.", file=sys.stderr)
+        return 1
+    except Exception as error:
+        print(failure_hint(error), file=sys.stderr)
         return 1
     return 0
 

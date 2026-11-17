@@ -330,8 +330,8 @@ def manifest(project) -> dict:
         entry.update(
             install='cd "$(git rev-parse --show-toplevel)/examples/shop-assistant" && make setup',
             ready='test -x .venv/bin/python && test -x server/.venv/bin/python && test -x consent/.venv/bin/python',
-            first="make google-signin",
-            see="the Google sign-in link. Paste the final browser address back into this terminal, save GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.",
+            first="make doctor",
+            see="setting names marked SET or MISSING or INVALID, with instructions for each missing value. Complete the named steps, rerun make doctor, then make setup-sheet and make run.",
             before_first="Create a blank demo Sheet and add the initial Codespace secrets. Google sign-in produces GOOGLE_TOKEN_JSON. All commands run in this Codespace terminal.",
             secrets={license_secret: True, "OPENAI_API_KEY": True, "TELEGRAM_BOT_TOKEN": True,
                      "GOOGLE_CLIENT_SECRETS_JSON": True, "GOOGLE_TOKEN_JSON": True,

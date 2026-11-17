@@ -40,8 +40,8 @@ their own bot and dedicated Sheet.
 
 - **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_PRO_LICENSE`, `OPENAI_API_KEY`, `TELEGRAM_BOT_TOKEN`, `GOOGLE_CLIENT_SECRETS_JSON`, `GOOGLE_TOKEN_JSON`, `SHOP_SHEET_ID`, `SHOP_OPERATOR_CHAT_ID`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
 - **Before the first command:** Create a blank demo Sheet and add the initial Codespace secrets. Google sign-in produces GOOGLE_TOKEN_JSON. All commands run in this Codespace terminal.
-- **First command:** `make google-signin`. The terminal opens in this folder, and the creation log ends with `READY`.
-- **You should see:** the Google sign-in link. Paste the final browser address back into this terminal, save GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.
+- **First command:** `make doctor`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** setting names marked SET or MISSING or INVALID, with instructions for each missing value. Complete the named steps, rerun make doctor, then make setup-sheet and make run.
 <!-- codespaces:end -->
 
 **Work in progress:** the complete live order walkthrough has not passed.
@@ -96,12 +96,21 @@ a name prefix or surrounding quotes. GitHub hides the saved values.
 | `GOOGLE_CLIENT_SECRETS_JSON` | The complete Google Desktop OAuth client JSON, for consent only |
 | `GOOGLE_TOKEN_JSON` | The authorized-user JSON returned by consent; required before setup and run |
 
-Send `/start` to your own bot so it may message you later. It will not answer
-until the demo is running. To find your private chat ID without another bot,
-open [Telegram Web A](https://web.telegram.org/a/), select Saved Messages,
-and copy the number after `#` in the address into `SHOP_OPERATOR_CHAT_ID`.
-Alternatively, `@userinfobot` is a third-party bot: send it `/start` and copy
-the number after `Id:`.
+Send `/start` to your own bot so Telegram has a private message from you.
+With the assistant stopped, run:
+
+```sh
+make chat-id
+```
+
+This reads pending Telegram updates and prints your numeric private chat ID.
+It does not send a message or advance the update offset. Save that number as
+`SHOP_OPERATOR_CHAT_ID`. If no message has arrived, send `/start` to your own
+bot and run the command again. If several private chats are present, use a new
+personal bot for this example. Do not run another poller for this bot at the
+same time. The command uses a private local lock file under `.state` and refuses when
+the local assistant holds it. It does not write conversation or order records.
+Your bot's ID or token is not your private chat ID.
 
 Enable the Google Sheets API for the OAuth client project. If its consent
 screen is in Testing, add your Google account as a test user. Use the Sheets
@@ -120,10 +129,24 @@ secret. It does not write client or token files.
 
 In a fresh checkout, run `make setup` from this example's directory. It creates
 three separate environments from their locks: native Rasa, the Core MCP server
-and Google consent. It refuses to replace an existing environment. A Codespace
+and Google consent. On a second run, it reuses an existing environment when its recorded owner, project path and lock inputs match. It does not replace mismatched or unrecorded environments; preserve them and use a fresh Codespace. This reuse check does not audit every installed file. A Codespace
 created from this example's launch button performs that setup during creation.
 
-Run every command below in this example's Codespace terminal. First sign in:
+Run every command below in this example's Codespace terminal. Start with:
+
+```sh
+make
+make setup
+make doctor
+```
+
+Plain `make` only lists commands. `make doctor` makes no network calls or state
+changes. It checks all seven setting names without printing values. Follow its
+instructions for missing settings: create the Sheet and save its ID; use
+`make chat-id` after messaging your own bot; complete Google sign-in below.
+The doctor may report the Google token missing until sign-in is complete.
+
+First sign in:
 
 ```sh
 make google-signin
@@ -148,9 +171,13 @@ environment checks; the bot starts only when you run `make run`.
 Then return to this example's Codespace terminal:
 
 ```sh
+make doctor
 make setup-sheet
 make run
 ```
+
+`make run` checks the doctor first and stops with instructions if a setting is
+missing or invalid. Wait for the ready message before messaging the bot.
 
 `make setup-sheet` uses the same Google token and `SHOP_SHEET_ID`. It creates
 `Products` and `Orders` only when they are missing. In an empty Products tab,
@@ -211,7 +238,7 @@ updates or 15 minutes, whichever comes first.
 
 | What you see | What to check |
 | --- | --- |
-| A missing-secret message | Save the named value in personal Codespaces secrets, grant this repository access, then stop and start the Codespace. GitHub Actions secrets are a different setting. |
+| `MISSING or INVALID` from doctor | Save the named value in personal Codespaces secrets, grant this repository access, then stop and start the Codespace. GitHub Actions secrets are a different setting. |
 | `TELEGRAM_BOT_TOKEN was rejected` | Copy only the bot token from BotFather, without labels or quotes. Save it again and restart the Codespace. Keep its value private. |
 | No reply in Telegram | Wait for the terminal's ready message, send `/start` to the intended bot, and check that `SHOP_OPERATOR_CHAT_ID` is your private chat ID. Run one assistant for this bot and Sheet. |
 | The fallback repeats and the trace says `unexpected keyword argument 'context'` | Stop this old version and preserve `.state`. Use the reviewed fix from RasaHQ main: every native tool must accept the `ToolContext` Rasa supplies. This is a Python tool-signature error, not a different way to phrase the question. |
@@ -221,6 +248,10 @@ updates or 15 minutes, whichever comes first.
 | A write or send is uncertain | Stop and preserve `.state`. Inspect the original Sheet row or Telegram message before restarting; do not delete the journal or repeat the write. |
 
 ## Development checks
+
+`make test-startup` uses fakes to check missing settings, chat-ID discovery,
+safe failure hints and environment reuse. It makes no live calls.
+
 
 `make test` checks the shop, durable conversation and Google sign-in helper
 with synthetic provider responses. `make test-native` uses the actual locked
