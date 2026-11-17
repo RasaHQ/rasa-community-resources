@@ -56,7 +56,10 @@ jobs:
           python scripts/workspace.py start examples/shop-assistant/consent --owner shop-release-consent
       - name: Fake shop and native protocol controls (no provider credentials)
         working-directory: examples/shop-assistant
+        env:
+          TMPDIR: ${{ runner.temp }}/shop-release-fixtures
         run: |
+          mkdir -p "$TMPDIR"
           .venv/bin/python -B -c 'from importlib.metadata import version; print("rasa-pro", version("rasa-pro"), "mcp", version("mcp"))'
           make test 2>&1 | tee "$RUNNER_TEMP/shop-release-unit.log"
           timeout --signal=ABRT --kill-after=15s 180s make test-native 2>&1 | tee "$RUNNER_TEMP/shop-release-native.log"
@@ -67,6 +70,7 @@ jobs:
           name: shop-release-${{ matrix.release }}
           path: |
             ${{ runner.temp }}/shop-release-*.log
+            ${{ runner.temp }}/shop-release-fixtures
             examples/shop-assistant/pyproject.toml
             examples/shop-assistant/uv.lock
             examples/shop-assistant/agent.yml
