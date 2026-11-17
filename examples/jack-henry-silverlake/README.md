@@ -104,7 +104,7 @@ This example runs only in GitHub Codespaces, which gives everyone the same teste
 
 - **Before starting:** save `RASA_LICENSE`, `OPENAI_API_KEY`, and `DEEPGRAM_API_KEY` as personal Codespaces secrets. [Get the keys](https://rasa.community/keys/) and follow [the walkthrough](#walkthrough).
 - **Use this badge:** it selects this example's development environment.
-- **After the setup log says `READY`:** run `make download` and wait for `Saved and checked`, then run `make run`.
+- **After the setup log says `READY`:** run `make` for help, then `make doctor`; follow its instructions, run `make download`, and repeat `make doctor` until it says ready, then run `make run`.
 - **Open the assistant:** wait for `Rasa server is up and running`, then follow the printed Inspector link. The server uses port `5005`.
 <!-- codespaces:end -->
 
@@ -121,6 +121,16 @@ The **terminal** is the panel where you enter commands. It opens in this example
 
 **Checkpoint:** setup has printed `READY` and the terminal is available for input. This means the environment is prepared; the banking assistant is not running yet.
 
+Run `make` to see the available commands. It shows help and does not start the assistant. Then run:
+
+```bash
+make doctor
+```
+
+The doctor lists `RASA_LICENSE`, `OPENAI_API_KEY`, `DEEPGRAM_API_KEY`, the vendor archive filename, and the installed runtime. It never prints secret values or contacts a provider. `SET` means a value is present, not that the provider has accepted it. A missing vendor archive is expected before step 4. Follow every missing item's printed acquisition instructions.
+
+The Codespaces creation step already installs this folder's locked environment. To repeat that installation safely, run `make setup`. You can run it twice: it reuses the existing Python 3.12 environment and never resets vendor inputs or the transfer journal. If an existing environment is incomplete, linked, or uses another Python version, setup stops with a hint instead of removing it. Use a fresh README-button Codespace and preserve the old folder for investigation.
+
 ### 4. Download the banking API definitions
 
 In the terminal, paste this command and press **Enter**:
@@ -135,9 +145,13 @@ A **schema** describes the allowed structure of an API message: which fields it 
 
 **Checkpoint:** the terminal prints `Saved and checked`.
 
+Run `make doctor` again. Continue only when every prerequisite is ready and the final line says `Ready to start with make run.` A compatible newer vendor archive is checked by the same operation-compatibility rules as the launcher; a changed hash alone is not a reason to reject it. See [Vendor files and versions](#vendor-files-and-versions).
+
 If the download or check fails, do not continue or substitute a different archive. Read the error and use [Troubleshooting](#troubleshooting).
 
 ### 5. Start the assistant
+
+`make run` runs the doctor first. A missing prerequisite stops before the assistant or bank service starts. If a later service fails, the launcher prints a safe error type and recovery hint. Preserve the transfer journal and inspect an uncertain result before restarting; never repeat a transfer to find out whether it succeeded.
 
 Run:
 

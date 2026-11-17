@@ -59,6 +59,8 @@ class GeneratedFilesTests(unittest.TestCase):
             self.assertIn("Rasa server is up and running", block)
             prerequisite = "`make download`" if project.rel.endswith("silverlake") else "`vendor-inputs/`"
             self.assertLess(block.index(prerequisite), block.index("`make run`"))
+            if project.rel.endswith("silverlake"):
+                self.assertLess(block.index("`make doctor`"), block.index(prerequisite))
             checked.add(project.rel)
         self.assertEqual(checked, selected)
 
