@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import socket
+import sys
 import tarfile
 import tempfile
 import unittest
@@ -82,6 +83,33 @@ class NativeChecks(unittest.IsolatedAsyncioTestCase):
                      for request in completions for tool in request["tools"]}
         for name in ("product_catalog", "price_basket", "order_progress", "ask_basket_details"):
             self.assertNotIn("context", functions[name]["parameters"].get("properties", {}))
+
+    async def test_owned_agent_process_exits_within_five_seconds_after_close(self):
+        import signal
+        child = await asyncio.create_subprocess_exec(sys.executable, '-B',
+            str(PROJECT / 'tests/agent_exit_check.py'), cwd=PROJECT,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT,
+            start_new_session=True)
+        lines = []
+        try:
+            async with asyncio.timeout(60):
+                while True:
+                    line = await child.stdout.readline()
+                    lines.append(line.decode(errors='replace'))
+                    if line == b'AGENT_CLOSE_COMPLETE\n':
+                        break
+                    self.assertTrue(line, ''.join(lines))
+            try:
+                async with asyncio.timeout(5):
+                    remainder = await child.stdout.read()
+                    await child.wait()
+            except TimeoutError:
+                self.fail('Agent process did not exit within five seconds after close: ' + ''.join(lines))
+            self.assertEqual(child.returncode, 0, ''.join(lines) + remainder.decode(errors='replace'))
+        finally:
+            if child.returncode is None:
+                os.killpg(child.pid, signal.SIGKILL)
+                await child.wait()
 
     async def test_invalid_token_stops_before_mcp_without_printing_secret(self):
         from pydantic import SecretStr
@@ -187,6 +215,11 @@ class NativeChecks(unittest.IsolatedAsyncioTestCase):
                 async with Assistant(object(), project=PROJECT, state_directory=Path(directory),
                     clock=lambda: datetime.now(timezone.utc)) as assistant:
                     self.assertIsNotNone(assistant.agent)
+                    manager = assistant.agent.privacy_manager
+                if manager is not None:
+                    self.assertFalse(manager.can_consume_from_tracker_queue)
+                    self.assertFalse(manager.background_scheduler.running)
+                self.assertIsNone(assistant.agent)
 
     async def test_mcp1_client_calls_mcp2_core_server_and_replays_original(self):
         with tempfile.TemporaryDirectory() as directory:

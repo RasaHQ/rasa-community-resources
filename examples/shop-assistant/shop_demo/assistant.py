@@ -100,17 +100,26 @@ class Assistant:
         Configuration.initialise_sub_agents(None)
         self.agent = await load_agent(model_path=str(package.model), endpoints=AvailableEndpoints())
         if not isinstance(self.agent.processor, MantleMessageProcessor):
-            await self.agent.close()
-            self.agent = None
+            await self.close()
             raise RuntimeError("The native Mantle processor did not load")
         _bridge = self.client
         return self
 
+    async def close(self):
+        """Match Rasa's server shutdown: runtime close AND privacy scheduler stop."""
+        agent, self.agent = self.agent, None
+        if agent is not None:
+            try:
+                await agent.close()
+            finally:
+                # Agent.close stops runtime integrations/timers, but does not
+                # retire its privacy worker. This is Rasa's public owner hook.
+                agent.stop_privacy_manager()
+
     async def __aexit__(self, *error):
         global _bridge
         try:
-            if self.agent is not None:
-                await self.agent.close()
+            await self.close()
         finally:
             _bridge = None
 
