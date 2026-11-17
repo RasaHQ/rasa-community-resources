@@ -40,8 +40,8 @@ their own bot and dedicated Sheet.
 
 - **You need:** the free Rasa Developer Edition license and the keys it names: required `RASA_PRO_LICENSE`, `OPENAI_API_KEY`, `TELEGRAM_BOT_TOKEN`, `GOOGLE_CLIENT_SECRETS_JSON`, `GOOGLE_TOKEN_JSON`, `SHOP_SHEET_ID`, `SHOP_OPERATOR_CHAT_ID`, saved once as personal Codespaces secrets ([how](../../README.md#run-any-resource-in-a-github-codespace)). Use this button rather than the Codespaces picker, so you get this resource's setup.
 - **Before the first command:** Create a blank demo Sheet and add the initial Codespace secrets. Google sign-in produces GOOGLE_TOKEN_JSON. All commands run in this Codespace terminal.
-- **First command:** `make google-signin`. The terminal opens in this folder, and the creation log ends with `READY`.
-- **You should see:** the Google sign-in link. Paste the final browser address back into this terminal, save GOOGLE_TOKEN_JSON, restart the Codespace, then run make setup-sheet and make run.
+- **First command:** `make doctor`. The terminal opens in this folder, and the creation log ends with `READY`.
+- **You should see:** setting names marked SET or MISSING or INVALID, with instructions for each missing value. Complete the named steps, rerun make doctor, then make setup-sheet and make run.
 <!-- codespaces:end -->
 
 **Work in progress:** the complete live order walkthrough has not passed.
