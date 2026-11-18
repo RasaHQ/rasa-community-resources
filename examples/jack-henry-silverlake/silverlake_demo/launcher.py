@@ -13,8 +13,8 @@ import time
 from urllib.parse import urlencode
 
 from .contract import TESTED_WITH, ContractError, MissingContractInput, SilverLakeContract, VendorChanged
+from .startup import failure_hint, locked_rasa
 
-EXPECTED_RASA = "3.21.0.dev5"
 SECRETS = ("RASA_LICENSE", "OPENAI_API_KEY", "DEEPGRAM_API_KEY")
 
 
@@ -75,8 +75,8 @@ def main(project):
     from .demo_data import choose_seed, seed_line
     try:
         seed = choose_seed(os.environ)
-    except ValueError as error:
-        print("Not ready. " + str(error))
+    except ValueError:
+        print("Not ready (ValueError). DEMO_SEED must be an integer in the range described in README.md.")
         return 2
     print(seed_line(seed), flush=True)
     # Step 1: the learner-supplied vendor definitions. Stop with a plain message.
@@ -88,15 +88,15 @@ def main(project):
             changed = changed_operations(contract)
         if changed:
             raise VendorChanged(changed)
-    except MissingContractInput as missing:
-        print("Not ready. " + str(missing))
+    except MissingContractInput:
+        print("Not ready (MissingContractInput). Run make doctor for the exact vendor filename and download instructions.")
         return 2
     except VendorChanged as error:
-        print("Not ready. Jack Henry has changed something this example uses since the files it was tested with ("
+        print("Not ready (VendorChanged). Jack Henry has changed something this example uses since the files it was tested with ("
               + TESTED_WITH + "): " + "; ".join(error.changes) + '. See "Vendor files and versions" in README.md.')
         return 2
     except ContractError:
-        print("Not ready. The file in vendor-inputs/ cannot be read the way this example expects. "
+        print("Not ready (ContractError). The file in vendor-inputs/ cannot be read the way this example expects. "
               'See "Vendor files and versions" in README.md.')
         return 2
     if contract.newer_archive:
@@ -106,12 +106,12 @@ def main(project):
     load_dotenv(project / ".env", override=False)
     missing = [key for key in SECRETS if not os.environ.get(key, "").strip()]
     if missing:
-        print("Not ready. Add these Codespaces secrets, then rebuild: " + ", ".join(missing)
+        print("Not ready (ValueError). Run make doctor for the acquisition instructions for these missing names: " + ", ".join(missing)
               + ". The SilverLake mock needs no Jack Henry account.")
         return 2
     from importlib.metadata import version
-    if version("rasa-pro") != EXPECTED_RASA:
-        print("Not ready. Rebuild the locked project environment; the runtime pin differs.")
+    if version("rasa-pro") != locked_rasa(project):
+        print("Not ready (ValueError). Run make setup; the installed runtime differs from this folder's uv.lock.")
         return 2
     from rasa.mantle.model_archive.snapshot import package_model_archive
     from rasa.shared.utils.yaml import read_yaml_file, write_yaml
@@ -145,11 +145,11 @@ def main(project):
         while True:
             if server.poll() is not None:
                 if server.returncode == 4:
-                    print("Not ready. Another copy of this example is still running. "
+                    print("Not ready (RuntimeError). Another copy of this example is still running. "
                           "Press Ctrl+C in its terminal, or close that terminal, then try again.")
                     return 1
                 if server.returncode == 5:
-                    print("Not ready. The local transfer journal needs recovery; see the README section on the journal.")
+                    print("Not ready (RuntimeError). The local transfer journal needs recovery; see the README section on the journal.")
                     return 1
                 raise RuntimeError("backend_exited")
             try:
@@ -188,13 +188,17 @@ def main(project):
                     raise RuntimeError("backend_exited")
                 time.sleep(.2)
             # A Ctrl+C reaches Rasa too; its own exit code is then not a failure.
-            return 0 if stopped_by_the_caller() else inspector.returncode
+            if stopped_by_the_caller():
+                return 0
+            if inspector.returncode:
+                print(failure_hint(RuntimeError("Inspector exited")))
+            return inspector.returncode
     except KeyboardInterrupt:
         return 0
-    except Exception:
+    except Exception as error:
         if stopped_by_the_caller():
             return 0
-        print("Not ready. An owned service failed; no secret or raw service error is shown.")
+        print(failure_hint(error))
         return 1
     finally:
         for child in (inspector, server):
