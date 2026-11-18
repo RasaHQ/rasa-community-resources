@@ -1,0 +1,130 @@
+name: Shop release compatibility
+on:
+  pull_request:
+    paths:
+      - 'examples/shop-assistant/**'
+      - 'scripts/migrate_rasa_pro.py'
+      - 'scripts/migrate_mantle_config.py'
+      - 'RASA_PRO_VERSION'
+      - '.github/workflows/shop-release-compatibility.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  shop:
+    name: shop / ${{ matrix.release }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        release: ['current', '3.21.4']
+    env:
+      TARGET_RELEASE: ${{ matrix.release }}
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONFAULTHANDLER: '1'
+      RASA_TELEMETRY_ENABLED: 'false'
+      LITELLM_LOCAL_MODEL_COST_MAP: 'True'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - name: Prove failed and timed-out test pipelines remain failures
+        run: |
+          set +e
+          python -c 'raise SystemExit(17)' 2>&1 | tee "$RUNNER_TEMP/shop-release-control-unit.log"
+          unit_status=("$?" "${PIPESTATUS[@]}")
+          python -c 'raise SystemExit(23)' 2>&1 | tee "$RUNNER_TEMP/shop-release-control-native.log"
+          native_status=("$?" "${PIPESTATUS[@]}")
+          timeout 1s python -c 'import time; time.sleep(10)' 2>&1 | tee "$RUNNER_TEMP/shop-release-control-timeout.log"
+          timeout_status=("$?" "${PIPESTATUS[@]}")
+          printf 'logger failure control\n' | tee /dev/full
+          logger_status=("$?" "${PIPESTATUS[@]}")
+          set -e
+          {
+            printf 'UNIT pipeline=%s producer=%s tee=%s\n' "${unit_status[@]}"
+            printf 'NATIVE pipeline=%s producer=%s tee=%s\n' "${native_status[@]}"
+            printf 'TIMEOUT pipeline=%s producer=%s tee=%s\n' "${timeout_status[@]}"
+            printf 'LOGGER pipeline=%s producer=%s tee=%s\n' "${logger_status[@]}"
+          } | tee "$RUNNER_TEMP/shop-release-control-status.log"
+          test "${unit_status[*]}" = '17 17 0'
+          test "${native_status[*]}" = '23 23 0'
+          test "${timeout_status[*]}" = '124 124 0'
+          test "${logger_status[*]}" = '1 0 1'
+      - name: Apply the stock migration to the selected shop only
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          sys.path.insert(0, 'scripts')
+          from rasa_projects import discover_projects, read_expected_version
+          from migrate_rasa_pro import migrate_project
+          target = os.environ['TARGET_RELEASE']
+          if target == 'current':
+              target = read_expected_version()
+          project = next(p for p in discover_projects('catalog') if p.rel == 'examples/shop-assistant')
+          result = migrate_project(project, target, skip_lock=False, touch_assessed_on=False, dry_run=False)
+          print(json.dumps(result, indent=2))
+          if result['error']:
+              raise SystemExit(1)
+          PY
+      - name: Create only the three selected locked environments
+        run: |
+          python scripts/workspace.py start examples/shop-assistant --owner shop-release-native
+          python scripts/workspace.py start examples/shop-assistant/server --owner shop-release-server
+          python scripts/workspace.py start examples/shop-assistant/consent --owner shop-release-consent
+      - name: Fake shop and native protocol controls (no provider credentials)
+        working-directory: examples/shop-assistant
+        env:
+          TMPDIR: ${{ runner.temp }}/shop-release-fixtures
+        run: |
+          mkdir -p "$TMPDIR"
+          .venv/bin/python -B -c 'from importlib.metadata import version; print("rasa-pro", version("rasa-pro"), "mcp", version("mcp"))'
+          set +e
+          make test 2>&1 | tee "$RUNNER_TEMP/shop-release-unit.log"
+          unit_status=("$?" "${PIPESTATUS[@]}")
+          set -e
+          printf 'PIPELINE_EXIT=%s PRODUCER_EXIT=%s TEE_EXIT=%s\n' "${unit_status[@]}" | tee "$RUNNER_TEMP/shop-release-unit-status.log"
+          test "${unit_status[*]}" = '0 0 0'
+          set +e
+          timeout --signal=ABRT --kill-after=15s 180s make test-native 2>&1 | tee "$RUNNER_TEMP/shop-release-native.log"
+          native_status=("$?" "${PIPESTATUS[@]}")
+          set -e
+          printf 'PIPELINE_EXIT=%s PRODUCER_EXIT=%s TEE_EXIT=%s\n' "${native_status[@]}" | tee "$RUNNER_TEMP/shop-release-native-status.log"
+          test "${native_status[*]}" = '0 0 0'
+      - name: Preserve selected inputs and original test output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: shop-release-${{ matrix.release }}
+          include-hidden-files: true
+          path: |
+            ${{ runner.temp }}/shop-release-*.log
+            ${{ runner.temp }}/shop-release-fixtures
+            examples/shop-assistant/pyproject.toml
+            examples/shop-assistant/uv.lock
+            examples/shop-assistant/agent.yml
+            examples/shop-assistant/integrations.yml
+            examples/shop-assistant/.venv/.rasa-workspace.json
+            examples/shop-assistant/server/pyproject.toml
+            examples/shop-assistant/server/uv.lock
+            examples/shop-assistant/server/.venv/.rasa-workspace.json
+            examples/shop-assistant/consent/pyproject.toml
+            examples/shop-assistant/consent/uv.lock
+            examples/shop-assistant/consent/.venv/.rasa-workspace.json
+          retention-days: 14
+      - name: Retire inactive managed test environments
+        if: always()
+        run: |
+          for pair in 'examples/shop-assistant shop-release-native' 'examples/shop-assistant/server shop-release-server' 'examples/shop-assistant/consent shop-release-consent'; do
+            read -r project owner <<< "$pair"
+            if test -f "$project/.venv/.rasa-workspace.json"; then
+              python scripts/workspace.py retire "$project" --owner "$owner" --inactive
+            fi
+          done

@@ -96,18 +96,23 @@ a name prefix or surrounding quotes. GitHub hides the saved values.
 | `GOOGLE_CLIENT_SECRETS_JSON` | The complete Google Desktop OAuth client JSON, for consent only |
 | `GOOGLE_TOKEN_JSON` | The authorized-user JSON returned by consent; required before setup and run |
 
-Send `/start` to your own bot so Telegram has a private message from you.
-With the assistant stopped, run:
+With the assistant stopped, identify the bot your token belongs to:
 
 ```sh
 make chat-id
 ```
 
-This reads pending Telegram updates and prints your numeric private chat ID.
+The command first prints `Listening as @<botname>: send /start to this bot`.
+Open that exact bot in a private Telegram chat and send `/start`. Run the
+command again to print your numeric private chat ID.
 It does not send a message or advance the update offset. Save that number as
 `SHOP_OPERATOR_CHAT_ID`. If no message has arrived, send `/start` to your own
 bot and run the command again. If several private chats are present, use a new
-personal bot for this example. Do not run another poller for this bot at the
+personal bot for this example. If updates arrive without a private text message,
+the command lists only the update kinds it saw. Membership notifications are
+not text messages; send a new `/start` to the named bot in private. The command
+requests message, edited-message and bot-membership updates explicitly.
+Do not run another poller for this bot at the
 same time. The command uses a private local lock file under `.state` and refuses when
 the local assistant holds it. It does not write conversation or order records.
 Your bot's ID or token is not your private chat ID.
