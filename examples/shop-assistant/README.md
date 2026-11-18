@@ -114,10 +114,13 @@ make telegram
    separate personal bot or ask its owner to remove the webhook. It changes
    no webhook. With no webhook, it asks you to stop other Codespaces using the
    same bot. It cannot prove that an idle remote reader is absent.
-4. Send `/start` in a private chat with the named bot. The command waits up to
-   90 seconds and then prints `Your private chat ID: ...`. Group messages and
-   membership notices do not count. If several private chats are present,
-   use a fresh personal bot. No message text or update offset is written.
+4. Send the exact `/start shop-...` line shown in the terminal to the named
+   bot in your own private chat. Each setup generates a new code. The command
+   waits up to 90 seconds for that code, then prints `Your private chat ID: ...`.
+   Old messages, other text, group messages, and membership notices do not
+   select a chat. If several private chats send the code, setup refuses to
+   choose. Keep the code in your own chat; rerun setup to get a new one if it
+   expires. No message text or update offset is written.
 5. Choose where the two settings live. For a live class, answer **yes** to open
    `shop-session>`. The token and chat setting exist in that child shell's
    memory. Run `make doctor`, `make status` or `make run` there. Type `exit` to
@@ -145,6 +148,9 @@ and whether a local assistant holds the shop lock for those settings.
 It checks Sheet access by reading metadata in the separate server environment.
 It prints no settings values, rows or token. Status does not poll Telegram,
 change webhook settings, create local state or set up the Sheet.
+The local lock check is advisory: its brief exclusive probes can contend with
+startup. An unavailable activity record may mean startup is still in progress;
+check the foreground terminal before restarting. It does not establish readiness.
 A configured chat setting alone does not prove that a message reached this bot.
 
 `make chat-id` remains a shorter discovery command. It prints the bot name,

@@ -93,8 +93,8 @@ async def run():
                 conversation = Conversation(settings.state_directory / "conversation.sqlite3",
                     chat_id=settings.operator_chat_id, telegram=telegram, assistant=assistant, orders=client, clock=clock)
                 stack.callback(conversation.close)
-                print("Shop assistant ready for the configured private chat. Ctrl-C requests a clean stop.", flush=True)
                 with assistant_activity(settings.state_directory, settings.telegram_token.get_secret_value(), settings.operator_chat_id):
+                    print("Shop assistant ready for the configured private chat. Ctrl-C requests a clean stop.", flush=True)
                     turns = await drive(conversation, telegram, stop, max_turns=settings.max_turns)
                 print(f"Shop assistant stopped after {turns} retained updates.", flush=True)
         finally:

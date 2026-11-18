@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import re
+import secrets
 import subprocess
 import sys
 import time
@@ -100,7 +101,7 @@ def session_shell(environ):
     return subprocess.run(['/bin/bash', '--noprofile', '--norc', '-i'], env=clean, check=False).returncode
 
 
-def private_chats(updates):
+def private_chats(updates, challenge):
     if not isinstance(updates, list):
         raise TelegramProblem()
     chats = set()
@@ -109,6 +110,7 @@ def private_chats(updates):
             continue
         message = update.get('message', update.get('edited_message'))
         if (not isinstance(message, dict) or not isinstance(message.get('text'), str)
+                or message['text'] != challenge
                 or not isinstance(message.get('chat'), dict) or message['chat'].get('type') != 'private'):
             continue
         chats.add(PrivateChat.model_validate(message['chat']).id)
@@ -150,7 +152,10 @@ def guided(environ=None, *, request=api, ask=input, secret=hidden_token,
             return 1
         say('No webhook is configured. A remote reader cannot be ruled out; stop other Codespaces using this bot.')
         say('Setup can recognize edited text; the current assistant receives new messages and callbacks only. An edit cannot confirm an order.')
-        say('Step 4: checking for your private message. Open the named bot and send /start now.')
+        challenge = '/start shop-' + secrets.token_hex(16)
+        say('Step 4: bind your private chat to this setup. Send the following exact line to the named bot:')
+        say(challenge)
+        say('Use this new code only in your own private chat. Old messages and messages without this code cannot select a chat.')
         say(f'Waiting up to {seconds} seconds. Press Ctrl-C to leave setup; the assistant will not start automatically.')
         deadline = clock() + seconds
         chats = set()
@@ -159,15 +164,15 @@ def guided(environ=None, *, request=api, ask=input, secret=hidden_token,
                 updates = request(token, 'getUpdates', {'timeout': 0, 'limit': 100,
                     'allowed_updates': ['message', 'edited_message', 'my_chat_member', 'callback_query']},
                     timeout=min(15, max(0.1, deadline - clock())))
-                chats.update(private_chats(updates))
+                chats.update(private_chats(updates, challenge))
                 if chats:
                     break
                 sleep(min(2, max(0, deadline - clock())))
         if not chats:
-            say('No private text message arrived. Send /start to the named bot, then run make telegram again. Group and membership updates do not select a chat.')
+            say('No private message matched this setup code. Run make telegram again and send its new code to the named bot. Group and membership updates do not select a chat.')
             return 1
         if len(chats) != 1:
-            say('More than one private chat is present. Use a fresh personal bot, then run make telegram; no chat was selected.')
+            say('More than one private chat sent this setup code. Use a fresh personal bot, then run make telegram; no chat was selected.')
             return 1
         chat = str(chats.pop())
         say('Your private chat ID: ' + chat)
@@ -242,7 +247,7 @@ def status(environ=None, *, request=api, probe=sheet_status, activity=local_acti
         if state in {'different', 'unknown'}:
             ok = False
     except Exception:
-        say('Local activity: unavailable. Preserve .state and check its private file permissions before restarting.')
+        say('Local activity: unavailable; startup may still be in progress. Check the foreground terminal and private .state permissions before restarting.')
         ok = False
     if not environ.get('GOOGLE_TOKEN_JSON', '').strip() or not re.fullmatch(r'[A-Za-z0-9_-]{20,120}', environ.get('SHOP_SHEET_ID', '')):
         say('Sheet: settings missing or invalid. Set SHOP_SHEET_ID and run make google-signin; make doctor explains all names.')

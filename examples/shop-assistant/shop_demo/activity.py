@@ -64,7 +64,10 @@ def clear_activity(directory):
 
 
 def local_activity(directory, token, chat):
-    """Observe only existing private state; never create it or acquire ownership."""
+    """Observe existing private state with brief exclusive, nonblocking lock probes.
+
+    A probe can briefly contend with startup; it does not retain ownership.
+    A missing or partially written activity record is not proof of readiness."""
     directory = Path(directory)
     try:
         info = directory.stat(follow_symlinks=False)

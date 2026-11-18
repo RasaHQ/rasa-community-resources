@@ -18,7 +18,8 @@ from shop_demo.setup_sheet import SheetSettings
 
 TOKEN = '123:SYNTHETIC_CANARY'
 IDENTITY = {'username': 'example_shop_bot', 'is_bot': True}
-PRIVATE = {'message': {'text': '/start PRIVATE_TEXT_CANARY', 'chat': {'id': 77, 'type': 'private'},
+CHALLENGE = '/start shop-' + 'a' * 32
+PRIVATE = {'message': {'text': CHALLENGE, 'chat': {'id': 77, 'type': 'private'},
     'entities': [{'offset': 0, 'length': 6, 'type': 'bot_command'}]}}
 
 
@@ -35,6 +36,9 @@ class TelegramSetupTests(unittest.TestCase):
         block = patch('urllib.request.urlopen', side_effect=AssertionError('Real HTTP forbidden'))
         block.start()
         self.addCleanup(block.stop)
+        challenge = patch.object(setup.secrets, 'token_hex', return_value='a' * 32)
+        challenge.start()
+        self.addCleanup(challenge.stop)
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.env = {'SHOP_STATE_DIR': self.directory.name}
@@ -95,14 +99,54 @@ class TelegramSetupTests(unittest.TestCase):
                 [{'message': {'text': 'PRIVATE_TEXT_CANARY', 'chat': {'id': -9, 'type': 'group'}}}]):
             result, text, _, _, clock = self.run_setup(updates)
             self.assertEqual(result, 1)
-            self.assertIn('No private text message arrived', text)
+            self.assertIn('No private message matched this setup code', text)
             self.assertEqual(clock.value, 4)
 
     def test_multiple_private_chats_refuse_selection(self):
-        result, text, _, _, _ = self.run_setup([PRIVATE, {'message': {'text': 'other', 'chat': {'id': 88, 'type': 'private'}}}])
+        result, text, _, _, _ = self.run_setup([PRIVATE, {'message': {'text': CHALLENGE, 'chat': {'id': 88, 'type': 'private'}}}])
         self.assertEqual(result, 1)
         self.assertIn('no chat was selected', text)
         self.assertNotIn('Your private chat ID', text)
+
+    def test_unrelated_queued_sender_cannot_become_operator(self):
+        polls = []
+        unrelated = {'message': {'text': '/start', 'chat': {'id': 88, 'type': 'private'}}}
+        def request(token, method, payload, **kwargs):
+            if method == 'getMe':
+                return IDENTITY
+            if method == 'getWebhookInfo':
+                return {'url': ''}
+            self.assertNotIn('offset', payload)
+            polls.append(payload)
+            return [unrelated] if len(polls) == 1 else [unrelated, PRIVATE]
+        result, text, _, shell, _ = self.run_setup(request=request, ask=Mock(return_value='yes'))
+        self.assertEqual(result, 0)
+        self.assertEqual(len(polls), 2)
+        self.assertEqual(shell.call_args.args[0]['SHOP_OPERATOR_CHAT_ID'], '77')
+        self.assertIn(CHALLENGE, text)
+        self.assertNotIn('Your private chat ID: 88', text)
+
+    def test_old_setup_code_or_partial_match_cannot_select_chat(self):
+        for text in ('/start', '/start shop-' + 'b' * 32, CHALLENGE + ' extra'):
+            update = {'message': {'text': text, 'chat': {'id': 88, 'type': 'private'}}}
+            result, output, _, shell, _ = self.run_setup([update])
+            self.assertEqual(result, 1)
+            self.assertIn('No private message matched this setup code', output)
+            self.assertNotIn('Your private chat ID', output)
+            shell.assert_not_called()
+
+    def test_empty_activity_during_startup_is_unavailable_not_healthy(self):
+        directory = Path(self.directory.name)
+        with discovery_lock(directory):
+            path = directory / 'activity.json'
+            path.write_text('')
+            path.chmod(0o600)
+            output = io.StringIO()
+            result = setup.status({**self.env, 'TELEGRAM_BOT_TOKEN': TOKEN, 'SHOP_OPERATOR_CHAT_ID': '77'},
+                request=Mock(side_effect=[IDENTITY, {'url': ''}]), output=output)
+        self.assertEqual(result, 1)
+        self.assertIn('startup may still be in progress', output.getvalue())
+        self.assertNotIn('Local assistant: running', output.getvalue())
 
     def test_bad_token_no_provider_call(self):
         result, text, request, _, _ = self.run_setup(secret=Mock(return_value='RAW_PROVIDER_CANARY'))
