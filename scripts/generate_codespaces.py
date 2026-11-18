@@ -399,6 +399,8 @@ def readme_block(entry: dict, depth: int) -> str:
         inputs = ("run `make download` and wait for `Saved and checked`" if name == "jack-henry-silverlake"
                   else "upload the four definitions into `vendor-inputs/`" if name == "jack-henry-symitar"
                   else "upload the unopened Premier ZIP into `vendor-inputs/`")
+        if name == "jack-henry-silverlake":
+            inputs = "run `make` for help, then `make doctor`; follow its instructions, run `make download`, and repeat `make doctor` until it says ready"
         return "\n".join([
             START,
             f"[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)]({launch_url(entry)})",

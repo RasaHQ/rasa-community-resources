@@ -57,14 +57,39 @@ jobs:
           --config ".devcontainer/${{ matrix.resource.slug }}/devcontainer.json"
           --log-level info
       - name: Resource reports READY
+        shell: bash
         env:
           READY_SKIP_SECRETS: "1"
         run: |
+          set -euo pipefail
           config=".devcontainer/${{ matrix.resource.slug }}/devcontainer.json"
           command=$(jq -r .postCreateCommand "$config")
           if [ "$command" = null ]; then
             echo "This configuration has no READY command; the dev container starting is the check."
             exit 0
           fi
-          devcontainer exec --workspace-folder "$PWD" --config "$config" bash -c "READY_SKIP_SECRETS=1 $command" | tee ready.txt
-          grep -q '^READY' ready.txt
+          set +e
+          devcontainer exec --workspace-folder "$PWD" --config "$config" bash -c "READY_SKIP_SECRETS=1 $command" 2>&1 | tee ready.txt
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          printf 'producer=%s\nlogger=%s\n' "${statuses[0]}" "${statuses[1]}" > ready-status.txt
+          if [ "${statuses[0]}" -ne 0 ]; then
+            echo "Readiness command failed; see ready.txt and ready-status.txt. A READY line cannot override its exit status."
+            exit "${statuses[0]}"
+          fi
+          if [ "${statuses[1]}" -ne 0 ]; then
+            echo "Readiness log capture failed; refusing to accept incomplete evidence."
+            exit "${statuses[1]}"
+          fi
+          # Child checks may print their own READY text. Only the wrapper's
+          # last anchored readiness verdict can qualify the resource.
+          grep -E '^(READY|NOT READY):' ready.txt | tail -n 1 | grep -q '^READY:'
+      - name: Retain readiness output and command statuses
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: codespaces-ready-${{ matrix.resource.slug }}
+          path: |
+            ready.txt
+            ready-status.txt
+          if-no-files-found: warn
