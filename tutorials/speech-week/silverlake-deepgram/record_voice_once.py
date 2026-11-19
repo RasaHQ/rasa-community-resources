@@ -64,7 +64,7 @@ async def synthesize(directory):
     return clips
 
 
-async def conversation(directory, clips):
+async def conversation(directory, clips, port):
     import socketio
     client = socketio.AsyncClient(reconnection=False, logger=False, engineio_logger=False)
     confirmed = asyncio.Event()
@@ -114,7 +114,7 @@ async def conversation(directory, clips):
             if "marker" in value:
                 ack_tasks.append(asyncio.create_task(ack(value["marker"])))
         try:
-            await client.connect("http://127.0.0.1:5005", socketio_path="inspector.io",
+            await client.connect(f"http://127.0.0.1:{port}", socketio_path="inspector.io",
                                  transports=["websocket"], wait_timeout=15)
             await client.emit("session_request", {"session_id": directory.name.removeprefix("rasa-"),
                                                    "is_voice": True})
@@ -149,6 +149,13 @@ def require_free_port(port):
     """Refuse an already running server before generating paid caller audio."""
     with socket.socket() as listener:
         listener.bind(("127.0.0.1", port))
+
+
+def attempt_port():
+    """Choose a distinct ephemeral port for this attempt's child and client."""
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        return listener.getsockname()[1]
 
 
 def owned_server_ready(process, url):
@@ -186,6 +193,8 @@ def main():
     log = (args.state_dir / "server.log").open("wb")
     try:
         require_free_port(5005)
+        port = attempt_port()
+        (args.state_dir / "server-port.json").write_text(json.dumps({"port": port}) + "\n")
         if args.caller_clips:
             clips = []
             for index in range(1, 5):
@@ -200,18 +209,18 @@ def main():
             clips = asyncio.run(synthesize(args.state_dir))
         environment = dict(os.environ, LITELLM_LOCAL_MODEL_COST_MAP="True", RASA_TELEMETRY_ENABLED="false",
                            DEMO_SEED="295185", SILVERLAKE_JOURNAL_DIR=str(args.state_dir / "journal"))
-        process = subprocess.Popen([sys.executable, "run_demo.py", "--port", "5005"], cwd=here,
+        process = subprocess.Popen([sys.executable, "run_demo.py", "--port", str(port)], cwd=here,
                                    env=environment, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
         ready = False
         deadline = time.monotonic() + 180
         while process.poll() is None and time.monotonic() < deadline:
-            if owned_server_ready(process, "http://127.0.0.1:5005/"):
+            if owned_server_ready(process, f"http://127.0.0.1:{port}/"):
                 ready = True
                 break
             time.sleep(1)
         if not ready:
             raise RuntimeError("native_inspector_startup_failed")
-        result.update(asyncio.run(conversation(args.state_dir, clips)))
+        result.update(asyncio.run(conversation(args.state_dir, clips, port)))
         result["outcome"] = "OBSERVATION_RECORDED; inspect original events before claiming acceptance"
     except BaseException as error:
         result.update(outcome="RUN_FAILED", exception_type=type(error).__name__)

@@ -126,3 +126,5 @@ Inspect recognized turns, tool results and the SQLite journal before making a cl
 `make text` is a separate REST-only developer check. Typed messages do not establish
 voice acceptance. The existing bank README documents the mock, schema archive and
 journal behavior; its older runtime assessment does not qualify this rc1 profile.
+
+`make run` and `make text` fetch and verify the required public bank archive first. The recorder refuses a foreign listener on port 5005, then uses a fresh per-attempt port consistently for its child, readiness probe and client. It never terminates the foreign listener.
