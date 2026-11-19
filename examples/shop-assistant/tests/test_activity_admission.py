@@ -19,21 +19,27 @@ CHILD = textwrap.dedent('''
     from pathlib import Path
     from unittest.mock import Mock, patch
     from shop_demo.activity import assistant_activity, private_file
-    from shop_demo.startup import chat_id
-    from shop_demo.telegram_setup import status
+    from shop_demo.telegram_setup import guided, status
 
     directory, action = Path(sys.argv[1]), sys.argv[2]
     output = io.StringIO()
     real_http = Mock(side_effect=AssertionError('Real provider forbidden'))
     fetch = Mock(side_effect=AssertionError('No update poll allowed'))
-    identity = Mock(side_effect=AssertionError('Discovery refuses before identity'))
+    def metadata(token, method, payload, **kwargs):
+        if method == 'getMe':
+            return {'id': 123, 'is_bot': True, 'username': 'synthetic_test_bot'}
+        if method == 'getWebhookInfo':
+            return {'url': ''}
+        return fetch(token, method, payload, **kwargs)
+    request = Mock(side_effect=metadata)
     with patch('urllib.request.urlopen', real_http):
         if action == 'discover':
-            result = chat_id({'TELEGRAM_BOT_TOKEN': '123:SYNTHETIC_CANARY',
-                'SHOP_STATE_DIR': str(directory)}, fetch=fetch, output=output, identify=identity)
+            result = guided({'TELEGRAM_BOT_TOKEN': '123:SYNTHETIC_CANARY',
+                'SHOP_STATE_DIR': str(directory)}, request=request, ask=lambda _: 'yes',
+                output=output)
             assert result == 1
-            assert 'Chat discovery failed' in output.getvalue()
-            identity.assert_not_called()
+            assert 'The Telegram check could not finish' in output.getvalue()
+            assert [call.args[1] for call in request.call_args_list] == ['getMe', 'getWebhookInfo']
             # The discovery context already acquired this lock before the
             # activity admission failed. It MUST release it on the error path.
             descriptor = private_file(directory / 'run.sqlite3', os.O_RDWR)
@@ -74,7 +80,7 @@ class ActivityAdmissionTests(unittest.TestCase):
         self.assertNotIn('SYNTHETIC_CANARY', result.stdout + result.stderr)
         self.assertNotIn('Traceback', result.stderr)
 
-    def test_fifo_activity_refused_by_discovery_and_assistant_without_replacement(self):
+    def test_fifo_activity_refused_by_guided_setup_and_assistant_without_replacement(self):
         with tempfile.TemporaryDirectory() as root:
             directory = Path(root)
             fifo = directory / 'activity.json'
