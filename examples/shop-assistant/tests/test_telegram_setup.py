@@ -12,7 +12,7 @@ from unittest.mock import Mock, patch
 from pydantic import SecretStr
 from shop_demo import telegram_setup as setup
 from shop_demo.activity import assistant_activity, local_activity
-from shop_demo.startup import discovery_lock
+from shop_demo.startup import discovery_lock, doctor
 from shop_demo.status_sheet import check
 from shop_demo.setup_sheet import SheetSettings
 
@@ -140,6 +140,21 @@ class TelegramSetupTests(unittest.TestCase):
         self.assertEqual(shell.call_args.args[0]['SHOP_OPERATOR_CHAT_ID'], '77')
         self.assertIn(CHALLENGE, text)
         self.assertNotIn('Your private chat ID: 88', text)
+
+    def test_doctor_recovery_cannot_select_an_unrelated_queued_sender(self):
+        guidance = io.StringIO()
+        original = dict(self.env)
+        self.assertEqual(doctor(self.env, guidance), 1)
+        self.assertIn('Run make telegram', guidance.getvalue())
+        self.assertIn('fresh setup code', guidance.getvalue())
+        self.assertNotIn('make chat-id', guidance.getvalue())
+        unrelated = {'message': {'text': '/start', 'chat': {'id': 88, 'type': 'private'}}}
+        result, text, _, shell, _ = self.run_setup([unrelated], env=self.env,
+            ask=Mock(return_value='yes'))
+        self.assertEqual(result, 1)
+        self.assertEqual(self.env, original)
+        self.assertNotIn('Your private chat ID:', text)
+        shell.assert_not_called()
 
     def test_old_setup_code_or_partial_match_cannot_select_chat(self):
         for text in ('/start', '/start shop-' + 'b' * 32, CHALLENGE + ' extra'):
