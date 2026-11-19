@@ -64,7 +64,7 @@ async def synthesize(directory):
     return clips
 
 
-async def conversation(directory, clips, port):
+async def conversation(directory, clips, port, process):
     import socketio
     client = socketio.AsyncClient(reconnection=False, logger=False, engineio_logger=False)
     confirmed = asyncio.Event()
@@ -116,6 +116,7 @@ async def conversation(directory, clips, port):
         try:
             await client.connect(f"http://127.0.0.1:{port}", socketio_path="inspector.io",
                                  transports=["websocket"], wait_timeout=15)
+            require_owned_connection(process, port)
             await client.emit("session_request", {"session_id": directory.name.removeprefix("rasa-"),
                                                    "is_voice": True})
             await asyncio.wait_for(confirmed.wait(), 15)
@@ -156,6 +157,53 @@ def attempt_port():
     with socket.socket() as listener:
         listener.bind(("127.0.0.1", 0))
         return listener.getsockname()[1]
+
+
+def require_owned_connection(process, port):
+    """Verify the connected WebSocket's kernel peer before session/audio emission.
+
+    Linux Codespaces only. A live launcher and HTTP response are insufficient.
+    The established client socket must have a reverse kernel socket held by the
+    attempt's process group. No reconnect is enabled, so a later listener cannot
+    take over this connection. Missing/inaccessible process evidence refuses.
+    """
+    if process.poll() is not None or not Path("/proc/net/tcp").is_file():
+        raise RuntimeError("endpoint_ownership_unavailable")
+    rows = []
+    for line in Path("/proc/net/tcp").read_text().splitlines()[1:]:
+        fields = line.split()
+        if fields[3] == "01":  # established IPv4 connection
+            rows.append((fields[1], fields[2], fields[9]))
+    own_sockets = set()
+    for fd in Path("/proc/self/fd").iterdir():
+        try:
+            own_sockets.add(os.readlink(fd))
+        except FileNotFoundError:
+            pass
+    endpoint = f"0100007F:{port:04X}"
+    clients = [(local, remote, inode) for local, remote, inode in rows
+               if remote == endpoint and f"socket:[{inode}]" in own_sockets]
+    if len(clients) != 1:
+        raise RuntimeError("endpoint_connection_ambiguous")
+    local, remote, _ = clients[0]
+    peers = {inode for left, right, inode in rows if left == remote and right == local}
+    if len(peers) != 1:
+        raise RuntimeError("endpoint_peer_unavailable")
+    peer = f"socket:[{next(iter(peers))}]"
+    owners = set()
+    for entry in Path("/proc").iterdir():
+        if not entry.name.isdecimal():
+            continue
+        try:
+            if any(os.readlink(fd) == peer for fd in (entry / "fd").iterdir()):
+                # comm may contain spaces or parentheses; fields after its last
+                # closing parenthesis begin with state, ppid, pgrp.
+                group = int((entry / "stat").read_text().rsplit(")", 1)[1].split()[2])
+                owners.add(group)
+        except (FileNotFoundError, ProcessLookupError, PermissionError):
+            continue
+    if owners != {process.pid} or process.poll() is not None:
+        raise RuntimeError("endpoint_not_owned_by_attempt")
 
 
 def owned_server_ready(process, url):
@@ -220,7 +268,7 @@ def main():
             time.sleep(1)
         if not ready:
             raise RuntimeError("native_inspector_startup_failed")
-        result.update(asyncio.run(conversation(args.state_dir, clips, port)))
+        result.update(asyncio.run(conversation(args.state_dir, clips, port, process)))
         result["outcome"] = "OBSERVATION_RECORDED; inspect original events before claiming acceptance"
     except BaseException as error:
         result.update(outcome="RUN_FAILED", exception_type=type(error).__name__)

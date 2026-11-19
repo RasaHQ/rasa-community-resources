@@ -128,6 +128,6 @@ Inspect recognized turns, tool results and the SQLite journal before making a cl
 voice acceptance. The existing bank README documents the mock, schema archive and
 journal behavior; its older runtime assessment does not qualify this rc1 profile.
 
-`make run` and `make text` fetch and verify the required public bank archive first. The recorder refuses a foreign listener on port 5005, then uses a fresh per-attempt port consistently for its child, readiness probe and client. It never terminates the foreign listener.
+`make run` and `make text` fetch and verify the required public bank archive first. The recorder refuses a foreign listener on port 5005, then uses a fresh per-attempt port consistently for its child, readiness probe and client. Before sending a session request or audio, the Linux Codespaces recorder checks that the connected WebSocket peer belongs to its child process group using kernel socket records. It refuses missing or foreign ownership and never terminates the foreign listener. This automated recorder requires Linux `/proc`; use the Inspector manually on other systems.
 
 `make doctor` checks only key presence, the installed version and local vendor definitions; it prints no secret values and makes no provider request. A profile-local `.env` is loaded without replacing exported Codespaces secrets, before the license-name alias is applied. That file is never copied into the temporary Rasa source project.
