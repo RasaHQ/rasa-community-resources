@@ -170,6 +170,7 @@ def guided(environ=None, *, request=api, ask=input, secret=hidden_token,
                 sleep(min(2, max(0, deadline - clock())))
         if not chats:
             say('No private message matched this setup code. Run make telegram again and send its new code to the named bot. Group and membership updates do not select a chat.')
+            say('A busy bot may keep returning a full older pending window. If the new code is not seen, use a fresh personal bot. No pending updates were acknowledged or deleted.')
             return 1
         if len(chats) != 1:
             say('More than one private chat sent this setup code. Use a fresh personal bot, then run make telegram; no chat was selected.')

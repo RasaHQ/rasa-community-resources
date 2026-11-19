@@ -102,6 +102,21 @@ class TelegramSetupTests(unittest.TestCase):
             self.assertIn('No private message matched this setup code', text)
             self.assertEqual(clock.value, 4)
 
+    def test_full_unrelated_pending_window_times_out_with_safe_recovery(self):
+        updates = [{'message': {'text': '/start', 'chat': {'id': 88, 'type': 'private'}}}] * 100
+        result, text, request, shell, clock = self.run_setup(updates)
+        self.assertEqual(result, 1)
+        self.assertEqual(clock.value, 4)
+        self.assertIn('full older pending window', text)
+        self.assertIn('fresh personal bot', text)
+        self.assertNotIn('Your private chat ID:', text)
+        shell.assert_not_called()
+        polls = [call for call in request.call_args_list if call.args[1] == 'getUpdates']
+        self.assertTrue(polls)
+        for call in polls:
+            self.assertEqual(call.args[2]['limit'], 100)
+            self.assertNotIn('offset', call.args[2])
+
     def test_multiple_private_chats_refuse_selection(self):
         result, text, _, _, _ = self.run_setup([PRIVATE, {'message': {'text': CHALLENGE, 'chat': {'id': 88, 'type': 'private'}}}])
         self.assertEqual(result, 1)

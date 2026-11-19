@@ -1,5 +1,4 @@
 """Offline checks for the first commands a reader runs."""
-import fcntl
 import hashlib
 import io
 import json
@@ -8,7 +7,6 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
-import urllib.error
 from unittest.mock import Mock, patch
 
 from shop_demo.startup import HELP, chat_id, doctor, failure_hint
@@ -37,98 +35,54 @@ class StartupTests(unittest.TestCase):
         self.assertNotIn('12345', output.getvalue())
         self.assertNotIn('a' * 25, output.getvalue())
 
-    def discover(self, result, **extra):
+    def test_missing_chat_guidance_uses_challenge_binding(self):
+        hint = HELP['SHOP_OPERATOR_CHAT_ID']
+        self.assertIn('make telegram', hint)
+        self.assertIn('fresh setup code', hint)
+        self.assertNotIn('make chat-id', hint)
+
+    def test_retired_chat_id_never_reads_a_lone_unrelated_sender(self):
         output = io.StringIO()
-        fetch = Mock(return_value={'ok': True, 'result': result})
+        fetch = Mock(return_value={'ok': True, 'result': [
+            {'message': {'text': '/start', 'chat': {'id': 987654321, 'type': 'private'}}}]})
+        identify = Mock(return_value={'username': 'example_shop_bot', 'is_bot': True})
         with tempfile.TemporaryDirectory() as directory:
-            status = chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory}, fetch, output, identify=Mock(return_value={'username': 'my_shop_bot', 'is_bot': True}))
-            self.assertEqual({p.name for p in Path(directory).iterdir()}, {'run.sqlite3'})
-        return status, output.getvalue(), fetch
-
-    def test_chat_id_private_only_and_deduplicates(self):
-        messages = [{'message': {'text': 'hello', 'chat': {'id': 55, 'type': 'private'}}}] * 2
-        messages.append({'message': {'chat': {'id': -99, 'type': 'group'}}})
-        status, output, fetch = self.discover(messages)
-        self.assertEqual(status, 0)
-        self.assertIn('Your private chat ID: 55', output)
-        self.assertLess(output.index('Listening as @my_shop_bot'), output.index('Your private chat ID: 55'))
-        fetch.assert_called_once_with('123:SECRET')
-
-    def test_start_command_with_entities_and_edited_private_text(self):
-        for kind in ('message', 'edited_message'):
-            status, output, _ = self.discover([{kind: {'text': '/start',
-                'entities': [{'offset': 0, 'length': 6, 'type': 'bot_command'}],
-                'chat': {'id': 55, 'type': 'private'}}}])
-            self.assertEqual(status, 0)
-            self.assertIn('Your private chat ID: 55', output)
-            self.assertNotIn('/start\n', output)
-
-    def test_membership_and_unknown_updates_show_kinds_without_ids_or_text(self):
-        status, output, _ = self.discover([{'my_chat_member': {'chat': {'id': 987654321,
-            'type': 'private'}, 'text': 'PRIVATE_MESSAGE'}}, {'SECRET_KEY': 'PRIVATE_MESSAGE'}])
-        self.assertEqual(status, 1)
-        self.assertIn('Kinds seen: my_chat_member, other', output)
-        for value in ('987654321', 'PRIVATE_MESSAGE', 'SECRET_KEY'):
-            self.assertNotIn(value, output)
-
-    def test_identity_failure_refuses_before_updates(self):
-        fetch, output = Mock(), io.StringIO()
-        with tempfile.TemporaryDirectory() as directory:
-            status = chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory},
-                fetch, output, identify=Mock(return_value={'username': 'invalid\nSECRET', 'is_bot': True}))
-        self.assertEqual(status, 1)
+            environ = {'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory}
+            original = dict(environ)
+            self.assertEqual(chat_id(environ, fetch, output, identify=identify), 1)
+            self.assertEqual(environ, original)
+            self.assertEqual(list(Path(directory).iterdir()), [])
         fetch.assert_not_called()
+        identify.assert_not_called()
+        self.assertIn('retired', output.getvalue())
+        self.assertIn('make telegram', output.getvalue())
+        self.assertNotIn('987654321', output.getvalue())
         self.assertNotIn('SECRET', output.getvalue())
+        self.assertNotIn('Your private chat ID:', output.getvalue())
 
-    def test_webhook_and_other_reader_errors_are_distinct_from_no_message(self):
-        for description, expected in [('Conflict: webhook SECRET', 'has a webhook'),
-                                      ('Conflict: terminated by other getUpdates request SECRET', 'Another reader')]:
-            error = urllib.error.HTTPError('https://SECRET', 409, 'SECRET', {},
-                io.BytesIO(json.dumps({'description': description}).encode()))
-            output = io.StringIO()
-            with tempfile.TemporaryDirectory() as directory:
-                status = chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory},
-                    Mock(side_effect=error), output,
-                    identify=Mock(return_value={'username': 'my_shop_bot', 'is_bot': True}))
-            self.assertEqual(status, 1)
-            self.assertIn(expected, output.getvalue())
-            self.assertNotIn('No private text message is available', output.getvalue())
-            self.assertNotIn('SECRET', output.getvalue())
-
-    def test_no_messages_explains_start(self):
-        status, output, _ = self.discover([])
-        self.assertEqual(status, 1)
-        self.assertIn('Send /start', output)
-
-    def test_multiple_chats_no_guess(self):
-        status, output, _ = self.discover([{'message': {'text': 'hello', 'chat': {'id': n, 'type': 'private'}}} for n in (1, 2)])
-        self.assertEqual(status, 1)
-        self.assertIn('no chat was selected', output)
-
-    def test_chat_id_refuses_local_running_assistant(self):
-        from shop_demo.state import open_state
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / 'run.sqlite3'
-            open_state(path).close()
-            with path.open('rb') as lock:
-                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                fetch, output = Mock(), io.StringIO()
-                status = chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory}, fetch, output)
-                self.assertEqual(status, 1)
-                fetch.assert_not_called()
-                self.assertIn('Stop it with Ctrl-C', output.getvalue())
-
-    def test_invalid_token_no_network(self):
-        fetch, output = Mock(), io.StringIO()
-        self.assertEqual(chat_id({}, fetch, output), 1)
-        fetch.assert_not_called()
-
-    def test_provider_error_does_not_leak_token_or_response(self):
+    def test_retired_cli_refuses_without_provider_access(self):
+        from shop_demo import startup
         output = io.StringIO()
-        with tempfile.TemporaryDirectory() as directory:
-            self.assertEqual(chat_id({'TELEGRAM_BOT_TOKEN': '123:SECRET', 'SHOP_STATE_DIR': directory}, Mock(side_effect=RuntimeError('123:SECRET response')), output, identify=Mock(return_value={'username': 'my_shop_bot', 'is_bot': True})), 1)
-        self.assertNotIn('123:SECRET', output.getvalue())
-        self.assertIn('RuntimeError', output.getvalue())
+        with patch('sys.argv', ['startup', 'chat-id']), patch('sys.stdout', output):
+            self.assertEqual(startup.main(), 1)
+        self.assertIn('make telegram', output.getvalue())
+        self.assertNotIn('Your private chat ID:', output.getvalue())
+
+    def test_retired_make_target_refuses_without_an_interpreter(self):
+        result = subprocess.run(['make', '--no-print-directory', 'chat-id',
+            'CONSENT_PYTHON=/bin/false'], cwd=Path(__file__).resolve().parents[1],
+            capture_output=True, text=True, timeout=10, check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('retired', result.stdout)
+        self.assertIn('make telegram', result.stdout)
+        self.assertNotIn('Run make setup', result.stdout)
+
+    def test_lock_hint_includes_transient_status_probe(self):
+        hint = failure_hint(BlockingIOError('SECRET'))
+        self.assertIn('local command', hint)
+        self.assertIn('make status', hint)
+        self.assertIn('foreground assistant', hint)
+        self.assertNotIn('SECRET', hint)
 
     def test_launcher_error_hint_never_interpolates_exception(self):
         for error in (ValueError('SECRET'), RuntimeError('SECRET'), FileNotFoundError('SECRET'), BlockingIOError('SECRET')):

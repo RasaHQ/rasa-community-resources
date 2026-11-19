@@ -153,11 +153,11 @@ startup. An unavailable activity record may mean startup is still in progress;
 check the foreground terminal before restarting. It does not establish readiness.
 A configured chat setting alone does not prove that a message reached this bot.
 
-`make chat-id` remains a shorter discovery command. It prints the bot name,
-reads available private text messages and shows a single chat ID. Send `/start`
-to the named bot and rerun it if no private message is available. It uses the
-same local lock and leaves update offsets and conversation records unchanged.
-Discovery explicitly includes text, edited text, membership and callback updates.
+Use `make telegram` for chat discovery. Its fresh code proves which private
+message belongs to this setup. The old `make chat-id` shortcut is retired and
+refuses without reading messages or selecting a chat. The guided command leaves
+update offsets and conversation records unchanged and accepts only private text
+that matches the code it just printed.
 The running assistant uses the maintained client's explicit message/callback
 selection on each poll. Edited text is supported for setup discovery only;
 the current assistant does not treat an edit as a new order or confirmation.

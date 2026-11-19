@@ -10,7 +10,7 @@ help:
 	@echo "doctor         Check settings by name and explain missing values"
 	@echo "telegram       Create your bot, find its chat and choose session or saved settings"
 	@echo "status         Check the local assistant, named bot and read-only Sheet access"
-	@echo "chat-id        Read your private chat ID after you message your own bot"
+	@echo "chat-id        Retired; use telegram to bind your private chat with a fresh code"
 	@echo "google-signin  Authorize this Codespace to use Google Sheets"
 	@echo "consent        Alias for google-signin"
 	@echo "setup-sheet    Create missing tabs and seed empty tabs in your dedicated Sheet"
@@ -26,8 +26,8 @@ doctor:
 	$(CONSENT_PYTHON) -B -m shop_demo.startup doctor
 
 chat-id:
-	@test -x $(CONSENT_PYTHON) || { echo "Run make setup first to create the locked environments."; exit 1; }
-	$(CONSENT_PYTHON) -B -m shop_demo.startup chat-id
+	@echo "Unchallenged chat discovery is retired. Run make telegram to bind your private chat with a fresh code."
+	@exit 1
 
 telegram status:
 	@test -x $(CONSENT_PYTHON) || { echo "Run make setup first to create the locked environments."; exit 1; }
