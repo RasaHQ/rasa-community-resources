@@ -1,0 +1,30 @@
+model_groups:
+  - id: orchestrator
+    models:
+      - provider: openai
+        model: gpt-5.2
+        api_key: ${OPENAI_API_KEY}
+  - id: deepgram_input
+    models:
+      - provider: deepgram
+        api_key: ${DEEPGRAM_API_KEY}
+        language_map:
+          en:
+            language: en
+            model: nova-3
+  - id: deepgram_output
+    models:
+      - provider: deepgram
+        api_key: ${DEEPGRAM_API_KEY}
+        language_map:
+          en:
+            language: en
+            model: aura-2-thalia-en
+channels:
+  rest:
+    enabled: true
+  inspector:
+    enabled: true
+    sample_rate: 16000
+    asr: deepgram_input
+    tts: deepgram_output

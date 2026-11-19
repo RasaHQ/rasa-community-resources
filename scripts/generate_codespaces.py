@@ -294,8 +294,10 @@ def manifest(project) -> dict:
             r'--port\s+(\d{4,5})\b', recipe((project.path / 'Makefile').read_text(), 'backend'))})
         before_first = 'In another terminal in this folder, run `make backend` and keep it running for the analysis tools.'
 
+    from rasa_projects import release_profile_version
+    release_profile = release_profile_version(project.path)
     ready = ('python3 "$(git rev-parse --show-toplevel)/scripts/check_project.py" '
-             + project.rel + ' --skip-sync --use-project-pin') if snapshot else None
+             + project.rel + ' --skip-sync --use-project-pin') if snapshot or release_profile else None
     if project.rel in {
         'heroes/wave-01-mantle/projects/malar-saravanan-nourishher-voice',
         'heroes/wave-01-mantle/projects/cycywanyeki20-stammy',
@@ -307,6 +309,7 @@ def manifest(project) -> dict:
         ready += ' && uv run --locked --no-sync pytest && uv run --locked --no-sync ruff check src tests scripts'
     entry = {
         "snapshot": snapshot,
+        "release_profile": release_profile,
         "provider_note": provider_note,
         "before_first": before_first,
         "remote_env": remote_env,
@@ -434,6 +437,8 @@ def readme_block(entry: dict, depth: int) -> str:
         see = "`READY` at the end of the creation log."
     snapshot_note = ("This cohort snapshot installs its own locked Rasa version; it does not track catalog upgrades.\n\n"
                      if entry.get('snapshot') else "")
+    if entry.get("release_profile"):
+        snapshot_note += "This release-candidate profile uses its own locked Rasa version; the rest of the catalog is unchanged.\n\n"
     if entry.get('provider_note'):
         snapshot_note += entry['provider_note'] + "\n\n"
     return "\n".join(

@@ -28,8 +28,14 @@ class ReplyPolicyTests(unittest.IsolatedAsyncioTestCase):
         consumer=SimpleNamespace(_dispatch_tool_calls=AsyncMock(),
             _completed_or_cancelled=lambda result,**kw:result)
         with patch("rasa.mantle.orchestration.orchestrator.current_turn_context",return_value=self.native):
+            # This is an explicit SDK-consumer check, not an installed-runtime patch.
+            # rc1 requires the first batch to be named; the older pinned demo did not.
+            import inspect
+            options = {"streamed": False}
+            if "previous_batch" in inspect.signature(Orchestrator._handle_llm_response).parameters:
+                options["previous_batch"] = None
             result=await Orchestrator._handle_llm_response(consumer,reply.text,
-                [LLMToolCall(**call) for call in reply.tool_calls],None,None,None,0,None,True,streamed=False)
+                [LLMToolCall(**call) for call in reply.tool_calls],None,None,None,0,None,True,**options)
         self.assertEqual(result.iteration_count,1)
         self.assertEqual(consumer._dispatch_tool_calls.await_count,1)
         self.assertEqual(consumer._dispatch_tool_calls.call_args.args[0][0].tool_name,"listen")
