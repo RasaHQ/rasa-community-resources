@@ -80,3 +80,11 @@ class RecorderStartup(unittest.TestCase):
             self.assertIn("TPG_R2026.1.00_XSD.zip", result.stdout)
             self.assertLess(result.stdout.index("curl -fsSL"), result.stdout.index("python run_demo.py"))
             self.assertIn("sha256sum", result.stdout)
+
+    def test_doctor_target_exists_without_scheduling_download(self):
+        import subprocess
+        here = Path(__file__).resolve().parents[1]
+        result = subprocess.run(["make", "--dry-run", "doctor"], cwd=here,
+                                text=True, capture_output=True, check=True)
+        self.assertIn("python doctor_profile.py", result.stdout)
+        self.assertNotIn("curl", result.stdout)

@@ -26,6 +26,18 @@ class ProfileTests(unittest.TestCase):
             self.assertFalse((target / ".env").exists())
             self.assertFalse((target / ".venv").exists())
 
+    def test_profile_dotenv_loads_without_overriding_exports(self):
+        import os
+        with tempfile.TemporaryDirectory() as directory:
+            here = Path(directory)
+            (here / ".env").write_text("PROFILE_SETUP_SENTINEL=from-profile\n")
+            with patch.object(profile, "HERE", here), patch.dict(os.environ, {"PROFILE_SETUP_SENTINEL": "exported"}, clear=True):
+                profile.load_profile_environment()
+                self.assertEqual(os.environ["PROFILE_SETUP_SENTINEL"], "exported")
+                del os.environ["PROFILE_SETUP_SENTINEL"]
+                profile.load_profile_environment()
+                self.assertEqual(os.environ["PROFILE_SETUP_SENTINEL"], "from-profile")
+
     def test_native_channel_resolves_only_deepgram(self):
         import yaml
         from rasa.mantle.config.channels import parse_channels, resolve_voice_channel_speech

@@ -57,6 +57,7 @@ The managed experiment route, from the repository root, is:
 python3 scripts/workspace.py start tutorials/speech-week/silverlake-deepgram --owner silverlake-deepgram-rc1
 cd tutorials/speech-week/silverlake-deepgram
 make download
+make doctor
 make test
 ```
 
@@ -128,3 +129,5 @@ voice acceptance. The existing bank README documents the mock, schema archive an
 journal behavior; its older runtime assessment does not qualify this rc1 profile.
 
 `make run` and `make text` fetch and verify the required public bank archive first. The recorder refuses a foreign listener on port 5005, then uses a fresh per-attempt port consistently for its child, readiness probe and client. It never terminates the foreign listener.
+
+`make doctor` checks only key presence, the installed version and local vendor definitions; it prints no secret values and makes no provider request. A profile-local `.env` is loaded without replacing exported Codespaces secrets, before the license-name alias is applied. That file is never copied into the temporary Rasa source project.

@@ -25,7 +25,13 @@ def prepare(destination):
     return destination
 
 
+def load_profile_environment():
+    from dotenv import load_dotenv
+    load_dotenv(HERE / ".env", override=False)
+
+
 def main():
+    load_profile_environment()
     sys.path.insert(0, str(BANK))
     os.environ["PYTHONPATH"] = os.pathsep.join([str(BANK), os.environ.get("PYTHONPATH", "")])
     # rc1 accepts the user's configured license name. This alias is in memory,
