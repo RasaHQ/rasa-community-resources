@@ -47,6 +47,16 @@ class ReleaseProfiles(unittest.TestCase):
         with patch.object(lint_repo, "REPO_ROOT", self.root):
             self.assertTrue(lint_repo.check_lock_sync([project], "3.21.0.dev5"))
 
+    def test_profile_prose_is_linted_against_its_own_pin(self):
+        document = self.project / "README.md"
+        document.write_text("Install rasa-pro==3.21.0.dev5.\n")
+        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
+        subprocess.run(["git", "-C", str(self.root), "add", "."], check=True)
+        with patch.object(lint_repo, "REPO_ROOT", self.root):
+            self.assertTrue(lint_repo.check_version_consistency("3.21.0.dev5"))
+            document.write_text("Install rasa-pro==3.22.0rc1.\n")
+            self.assertFalse(lint_repo.check_version_consistency("3.21.0.dev5"))
+
     def test_tracked_candidate_inputs_are_excluded_from_catalog_migration(self):
         subprocess.run(["git", "init", "-q", str(self.root)], check=True)
         ordinary = self.root / "examples/ordinary/pyproject.toml"

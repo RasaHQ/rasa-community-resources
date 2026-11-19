@@ -536,7 +536,7 @@ def is_snapshot_path(rel_path: str) -> bool:
 
 
 def release_profile_version(path: str | Path) -> str | None:
-    """Exact operator-approved candidate pins, separate from catalog migration.
+    """Exact maintainer-approved candidate pins, separate from catalog migration.
 
     The registry and project metadata must agree; an arbitrary metadata field
     cannot opt a resource out of the maintained catalog pin.

@@ -28,14 +28,16 @@ def prepare(destination):
 def main():
     sys.path.insert(0, str(BANK))
     os.environ["PYTHONPATH"] = os.pathsep.join([str(BANK), os.environ.get("PYTHONPATH", "")])
-    # rc1 accepts the operator's current licence name. This alias is in memory,
+    # rc1 accepts the user's configured license name. This alias is in memory,
     # never written into the temporary project or a log.
     if not os.environ.get("RASA_LICENSE") and os.environ.get("RASA_PRO_LICENSE"):
         os.environ["RASA_LICENSE"] = os.environ["RASA_PRO_LICENSE"]
+    if not os.environ.get("RASA_PRO_LICENSE") and os.environ.get("RASA_LICENSE"):
+        os.environ["RASA_PRO_LICENSE"] = os.environ["RASA_LICENSE"]
     from silverlake_demo.launcher import main as launch
     with tempfile.TemporaryDirectory(prefix="silverlake-deepgram-source-") as directory:
         project = prepare(directory)
-        return launch(project, required_secrets=("RASA_LICENSE", "OPENAI_API_KEY", "DEEPGRAM_API_KEY"))
+        return launch(project, required_secrets=("RASA_PRO_LICENSE", "OPENAI_API_KEY", "DEEPGRAM_API_KEY"))
 
 
 if __name__ == "__main__":

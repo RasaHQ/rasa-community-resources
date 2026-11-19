@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import socket
 import subprocess
 import sys
 import time
@@ -144,6 +145,22 @@ async def conversation(directory, clips):
             "voice_error_observed": failed.is_set()}
 
 
+def require_free_port(port):
+    """Refuse an already running server before generating paid caller audio."""
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", port))
+
+
+def owned_server_ready(process, url):
+    if process.poll() is not None:
+        return False
+    try:
+        with urllib.request.urlopen(url, timeout=1) as response:
+            return response.status == 200 and process.poll() is None
+    except Exception:
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--state-dir", type=Path, required=True)
@@ -168,6 +185,7 @@ def main():
     process = None
     log = (args.state_dir / "server.log").open("wb")
     try:
+        require_free_port(5005)
         if args.caller_clips:
             clips = []
             for index in range(1, 5):
@@ -187,13 +205,9 @@ def main():
         ready = False
         deadline = time.monotonic() + 180
         while process.poll() is None and time.monotonic() < deadline:
-            try:
-                with urllib.request.urlopen("http://127.0.0.1:5005/", timeout=1) as response:
-                    ready = response.status == 200
-                if ready:
-                    break
-            except Exception:
-                pass
+            if owned_server_ready(process, "http://127.0.0.1:5005/"):
+                ready = True
+                break
             time.sleep(1)
         if not ready:
             raise RuntimeError("native_inspector_startup_failed")
