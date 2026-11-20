@@ -48,13 +48,13 @@ UNITTESTS    := $(PYTHON) $(SCRIPTS)/test_tooling.py
 
 # The maintained catalog: examples/, tutorials/, patterns/. These move together
 # under `make migrate` and must stay green.
-PROJECTS := $(shell $(LIST) --paths-only 2>/dev/null)
+PROJECTS = $(shell $(LIST) --paths-only 2>/dev/null)
 # Frozen snapshots: community/, heroes/. Pinned by their authors, never
 # migrated, checked against their own pins. See docs/SNAPSHOTS.md.
-SNAPSHOTS := $(shell $(LIST) --scope snapshots --paths-only 2>/dev/null)
+SNAPSHOTS = $(shell $(LIST) --scope snapshots --paths-only 2>/dev/null)
 # Empty for a stable pin; --prerelease=allow only when RASA_PRO_VERSION is a
 # dev/rc build. Derived so the flag can never drift from the pin.
-PRE      := $(shell $(LIST) --uv-prerelease-args 2>/dev/null)
+PRE      = $(shell $(LIST) --uv-prerelease-args 2>/dev/null)
 
 .DEFAULT_GOAL := help
 
@@ -64,7 +64,62 @@ PRE      := $(shell $(LIST) --uv-prerelease-args 2>/dev/null)
         snapshots check-snapshots \
         _require-projects
 
-help: ## Show this help message
+# These entrypoints never evaluate .env or discover the resource catalog.
+export PROJECT EXPERIMENT INACTIVE
+DOCTOR_ARGS ?=
+.PHONY: help help-all catalog-help doctor hooks setup run verify test build release clean maintenance-test
+help: ## Start here: five commands for contributors
+	@printf '%s\n' 'Rasa Community Resources: runnable Rasa examples, tutorials and workshops.' '' \
+	  '  make doctor   Inspect tools, hooks and optional configuration; change nothing' \
+	  '  make hooks    Install the tracked direct-main push refusal' \
+	  '  make setup PROJECT=<path> EXPERIMENT=<id>  Install one locked, managed environment' \
+	  '  make run PROJECT=<path> EXPERIMENT=<id>    Run that resource (may call providers)' \
+	  '  make verify   Run strict offline repository checks and tooling tests' '' \
+	  'Run make help-all for every target; make catalog-help explains catalog maintenance.' \
+	  'Setup, run, builds and verification need a build host; Mac mini pushes are source-only.'
+
+help-all: ## List all documented targets without catalog discovery
+	@awk '/^[a-zA-Z0-9][a-zA-Z0-9_ -]*:.*## / { \
+	  name=$$0; sub(/:.*/, "", name); description=$$0; sub(/^.*## /, "", description); \
+	  printf "  %-28s %s\n", name, description; \
+	}' Makefile | LC_ALL=C sort
+
+doctor: ## Read-only tools, hook, selected-project prerequisites and HTTPS checks
+	@PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/entrypoints.py doctor $(DOCTOR_ARGS)
+
+hooks: ## Install tracked pre-push protection; no application checks
+	@PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/entrypoints.py hooks
+
+setup: ## Create only PROJECT's locked environment, owned by EXPERIMENT
+	@PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/entrypoints.py setup
+
+run: ## Delegate to PROJECT's run target after checking managed ownership
+	@PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/entrypoints.py run
+
+maintenance-test: ## Test safe inspection, selected setup and push refusal before verification
+	@PYTHONDONTWRITEBYTECODE=1 $(PYTHON) -m unittest discover -s scripts -p test_entrypoints.py -v
+
+test: test-scripts maintenance-test ## Test repository tooling and environment ownership rules
+
+verify: ## Strict offline lint, tests, source whitespace and catalog drift; no provider calls
+	@PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/entrypoints.py require-build-host
+	@$(MAKE) --no-print-directory maintenance-test
+	@$(MAKE) --no-print-directory workspace-test
+	@$(MAKE) --no-print-directory validate STRICT=1
+	@git diff --check
+
+build: ## Generate the resource catalog (not models or an application release)
+	@PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/entrypoints.py require-build-host
+	@$(MAKE) --no-print-directory catalog
+
+release: ## Verify release readiness; this repository has no package publisher
+	@$(MAKE) --no-print-directory verify
+	@printf '%s\n' 'Readiness only: no tag, package, push or deployment was created.'
+
+clean: ## Retire only an unchanged managed PROJECT environment with INACTIVE=1
+	@PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/entrypoints.py clean
+
+catalog-help: ## Detailed catalog maintenance guide (discovers projects)
 	@echo ''
 	@echo '$(MAGENTA)Rasa Community Resources$(RESET) — runnable Rasa Pro examples and tutorials'
 	@echo ""

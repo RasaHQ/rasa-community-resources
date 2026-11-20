@@ -37,8 +37,8 @@ jobs:
         with:
           python-version: "3.12"
       # No dependencies to install: the tooling is stdlib-only by design.
-      - name: make validate
-        run: make validate STRICT=1
+      - name: make verify
+        run: make verify
 
       # Machine-readable findings for anything that wants to consume them.
       - name: lint report
@@ -133,6 +133,7 @@ jobs:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
+          version: "0.12.2"
           enable-cache: true
           cache-dependency-glob: "${{ matrix.project }}/uv.lock"
 
@@ -170,6 +171,7 @@ jobs:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
+          version: "0.12.2"
           enable-cache: true
 
       # A frozen resource is only worth keeping if the claim on its README is

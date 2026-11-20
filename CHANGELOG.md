@@ -11,6 +11,15 @@ Rasa Community Resources contains runnable examples, reusable patterns and works
 - **Limits:** real model and speech calls require the reader's own access. Some banking examples also require separately supplied interface definitions. A mock or offline test is not a live banking result.
 - **Check:** run `make validate STRICT=1` for the offline repository checks. Each project's README describes its own setup and tests.
 
+## [Unreleased]
+
+### Added
+
+- Repository commands provide a short starting guide, read-only prerequisite checks,
+  a strict offline verification gate and setup for one managed example at a time.
+- An installable push hook refuses direct changes to the main branches before any
+  application checks. Environment cleanup checks ownership and preserves rebuild records.
+
 ## [2026-11]
 
 ### Added
