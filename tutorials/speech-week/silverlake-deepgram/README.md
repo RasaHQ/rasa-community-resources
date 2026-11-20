@@ -31,7 +31,7 @@ Use GitHub Codespaces, Python 3.12 and uv. Save personal Codespaces secrets
 `RASA_PRO_LICENSE`, `OPENAI_API_KEY` and `DEEPGRAM_API_KEY`, with repository access.
 The license is available through [Rasa's key instructions](https://rasa.community/keys/).
 Use accounts with authorized API usage. Codespaces, OpenAI and Deepgram can incur
-charges. Do not use customer data. Secret presence does not prove account access.
+charges. Do not use customer data. The setup checks which names are set. A successful provider request separately checks account access.
 After changing secrets, stop and restart the Codespace. Never print their values.
 
 ## Start it
@@ -64,8 +64,8 @@ make test
 The workspace command creates only this profile's locked environment. Preserve an
 existing experiment before reusing its owner or environment. The download checks
 the published archive hash before saving it in the bank example's vendor-inputs
-folder. If it fails, stop; do not substitute an unverified archive. The four native
-profile tests check the rc1 loader, required orchestrator, Deepgram channel and
+folder. If it fails, stop; do not substitute an unverified archive. The native
+configuration tests check the rc1 loader, required orchestrator, Deepgram channel and
 source-only preparation. They do not call a speech or model service.
 
 Then start the assistant:
@@ -106,13 +106,15 @@ On November 19, one headless native Inspector run used Deepgram Nova 3 input,
 Deepgram Aura 2 output and a synthetic caller. Four recognized user turns led to
 simulated verification, a review and one accepted local-mock operation. Audio was
 captured; playback acknowledgements were simulated, with no human listening
-assessment. This is a finite integration observation, not a voice-quality study,
-a latency benchmark or production banking acceptance.
+assessment. The retained observation covers this synthetic conversation and its mock journal.
+Human listening quality, latency and production banking readiness require their
+own evaluations.
 
 The earlier caller client sent a short silence followed by a wire gap. Recognition
 combined its four clips into two turns and no operation was accepted. The corrected
 client reused the same four WAVs and streamed PCM silence between utterances.
-This fixes the test feed; it does not establish a Deepgram defect. The existing
+The corrected feed produced four recognized turns in this observation. Vendor
+fault attribution would require separate evidence. The existing
 `scripts/case_builds/voice_driver.py` also uses continuous silence, on the older
 browser_audio transport. Its historical success is not an rc1 Inspector result.
 
@@ -124,8 +126,8 @@ Keep these outputs private; tracker and server logs can contain runtime details.
 The process exit code means observations were recorded, not that acceptance passed.
 Inspect recognized turns, tool results and the SQLite journal before making a claim.
 
-`make text` is a separate REST-only developer check. Typed messages do not establish
-voice acceptance. The existing bank README documents the mock, schema archive and
+`make text` is a separate REST-only developer check. Typed messages check the model and tool route. Qualify the speech path with a
+separate recorded voice session. The existing bank README documents the mock, schema archive and
 journal behavior; its older runtime assessment does not qualify this rc1 profile.
 
 `make run` and `make text` fetch and verify the required public bank archive first. The recorder refuses a foreign listener on port 5005, then uses a fresh per-attempt port consistently for its child, readiness probe and client. Before sending a session request or audio, the Linux Codespaces recorder checks that the connected WebSocket peer belongs to its child process group using kernel socket records. It refuses missing or foreign ownership and never terminates the foreign listener. This automated recorder requires Linux `/proc`; use the Inspector manually on other systems.
