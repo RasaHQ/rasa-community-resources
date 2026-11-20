@@ -50,6 +50,7 @@ from rasa_projects import (
     is_prerelease,
     is_historical_version_path,
     read_expected_version,
+    release_profile_version,
     read_lock_version,
     read_pyproject_pin,
     read_readme_verified,
@@ -141,7 +142,7 @@ def check_version_consistency(expected: str) -> list[Finding]:
             for pattern in patterns:
                 for match in pattern.finditer(line):
                     found = match.group("version")
-                    if found != expected:
+                    if found != (release_profile_version(_rel(path)) or expected):
                         findings.append(
                             Finding(
                                 "version-consistency",
@@ -176,14 +177,15 @@ def check_lock_sync(projects: list[Project], expected: str) -> list[Finding]:
     """pyproject pin and uv.lock both resolve to the pinned version."""
     findings: list[Finding] = []
     for project in projects:
+        target = release_profile_version(project.path) or expected
         pin = read_pyproject_pin(project)
-        if pin != expected:
+        if pin != target:
             findings.append(
                 Finding(
                     "lock-sync",
                     _rel(project.pyproject),
                     None,
-                    f"pins rasa-pro=={pin}, expected {expected}",
+                    f"pins rasa-pro=={pin}, expected {target}",
                 )
             )
         if not project.lockfile.is_file():
@@ -192,13 +194,13 @@ def check_lock_sync(projects: list[Project], expected: str) -> list[Finding]:
             )
             continue
         locked = read_lock_version(project)
-        if locked != expected:
+        if locked != target:
             findings.append(
                 Finding(
                     "lock-sync",
                     _rel(project.lockfile),
                     None,
-                    f"resolved rasa-pro=={locked}, expected {expected} "
+                    f"resolved rasa-pro=={locked}, expected {target} "
                     f"(run: make migrate)",
                 )
             )
@@ -208,9 +210,10 @@ def check_lock_sync(projects: list[Project], expected: str) -> list[Finding]:
 def check_prerelease_consistency(projects: list[Project], expected: str) -> list[Finding]:
     """uv prerelease opt-in matches whether the pin is actually a prerelease."""
     findings: list[Finding] = []
-    want = is_prerelease(expected)
 
     for project in projects:
+        target = release_profile_version(project.path) or expected
+        want = is_prerelease(target)
         setting = read_uv_prerelease_setting(project)
         if want and setting != "allow":
             findings.append(
@@ -218,7 +221,7 @@ def check_prerelease_consistency(projects: list[Project], expected: str) -> list
                     "prerelease-consistency",
                     _rel(project.pyproject),
                     None,
-                    f'pin {expected} is a prerelease but [tool.uv] prerelease is '
+                    f'pin {target} is a prerelease but [tool.uv] prerelease is '
                     f"{setting!r}; resolution will fail",
                 )
             )
@@ -228,7 +231,7 @@ def check_prerelease_consistency(projects: list[Project], expected: str) -> list
                     "prerelease-consistency",
                     _rel(project.pyproject),
                     None,
-                    f'pin {expected} is stable but [tool.uv] prerelease = "allow" '
+                    f'pin {target} is stable but [tool.uv] prerelease = "allow" '
                     f"remains; that lets every other dependency resolve to a "
                     f"prerelease too",
                 )
@@ -237,6 +240,8 @@ def check_prerelease_consistency(projects: list[Project], expected: str) -> list
     # The same switch as written into per-project Makefiles and install docs.
     flag_re = re.compile(r"(?:\$\(UV\)|uv)[ \t]+(?:sync|lock)(?P<flag>[ \t]+--prerelease=allow)?")
     for project in projects:
+        target = release_profile_version(project.path) or expected
+        want = is_prerelease(target)
         for name in ("Makefile", "README.md", "AGENTS.md"):
             path = project.path / name
             if not path.is_file():
@@ -252,7 +257,7 @@ def check_prerelease_consistency(projects: list[Project], expected: str) -> list
                                 _rel(path),
                                 lineno,
                                 f"install command {verb} --prerelease=allow for "
-                                f"pin {expected} (run: make migrate)",
+                                f"pin {target} (run: make migrate)",
                             )
                         )
     return findings

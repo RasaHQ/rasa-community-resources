@@ -60,7 +60,7 @@ def stopped_by_the_caller():
     return _interrupted
 
 
-def main(project):
+def main(project, *, required_secrets=SECRETS):
     parser = argparse.ArgumentParser(description="Start the fictional SilverLake banking example.")
     parser.add_argument("--port", type=int, default=5005)
     parser.add_argument("--fault", choices=["none", "transfer-response-lost"], default="none",
@@ -104,7 +104,7 @@ def main(project):
               + "); everything this example uses is unchanged.")
     from dotenv import load_dotenv
     load_dotenv(project / ".env", override=False)
-    missing = [key for key in SECRETS if not os.environ.get(key, "").strip()]
+    missing = [key for key in required_secrets if not os.environ.get(key, "").strip()]
     if missing:
         print("Not ready (ValueError). Run make doctor for the acquisition instructions for these missing names: " + ", ".join(missing)
               + ". The SilverLake mock needs no Jack Henry account.")
@@ -168,7 +168,10 @@ def main(project):
                 raise RuntimeError("agent_validation_failed")
             integrations = read_yaml_file(project / "integrations.yml", expand_env_vars=False)
             integrations["channels"]["inspector"]["server_url"] = origin
-            if not args.text_api:
+            if args.text_api:
+                # A REST-only check must not initialize an unused voice channel.
+                integrations["channels"].pop("inspector", None)
+            else:
                 # The REST text channel is a developer check only; keep it off otherwise.
                 integrations["channels"].pop("rest", None)
             write_yaml(integrations, run / "integrations.yml")

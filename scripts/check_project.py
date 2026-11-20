@@ -24,6 +24,7 @@ from rasa_projects import (  # noqa: E402
     REPO_ROOT,
     Project,
     read_expected_version,
+    release_profile_version,
     read_pyproject_pin,
     read_training_secrets,
     uv_prerelease_args,
@@ -396,7 +397,7 @@ def main() -> int:
             )
             return 2
     else:
-        expected = read_expected_version(args.version)
+        expected = read_expected_version(args.version) if args.version else (release_profile_version(project) or read_expected_version())
 
     if args.local_embeddings:
         os.environ["RASA_CATALOG_LOCAL_EMBEDDINGS"] = args.local_embeddings

@@ -239,6 +239,7 @@ validate: test-voice-latency ## Offline correctness gate (lint + unit tests + dr
 	@$(PYTHON) -m unittest discover -s scripts -p test_snapshot_selection.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_codespaces_scope.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_release_migration.py
+	@$(PYTHON) -m unittest discover -s scripts -p test_release_profiles.py
 	@$(PYTHON) -m unittest discover -s scripts -p test_compatibility_scope.py
 	@$(PYTHON) scripts/generate_codespaces.py --check
 	@$(PYTHON) -m unittest discover -s scripts -p test_readme_catalog.py

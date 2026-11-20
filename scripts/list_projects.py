@@ -245,7 +245,7 @@ def main() -> int:
         if drifted:
             print(f"\n{len(drifted)} project(s) out of sync with {expected}")
             return 1
-        print(f"\n{GREEN}All projects match RASA_PRO_VERSION{RESET}")
+        print(f"\n{GREEN}All projects match their declared release targets{RESET}")
 
     return 0
 

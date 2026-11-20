@@ -535,6 +535,34 @@ def is_snapshot_path(rel_path: str) -> bool:
     return rel_path.split("/", 1)[0] in SNAPSHOT_ROOT_NAMES
 
 
+def release_profile_version(path: str | Path) -> str | None:
+    """Exact maintainer-approved candidate pins, separate from catalog migration.
+
+    The registry and project metadata must agree; an arbitrary metadata field
+    cannot opt a resource out of the maintained catalog pin.
+    """
+    registry = REPO_ROOT / "scripts/release-profiles.json"
+    if not registry.is_file():
+        return None
+    value = Path(path)
+    if value.is_absolute():
+        try:
+            path = value.relative_to(REPO_ROOT).as_posix()
+        except ValueError:
+            return None
+    else:
+        path = value.as_posix()
+    for prefix, item in json.loads(registry.read_text())["profiles"].items():
+        if path == prefix or path.startswith(prefix + "/"):
+            metadata = tomllib.loads((REPO_ROOT / prefix / "pyproject.toml").read_text())
+            declared = metadata.get("tool", {}).get("rasa-catalog", {}).get("release-version")
+            version = item["version"]
+            if declared != version or not is_valid_version(version) or not item.get("ruling"):
+                raise ValueError("Invalid registered release profile: " + prefix)
+            return version
+    return None
+
+
 def is_historical_version_path(rel_path: str) -> bool:
     """Whether a path records an old runtime instead of the current catalog pin."""
     return is_snapshot_path(rel_path) or any(
@@ -550,7 +578,7 @@ def tracked_version_paths(*patterns: str) -> list[Path]:
     ).decode().split("\0")
     paths = []
     for name in names:
-        if not name or is_historical_version_path(name):
+        if not name or is_historical_version_path(name) or release_profile_version(name):
             continue
         path = REPO_ROOT / name
         if path.is_symlink():
@@ -724,6 +752,7 @@ class Drift:
 
 
 def project_drift(project: Project, expected: str) -> Drift:
+    expected = release_profile_version(project.path) or expected
     return Drift(
         project=project,
         expected=expected,

@@ -56,6 +56,7 @@ from rasa_projects import (  # noqa: E402
     latest_version,
     release_carries_engine,
     read_expected_version,
+    release_profile_version,
     read_lock_version,
     read_version_line,
     read_pyproject_pin,
@@ -543,6 +544,7 @@ def main() -> int:
     # made on the contributor's behalf. See docs/SNAPSHOTS.md.
     projects = discover_projects()
     projects += additional_migration_projects(projects)
+    projects = [p for p in projects if not release_profile_version(p.path)]
     snapshots = discover_projects("snapshots")
     if args.project:
         wanted = {p.strip().rstrip("/") for p in args.project}
