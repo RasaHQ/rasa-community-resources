@@ -50,13 +50,13 @@ class EntryPointsTests(unittest.TestCase):
             host.assert_not_called()
 
     def test_source_only_work_push_runs_no_application_process(self):
-        with patch.object(ep, 'current_mode', return_value='source'), patch.object(ep.subprocess, 'run') as run:
+        with patch.object(ep, 'current_mode', return_value='source'), patch.object(ep, 'capture', return_value='refs/heads/work'), patch.object(ep.subprocess, 'run') as run:
             self.assertEqual(ep.push(self.root, update()), 0)
             run.assert_not_called()
 
     def test_source_only_refuses_tags_releases_and_deletions(self):
         for raw in (update(remote='refs/tags/v1'), update(remote='refs/heads/release/v1'), update(oid=ZERO)):
-            with patch.object(ep, 'current_mode', return_value='source'), patch.object(ep.subprocess, 'run') as run:
+            with patch.object(ep, 'current_mode', return_value='source'), patch.object(ep, 'capture', return_value='refs/heads/work'), patch.object(ep.subprocess, 'run') as run:
                 with self.assertRaises(ep.EntrypointError):
                     ep.push(self.root, raw)
                 run.assert_not_called()
@@ -138,6 +138,16 @@ class EntryPointsTests(unittest.TestCase):
             with self.assertRaises(ep.EntrypointError):
                 ep.operate(self.root, 'run', self.env)
             run.assert_not_called()
+
+    def test_run_overrides_inherited_environment_with_selected_managed_path(self):
+        marker = self.project / '.venv/.rasa-workspace.json'
+        marker.parent.mkdir()
+        record = {'owner': 'test-owner', 'project': str(self.project), 'inputs': {n: hashlib.sha256((self.project / n).read_bytes()).hexdigest() for n in ('pyproject.toml', 'uv.lock')}}
+        marker.write_text(json.dumps(record))
+        with patch.object(ep, 'require_build_host'), patch.object(ep.subprocess, 'run') as run:
+            run.return_value.returncode = 9
+            self.assertEqual(ep.operate(self.root, 'run', {**self.env, 'UV_PROJECT_ENVIRONMENT': '/outside'}), 9)
+            self.assertEqual(run.call_args.kwargs['env']['UV_PROJECT_ENVIRONMENT'], str(self.project / '.venv'))
 
     def test_doctor_never_reads_dotenv_or_prints_values_or_writes(self):
         (self.root / 'scripts').mkdir()

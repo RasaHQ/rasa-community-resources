@@ -230,7 +230,8 @@ def operate(root: Path, action: str, env: Mapping[str, str]) -> int:
         expected = {n: hashlib.sha256((project / n).read_bytes()).hexdigest() for n in ('pyproject.toml', 'uv.lock')}
         if record.get('owner') != owner or record.get('project') != str(project) or record.get('inputs') != expected:
             raise EntrypointError('Managed environment ownership or locked inputs differ; audit before running.')
-        return subprocess.run(['make', '--no-print-directory', '-C', str(project), 'run'], cwd=root).returncode
+        return subprocess.run(['make', '--no-print-directory', '-C', str(project), 'run'],
+                              cwd=root, env={**env, 'UV_PROJECT_ENVIRONMENT': str(project / '.venv')}).returncode
     return 0
 
 
