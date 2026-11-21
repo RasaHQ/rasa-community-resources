@@ -13,13 +13,17 @@ names and set/unset states, never values. A missing hook or tool returns a failu
 
 On a build host, `make verify` runs strict offline lint, tooling and workspace tests,
 and catalog checks. It does not install or train the catalog or prove a live service.
-Run `make hooks` to install the tracked pre-push refusal for direct `main` and
-`master` pushes. Work branch pushes run `make verify`; identified Mac mini work
-branch pushes preserve source only and report application checks as not run.
+Run `make hooks` to install the tracked pre-push hook that refuses direct pushes
+to `main` and `master`. On build hosts the hook runs `make verify` on the current
+checkout, including any local edits. GitHub pull request CI checks the pushed
+commit. On an identified Mac mini, work branch pushes preserve source and report
+application checks as not run.
 
 To work on one resource, use `make setup PROJECT=<path> EXPERIMENT=<id>`, then
 `make run PROJECT=<path> EXPERIMENT=<id>`. Setup uses the existing workspace manager
-and locked dependencies. Run delegates to the selected resource's `run` target;
+and locked dependencies. It then enables worktree configuration in the repository
+and sets this worktree's Git hook path. Run delegates to the selected resource's
+`run` target;
 read its README first because it may start a service or contact a paid provider.
 `make clean` with the same selection and `INACTIVE=1` retires only an unchanged
 managed environment after its jobs stop. It preserves source and retirement records;

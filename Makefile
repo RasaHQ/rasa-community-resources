@@ -72,10 +72,11 @@ help: ## Start here: five commands for contributors
 	@printf '%s\n' 'Rasa Community Resources: runnable Rasa examples, tutorials and workshops.' '' \
 	  '  make doctor   Inspect tools, hooks and optional configuration; change nothing' \
 	  '  make hooks    Install the tracked direct-main push refusal' \
-	  '  make setup PROJECT=<path> EXPERIMENT=<id>  Install one locked, managed environment' \
+	  '  make setup PROJECT=<path> EXPERIMENT=<id>  Install one locked environment and configure Git hooks' \
 	  '  make run PROJECT=<path> EXPERIMENT=<id>    Run that resource (may call providers)' \
 	  '  make verify   Run strict offline repository checks and tooling tests' '' \
-	  'Run make help-all for every target; make catalog-help explains catalog maintenance.' \
+	  'The push hook checks the current checkout on build hosts. CI checks the pushed commit.' \
+  'Run make help-all for every target; make catalog-help explains catalog maintenance.' \
 	  'Setup, run, builds and verification need a build host; Mac mini pushes are source-only.'
 
 help-all: ## List all documented targets without catalog discovery
@@ -90,7 +91,7 @@ doctor: ## Read-only tools, hook, selected-project prerequisites and HTTPS check
 hooks: ## Install tracked pre-push protection; no application checks
 	@PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/entrypoints.py hooks
 
-setup: ## Create only PROJECT's locked environment, owned by EXPERIMENT
+setup: ## Create PROJECT's locked environment for EXPERIMENT and configure Git hooks
 	@PYTHONDONTWRITEBYTECODE=1 $(PYTHON) scripts/entrypoints.py setup
 
 run: ## Delegate to PROJECT's run target after checking managed ownership
