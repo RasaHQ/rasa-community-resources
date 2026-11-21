@@ -2,6 +2,42 @@
 
 This repository holds the code for the tutorials, example agents and workshops on [rasa.community](https://rasa.community/), ready to run in your browser.
 
+## Repository commands
+
+Run `make help` for the five starting commands, or `make help-all` for the full index.
+The repository tooling uses Python 3.12 and uv 0.12.2, matching its CI pins.
+`make doctor` inspects prerequisites without installing, reading `.env` or calling
+providers. Use `make doctor DOCTOR_ARGS=--offline` to skip public HTTPS checks;
+`PROJECT=<path>` adds that project's declared requirements. It prints variable
+names and set/unset states, never values. A missing hook or tool returns a failure.
+
+On a build host, `make verify` runs strict offline lint, tooling and workspace tests,
+and catalog checks. It does not install or train the catalog or prove a live service.
+Run `make hooks` to install the tracked pre-push hook that refuses direct pushes
+to `main` and `master`. On build hosts the hook runs `make verify` on the current
+checkout, including any local edits. GitHub pull request CI checks the pushed
+commit. On an identified Mac mini, work branch pushes preserve source and report
+application checks as not run.
+
+To work on one resource, use `make setup PROJECT=<path> EXPERIMENT=<id>`, then
+`make run PROJECT=<path> EXPERIMENT=<id>`. Setup uses the existing workspace manager
+and locked dependencies. It then enables worktree configuration in the repository
+and sets this worktree's Git hook path. Run delegates to the selected resource's
+`run` target;
+read its README first because it may start a service or contact a paid provider.
+`make clean` with the same selection and `INACTIVE=1` retires only an unchanged
+managed environment after its jobs stop. It preserves source and retirement records;
+changed or unmanaged environments require a preservation audit.
+
+`make build` regenerates the catalog. `make release` verifies readiness only; this
+repository has no package publisher. Keep the Rasa pin and lockfiles unchanged until
+a deliberate migration. `make catalog-help` explains the existing migration and
+full-catalog commands. These operations need a build host; the Mac mini does source
+work only. Hook installation changes local Git configuration and applies to this
+checkout's worktree without changing existing sibling worktrees. Git may copy that
+configuration into a new worktree created afterward; run its `make doctor` before
+using it, especially when checking out an older revision.
+
 ## Start here
 
 Pick one:

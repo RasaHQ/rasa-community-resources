@@ -1,0 +1,5 @@
+#!/bin/sh
+# Git supplies all proposed ref updates on stdin; Python checks every destination first.
+set -eu
+cd "$(git rev-parse --show-toplevel)"
+exec python3 -B scripts/entrypoints.py pre-push
