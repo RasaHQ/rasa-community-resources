@@ -30,7 +30,9 @@ repository has no package publisher. Keep the Rasa pin and lockfiles unchanged u
 a deliberate migration. `make catalog-help` explains the existing migration and
 full-catalog commands. These operations need a build host; the Mac mini does source
 work only. Hook installation changes local Git configuration and applies to this
-checkout's worktree, not other worktrees.
+checkout's worktree without changing existing sibling worktrees. Git may copy that
+configuration into a new worktree created afterward; run its `make doctor` before
+using it, especially when checking out an older revision.
 
 ## Start here
 

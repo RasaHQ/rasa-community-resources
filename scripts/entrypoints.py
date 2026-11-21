@@ -82,7 +82,7 @@ def selected_project(root: Path, env: Mapping[str, str]) -> tuple[Path, str]:
 
 
 def install_hooks(root: Path) -> None:
-    # A worktree-local setting avoids breaking sibling worktrees at older revisions.
+    # A worktree-local setting leaves existing siblings alone. Git can copy it to new worktrees.
     if capture(['git', 'config', '--local', '--get', 'core.worktree'], root) or capture(['git', 'config', '--local', '--get', 'core.bare'], root) == 'true':
         raise EntrypointError('Custom or bare Git layout needs a reviewed worktree configuration migration.')
     for command in [
@@ -93,12 +93,12 @@ def install_hooks(root: Path) -> None:
 
 
 def hook_current(root: Path) -> bool:
-    configured = capture(['git', 'config', '--get', 'core.hooksPath'], root)
-    location = Path(configured) if configured else Path('.git/hooks')
-    location = location if location.is_absolute() else root / location
-    if location.resolve() != (root / '.githooks').resolve():
-        return False
+    # Let Git resolve core.hooksPath and worktree-specific repository layout.
+    effective = capture(['git', 'rev-parse', '--path-format=absolute',
+                         '--git-path', 'hooks/pre-push'], root)
     hook = root / '.githooks/pre-push'
+    if not effective or Path(effective).resolve() != hook.resolve():
+        return False
     if not hook.is_file() or not os.access(hook, os.X_OK):
         return False
     # Report dirty/mismatched protection as unhealthy, even if the filename exists.

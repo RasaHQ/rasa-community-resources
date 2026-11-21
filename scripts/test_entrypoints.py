@@ -187,12 +187,21 @@ class EntryPointsTests(unittest.TestCase):
         (self.root / '.githooks/pre-push').chmod(0o755)
         subprocess.run(['git', 'add', '.'], cwd=self.root, check=True)
         subprocess.run(['git', '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '-qm', 'Fixture'], cwd=self.root, check=True)
-        ep.install_hooks(self.root)
-        self.assertTrue(ep.hook_current(self.root))
+        # Existing worktrees must not change when this one installs its hooks.
         sibling = self.root.parent / (self.root.name + '-sibling')
         subprocess.run(['git', 'worktree', 'add', '-qb', 'sibling', str(sibling)], cwd=self.root, check=True, capture_output=True)
         self.addCleanup(shutil.rmtree, sibling, True)
+        before = ep.capture(['git', 'config', '--get', 'core.hooksPath'], sibling)
+        ep.install_hooks(self.root)
+        self.assertTrue(ep.hook_current(self.root))
+        self.assertEqual(ep.capture(['git', 'config', '--get', 'core.hooksPath'], sibling), before)
         self.assertFalse(ep.hook_current(sibling))
+        # Git copies config.worktree when adding a NEW worktree after installation.
+        inherited = self.root.parent / (self.root.name + '-inherited')
+        subprocess.run(['git', 'worktree', 'add', '-qb', 'inherited', str(inherited)], cwd=self.root, check=True, capture_output=True)
+        self.addCleanup(shutil.rmtree, inherited, True)
+        self.assertEqual(ep.capture(['git', 'config', '--get', 'core.hooksPath'], inherited), '.githooks')
+        self.assertTrue(ep.hook_current(inherited))
         with (self.root / '.githooks/pre-push').open('a') as stream:
             stream.write('# changed\n')
         self.assertFalse(ep.hook_current(self.root))
